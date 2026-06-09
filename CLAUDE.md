@@ -4,20 +4,25 @@
 
 ## Project goal
 
-A 2-page B2B admin panel (internet-shop analytics) that doubles as a **performance simulator**. The header exposes granular toggle switches that enable/disable known frontend anti-patterns. Users can activate them individually or in any combination and observe the real-time impact on Core Web Vitals and visual re-render indicators.
+An interactive educational demo that makes the consequences of frontend anti-patterns **visible and measurable in real time**. Built as a realistic-looking B2B analytics dashboard (2 pages), it exposes a control panel of toggles — each one injects a specific, well-known anti-pattern into the live UI. The viewer instantly sees the degradation: Core Web Vitals drop, re-render indicators flash, the interface lags or freezes.
+
+The purpose is not to build a product — it is to make a convincing argument: _"this is exactly what happens in production when you skip the best practice."_
 
 ---
 
 ## Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 16 (App Router, TypeScript) |
-| Styles / UI | Tailwind CSS v4 + shadcn/ui (dark theme by default) |
-| Charts | recharts / shadcn/charts |
-| State | Zustand (primary) + React Context (for comparison demos) |
-| Metrics | `web-vitals` — official Google package, LCP / CLS / INP |
-| Data | DummyJSON or FakeStoreAPI (real HTTP calls, no local mocks) |
+| Layer          | Choice                                                                                       |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| Framework      | Next.js 16 (App Router, TypeScript)                                                          |
+| Styles / UI    | Tailwind CSS v4 + shadcn/ui (dark theme by default)                                          |
+| Charts         | recharts / shadcn/charts                                                                     |
+| State          | Zustand (primary) + React Context (for comparison demos)                                     |
+| Metrics        | `web-vitals` — official Google package, LCP / CLS / INP                                      |
+| Data           | DummyJSON (real HTTP calls, no local mocks)                                                  |
+| Icons          | `lucide-react` — system icon set                                                             |
+| Class utils    | `clsx` + `tailwind-merge` — dynamic Tailwind class management (required for Flash on Update) |
+| Virtualisation | `@tanstack/react-virtual` — list virtualisation for the 2000+ row inventory table            |
 
 ---
 
