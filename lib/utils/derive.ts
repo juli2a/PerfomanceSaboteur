@@ -15,6 +15,6 @@ export function deriveLtv(userId: number, userAge: number): number {
 // 7-point sparkline based on product id and price
 export function deriveSparkline(productId: number, basePrice: number): number[] {
   return Array.from({ length: 7 }, (_, i) =>
-    Math.round(basePrice * (0.85 + 0.05 * ((productId * (i + 1)) % 7))),
+    Math.round(basePrice * (0.85 + 0.03 * ((productId * 17 + i * 13) % 11))),
   );
 }
