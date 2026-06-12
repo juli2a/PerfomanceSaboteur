@@ -5,8 +5,8 @@
 // Displays: LCP, CLS, INP, DOM element count, CPU compute indicator
 export default function PerformancePanel() {
   return (
-    <aside className="fixed bottom-4 right-4 z-50 rounded-xl border border-zinc-700 bg-zinc-900 p-3 text-xs text-zinc-300 shadow-xl">
-      <p className="mb-2 font-semibold text-zinc-100">Performance</p>
+    <aside className="fixed bottom-4 right-4 z-50 rounded-xl border border-brand-border bg-brand-bg p-3 text-xs text-brand-text shadow-xl">
+      <p className="mb-2 font-semibold text-brand-accent">Performance</p>
       <dl className="space-y-1">
         <div className="flex justify-between gap-6"><dt>LCP</dt><dd>—</dd></div>
         <div className="flex justify-between gap-6"><dt>CLS</dt><dd>—</dd></div>

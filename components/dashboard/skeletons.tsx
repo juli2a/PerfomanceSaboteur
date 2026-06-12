@@ -1,5 +1,5 @@
 function Shimmer({ className }: { className: string }) {
-  return <div className={`animate-pulse rounded-xl bg-zinc-800 ${className}`} />;
+  return <div className={`animate-pulse rounded-xl bg-raise ${className}`} />;
 }
 
 export function KpiSkeleton() {

@@ -26,7 +26,7 @@ function Sparkline({ data }: { data: number[] }) {
       <polyline
         points={points}
         fill="none"
-        stroke="#6366f1"
+        stroke="var(--primary)"
         strokeWidth={1.5}
         strokeLinejoin="round"
         strokeLinecap="round"
@@ -45,8 +45,8 @@ export function MicroCardsGridClient({ products }: Props) {
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-zinc-100">Analytics Grid</h2>
-        <div className="flex items-center gap-3 text-xs text-zinc-400">
+        <h2 className="text-sm font-semibold text-foreground">Analytics Grid</h2>
+        <div className="flex items-center gap-3 text-xs text-text-3">
           <span>Min GM%</span>
           <input
             type="range"
@@ -71,20 +71,20 @@ export function MicroCardsGridClient({ products }: Props) {
               className={[
                 "rounded-xl border p-3 transition-colors",
                 lowMargin
-                  ? "border-red-900/50 bg-red-950/20"
-                  : "border-zinc-800 bg-zinc-900",
+                  ? "border-alert/30 bg-alert/5"
+                  : "border-border bg-surface",
               ].join(" ")}
             >
               <div className="mb-2 flex items-start justify-between gap-1">
-                <p className="line-clamp-2 text-xs font-medium leading-tight text-zinc-200">
+                <p className="line-clamp-2 text-xs font-medium leading-tight text-foreground">
                   {p.meta.title}
                 </p>
                 <span
                   className={[
                     "shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium",
                     lowMargin
-                      ? "bg-red-900/50 text-red-400"
-                      : "bg-zinc-800 text-zinc-400",
+                      ? "bg-alert/20 text-alert"
+                      : "bg-raise text-text-3",
                   ].join(" ")}
                 >
                   GM% {p.marginality}
@@ -93,13 +93,13 @@ export function MicroCardsGridClient({ products }: Props) {
 
               <div className="flex items-end justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-zinc-100">
+                  <p className="text-sm font-semibold text-foreground">
                     {formatCurrency(p.metrics.currentValue)}
                   </p>
                   <p
                     className={[
                       "text-[10px] font-medium",
-                      lowRating ? "text-red-400" : "text-zinc-400",
+                      lowRating ? "text-alert" : "text-text-3",
                     ].join(" ")}
                   >
                     ★ {p.metrics.rating.toFixed(1)}

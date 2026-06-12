@@ -77,13 +77,13 @@ export function SalesChartClient({ orders }: Props) {
   const total = data.reduce((s, p) => s + p.value, 0);
 
   return (
-    <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+    <section className="rounded-xl border border-border bg-surface p-4">
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-zinc-100">Revenue</h2>
-          <p className="text-xs text-zinc-500">{formatCurrency(total)} this period</p>
+          <h2 className="text-sm font-semibold text-foreground">Revenue</h2>
+          <p className="text-xs text-text-2">{formatCurrency(total)} this period</p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-zinc-700 p-0.5 text-xs">
+        <div className="flex gap-1 rounded-lg border border-border-strong p-0.5 text-xs">
           {(["day", "week", "month"] as Period[]).map((p) => (
             <button
               key={p}
@@ -91,8 +91,8 @@ export function SalesChartClient({ orders }: Props) {
               className={[
                 "rounded px-2 py-1 capitalize transition-colors",
                 period === p
-                  ? "bg-zinc-700 text-zinc-100"
-                  : "text-zinc-400 hover:text-zinc-200",
+                  ? "bg-raise text-foreground"
+                  : "text-text-3 hover:text-foreground",
               ].join(" ")}
             >
               {p}
@@ -110,14 +110,14 @@ export function SalesChartClient({ orders }: Props) {
             className="group relative flex flex-1 flex-col items-center justify-end"
           >
             <div
-              className="w-full min-h-px rounded-t bg-indigo-500/70 transition-all group-hover:bg-indigo-400"
+              className="w-full min-h-px rounded-t bg-primary/70 transition-all group-hover:bg-primary"
               style={{ height: `${(point.value / max) * 100}%` }}
             />
           </div>
         ))}
       </div>
 
-      <div className="mt-1 flex justify-between text-[10px] text-zinc-600">
+      <div className="mt-1 flex justify-between text-[10px] text-text-3">
         <span>{data[0]?.label}</span>
         <span>{data[Math.floor(data.length / 2)]?.label}</span>
         <span>{data[data.length - 1]?.label}</span>
