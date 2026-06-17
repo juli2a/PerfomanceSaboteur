@@ -1,0 +1,66 @@
+@layer components {
+  /* Page title (h1) — e.g. "Dashboard", "Inventory Control" */
+  .heading-1 {
+    font-family: var(--font-heading);
+    font-size: 21px;
+    font-weight: 600;
+    line-height: var(--leading-tight);
+    letter-spacing: -0.4px;
+    color: var(--color-foreground);
+  }
+
+  /* Section title (h2) — e.g. "Top Customers", "Categories", "Revenue" */
+  .heading-2 {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+
+  @media (width >= 64rem) {
+    .heading-1 {
+      font-size: 25px;
+      letter-spacing: -0.5px;
+    }
+
+    .heading-2 {
+      font-size: 15px;
+    }
+  }
+
+  /* Dialog/modal title (h3) — e.g. "Confirm status change". Same on mobile and desktop. */
+  .heading-3 {
+    font-family: var(--font-heading);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: var(--color-foreground);
+  }
+
+  /* Brand kicker — eyebrow label over a brand heading, e.g. "SIMULATOR" */
+  .heading-brand-kicker {
+    font-family: var(--font-brand);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.3px;
+    color: var(--color-brand-accent);
+  }
+
+  /* Brand group label — legend for a group of toggles, e.g. "Network" */
+  .heading-brand-group {
+    font-family: var(--font-brand);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--color-brand-muted);
+  }
+
+  /* Brand panel title — e.g. "Core Web Vitals" */
+  .heading-brand-panel {
+    font-family: var(--font-brand);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-foreground);
+  }
+}

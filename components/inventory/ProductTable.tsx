@@ -10,7 +10,7 @@ export default function ProductTable() {
       {/* Desktop table */}
       <table className="hidden w-full text-xs lg:table">
         <thead>
-          <tr className="border-b border-zinc-800 text-left text-zinc-500">
+          <tr className="border-b border-border text-left text-muted-foreground">
             <th className="p-3 w-8" />
             <th className="p-3 w-10" />
             <th className="p-3">Name / SKU</th>

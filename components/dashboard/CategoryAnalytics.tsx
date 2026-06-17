@@ -1,10 +1,31 @@
-// Narrow column: list of 5-6 product categories with revenue progress bars
-// Data: GET /products/categories + sum(price × stock) per category
-export default function CategoryAnalytics() {
+import { getCategories } from "@/lib/server/dashboard";
+import { formatCurrency } from "@/lib/utils/format";
+import { ClientLogger } from "@/components/simulator/ClientLogger";
+import { Card } from "@/components/ui/card";
+
+export default async function CategoryAnalytics() {
+  const categories = await getCategories();
+
   return (
-    <section className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
-      <h2 className="mb-3 text-sm font-semibold text-zinc-100">Categories</h2>
-      {/* Category rows with progress bars */}
-    </section>
+    <Card variant="global">
+      <h2 className="heading-2 mb-heading-gap">Categories</h2>
+      <ul className="space-y-3">
+        {categories.map((cat) => (
+          <li key={cat.slug}>
+            <div className="mb-1 flex items-center justify-between text-xs">
+              <span className="capitalize text-text-2">{cat.name}</span>
+              <span className="text-text-2">{formatCurrency(cat.stockValue)}</span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-raise">
+              <div
+                className="h-1.5 rounded-full bg-primary"
+                style={{ width: `${cat.share}%` }}
+              />
+            </div>
+          </li>
+        ))}
+      </ul>
+      <ClientLogger label="CategoryAnalytics" />
+    </Card>
   );
 }
