@@ -1,12 +1,13 @@
 import { getCategories } from "@/lib/server/dashboard";
 import { formatCurrency } from "@/lib/utils/format";
 import { ClientLogger } from "@/components/simulator/ClientLogger";
+import { Card } from "@/components/ui/card";
 
 export default async function CategoryAnalytics() {
   const categories = await getCategories();
 
   return (
-    <section className="rounded-xl border border-border bg-surface p-4">
+    <Card variant="global">
       <h2 className="mb-3 text-sm font-semibold text-foreground">Categories</h2>
       <ul className="space-y-3">
         {categories.map((cat) => (
@@ -25,6 +26,6 @@ export default async function CategoryAnalytics() {
         ))}
       </ul>
       <ClientLogger label="CategoryAnalytics" />
-    </section>
+    </Card>
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CartEntry, ChartPoint } from "@/types/analytics";
 import { formatCurrency } from "@/lib/utils/format";
+import { Card } from "@/components/ui/card";
 
 type Period = "day" | "week" | "month";
 
@@ -77,7 +78,7 @@ export function SalesChartClient({ orders }: Props) {
   const total = data.reduce((s, p) => s + p.value, 0);
 
   return (
-    <section className="rounded-xl border border-border bg-surface p-4">
+    <Card variant="global">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="text-sm font-semibold text-foreground">Revenue</h2>
@@ -122,6 +123,6 @@ export function SalesChartClient({ orders }: Props) {
         <span>{data[Math.floor(data.length / 2)]?.label}</span>
         <span>{data[data.length - 1]?.label}</span>
       </div>
-    </section>
+    </Card>
   );
 }

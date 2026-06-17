@@ -4,198 +4,34 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  /* ── Layer 0 → Tailwind utility classes ── */
-  --color-background:           var(--background);
-  --color-foreground:           var(--foreground);
-  --color-card:                 var(--card);
-  --color-card-foreground:      var(--card-foreground);
-  --color-popover:              var(--popover);
-  --color-popover-foreground:   var(--popover-foreground);
-  --color-primary:              var(--primary);
-  --color-primary-foreground:   var(--primary-foreground);
-  --color-secondary:            var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted:                var(--muted);
-  --color-muted-foreground:     var(--muted-foreground);
-  --color-accent:               var(--accent);
-  --color-accent-foreground:    var(--accent-foreground);
-  --color-destructive:          var(--destructive);
-  --color-border:               var(--border);
-  --color-input:                var(--input);
-  --color-ring:                 var(--ring);
-  --color-chart-1:              var(--chart-1);
-  --color-chart-2:              var(--chart-2);
-  --color-chart-3:              var(--chart-3);
-  --color-chart-4:              var(--chart-4);
-  --color-chart-5:              var(--chart-5);
-  --color-sidebar:              var(--sidebar);
-  --color-sidebar-foreground:           var(--sidebar-foreground);
-  --color-sidebar-primary:              var(--sidebar-primary);
-  --color-sidebar-primary-foreground:   var(--sidebar-primary-foreground);
-  --color-sidebar-accent:               var(--sidebar-accent);
-  --color-sidebar-accent-foreground:    var(--sidebar-accent-foreground);
-  --color-sidebar-border:               var(--sidebar-border);
-  --color-sidebar-ring:                 var(--sidebar-ring);
-
-  /* ── Lumen Signal extended palette ── */
-  --color-surface:       var(--surface);
-  --color-surface-2:     var(--surface-2);
-  --color-raise:         var(--raise);
-  --color-border-strong: var(--border-strong);
-  --color-text-2:        var(--text-2);
-  --color-text-3:        var(--text-3);
-  --color-accent-2:      var(--accent-2);
-  --color-accent-dim:    var(--accent-dim);
-  --color-pos:           var(--pos);
-  --color-pos-dim:       var(--pos-dim);
-  --color-alert:         var(--alert);
-  --color-amber:         var(--amber);
-  --color-violet:        var(--violet);
-
-  /* ── Inventory status colors ── */
-  --color-status-instock:    var(--status-instock);
-  --color-status-toorder:    var(--status-toorder);
-  --color-status-ordered:    var(--status-ordered);
-  --color-status-transit:    var(--status-transit);
-  --color-status-outofstock: var(--status-outofstock);
-
-  /* ── Simulator shell ── */
-  --color-brand-bg:          var(--brand-bg);
-  --color-brand-bg-2:        var(--brand-bg-2);
-  --color-brand-border:      var(--brand-border);
-  --color-brand-accent:      var(--brand-accent);
-  --color-brand-accent-dim:  var(--brand-accent-dim);
-  --color-brand-text:        var(--brand-text);
-  --color-brand-muted:       var(--brand-muted);
-
-  /* ── Typography ── */
-  --font-sans:    var(--font-manrope), system-ui, sans-serif;
-  --font-heading: var(--font-manrope), system-ui, sans-serif;
-  --font-brand:   var(--font-chakra-petch), system-ui, sans-serif;
-
-  /* ── Radius scale (base = 12px) ── */
-  --radius:     0.75rem;
-  --radius-sm:  calc(var(--radius) * 0.5);
-  --radius-md:  calc(var(--radius) * 0.75);
-  --radius-lg:  var(--radius);
-  --radius-xl:  calc(var(--radius) * 1.33);
-  --radius-2xl: calc(var(--radius) * 1.67);
-  --radius-3xl: calc(var(--radius) * 2);
-  --radius-4xl: calc(var(--radius) * 2.5);
-}
-
-/* ─────────────────────────────────────────────────────────
-   Lumen Signal — dark-only palette
-   ─────────────────────────────────────────────────────────
-   Layer 0 — Primitives (raw values, defined exactly once)
-   Layer 1 — shadcn semantic tokens  (consume primitives)
-   Layer 2 — Lumen Signal extended   (consume primitives)
-   Layer 3 — Brand / simulator shell (consume primitives)
-   ───────────────────────────────────────────────────────── */
-:root {
-  /* ── Layer 0: Primitives ── */
-  --_surface-1:      #0a0c12;
-  --_surface-2:      #10131b;
-  --_surface-3:      #0c0f15;
-  --_surface-4:      #161a24;
-
-  --_text-1:         #f3f6fc;
-  --_text-2:         #a8a3ab;
-  --_text-3:         #8b868f;
-
-  --_green:          #34d399;
-  --_green-2:        #5eead4;
-  --_green-on:       #06231a;
-  --_green-alpha:    rgba(52, 211, 153, 0.14);
-
-  --_red:            #f6586f;
-  --_amber:          #f5b14c;
-  --_violet:         #8b8cf0;
-  --_indigo:         #7c9bf5;
-  --_sky:            #38bdf8;
-
-  --_border-subtle:  rgba(255, 255, 255, 0.07);
-  --_border-strong:  rgba(255, 255, 255, 0.13);
-
-  --_sim-bg:         #1a1610;
-  --_sim-bg-2:       #13110b;
-  --_sim-border:     rgba(244, 167, 60, 0.22);
-  --_sim-accent:     #f4a73c;
-  --_sim-accent-dim: rgba(244, 167, 60, 0.16);
-  --_sim-text:       #ecdfc9;
-  --_sim-muted:      #b39c77;
-
-  /* ── Layer 1: shadcn semantic tokens ── */
-  --background:             var(--_surface-1);
-  --foreground:             var(--_text-1);
-  --card:                   var(--_surface-2);
-  --card-foreground:        var(--_text-1);
-  --popover:                var(--_surface-3);
-  --popover-foreground:     var(--_text-1);
-  --primary:                var(--_green);
-  --primary-foreground:     var(--_green-on);
-  --secondary:              var(--_surface-4);
-  --secondary-foreground:   var(--_text-2);
-  --muted:                  var(--_surface-3);
-  --muted-foreground:       var(--_text-2);
-  --accent:                 var(--_green);
-  --accent-foreground:      var(--_green-on);
-  --destructive:            var(--_red);
-  --border:                 var(--_border-subtle);
-  --input:                  var(--_border-strong);
-  --ring:                   var(--_green);
-
-  --chart-1:                var(--_green);
-  --chart-2:                var(--_green-2);
-  --chart-3:                var(--_amber);
-  --chart-4:                var(--_violet);
-  --chart-5:                var(--_red);
-
-  --sidebar:                        var(--_surface-3);
-  --sidebar-foreground:             var(--_text-1);
-  --sidebar-primary:                var(--_green);
-  --sidebar-primary-foreground:     var(--_green-on);
-  --sidebar-accent:                 var(--_green-alpha);
-  --sidebar-accent-foreground:      var(--_text-1);
-  --sidebar-border:                 var(--_border-subtle);
-  --sidebar-ring:                   var(--_green);
-
-  /* ── Layer 2: Lumen Signal extended palette ── */
-  --surface:       var(--_surface-2);
-  --surface-2:     var(--_surface-3);
-  --raise:         var(--_surface-4);
-  --border-strong: var(--_border-strong);
-  --text-2:        var(--_text-2);
-  --text-3:        var(--_text-3);
-  --accent-2:      var(--_green-2);
-  --accent-dim:    var(--_green-alpha);
-  --pos:           var(--_green);
-  --pos-dim:       var(--_green-alpha);
-  --alert:         var(--_red);
-  --amber:         var(--_amber);
-  --violet:        var(--_violet);
-
-  /* ── Inventory status tokens ── */
-  --status-instock:    var(--_green);
-  --status-toorder:    var(--_amber);
-  --status-ordered:    var(--_indigo);
-  --status-transit:    var(--_sky);
-  --status-outofstock: var(--_red);
-
-  /* ── Layer 3: Brand / simulator shell ── */
-  --brand-bg:         var(--_sim-bg);
-  --brand-bg-2:       var(--_sim-bg-2);
-  --brand-border:     var(--_sim-border);
-  --brand-accent:     var(--_sim-accent);
-  --brand-accent-dim: var(--_sim-accent-dim);
-  --brand-text:       var(--_sim-text);
-  --brand-muted:      var(--_sim-muted);
-}
+@import "./styles/tokens.css";
+@import "./styles/components/card.css";
+@import "./styles/components/slider.css";
+@import "./styles/components/layout.css";
+@import "./styles/components/simulator.css";
+@import "./styles/components/dashboard.css";
+@import "./styles/components/inventory.css";
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background: transparent;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: var(--radius-xs);
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-3);
   }
   body {
     @apply bg-background text-foreground antialiased;

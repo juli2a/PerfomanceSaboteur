@@ -1,12 +1,13 @@
 import { getUsers } from "@/lib/server/dashboard";
 import { formatCurrency } from "@/lib/utils/format";
 import { ClientLogger } from "@/components/simulator/ClientLogger";
+import { Card } from "@/components/ui/card";
 
 export default async function TopCustomers() {
   const customers = await getUsers();
 
   return (
-    <section className="rounded-xl border border-border bg-surface p-4">
+    <Card variant="global">
       <h2 className="mb-3 text-sm font-semibold text-foreground">Top Customers</h2>
       <ul className="space-y-1">
         {customers.map((c, i) => (
@@ -31,6 +32,6 @@ export default async function TopCustomers() {
         ))}
       </ul>
       <ClientLogger label="TopCustomers" />
-    </section>
+    </Card>
   );
 }

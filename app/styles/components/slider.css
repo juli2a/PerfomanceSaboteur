@@ -1,0 +1,61 @@
+@layer components {
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    height: 16px;
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .slider::-webkit-slider-runnable-track {
+    height: 5px;
+    border-radius: var(--radius-xs);
+    background: linear-gradient(
+      to right,
+      var(--color-accent) var(--slider-fill, 0%),
+      var(--color-border-strong) var(--slider-fill, 0%)
+    );
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -5.5px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    box-shadow:
+      0 2px calc(var(--ls-glow, 1) * 8px) var(--color-accent),
+      0 0 0 4px var(--color-accent-dim);
+  }
+
+  .slider::-moz-range-track {
+    height: 5px;
+    border-radius: var(--radius-xs);
+    background: var(--color-border-strong);
+  }
+
+  .slider::-moz-range-progress {
+    height: 5px;
+    border-radius: var(--radius-xs);
+    background: var(--color-accent);
+  }
+
+  .slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow:
+      0 2px calc(var(--ls-glow, 1) * 8px) var(--color-accent),
+      0 0 0 4px var(--color-accent-dim);
+  }
+}

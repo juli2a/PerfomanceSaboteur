@@ -1,38 +1,23 @@
 "use client";
 
-// Toggle group rendered in the Header (desktop) and bottom sheet (mobile)
-// Three zones: Network | Rendering | Computing
-// Each toggle maps to a case key in the Zustand simulator store
+import ControlPanelTogglers from "@/components/layout/ControlPanelTogglers";
+
 export default function ControlPanel() {
   return (
-    <div className="flex items-center gap-6">
-      {/* Network */}
-      <div className="hidden lg:flex items-center gap-3">
-        <span className="text-xs font-medium text-brand-muted uppercase tracking-wider">Network</span>
-        {/* Race Condition toggle — Case 4 */}
-        {/* Request Waterfall toggle — Case 5 */}
+    <div className="sim-card">
+      <div className="flex shrink-0 flex-col justify-center gap-1.25 self-stretch pr-4">
+        <span className="flex items-center gap-1.5">
+          <span className="h-1.5 w-1.5 rounded-full bg-brand-accent shadow-[0_0_8px_var(--brand-accent)]" />
+          <span className="font-brand text-[10px] font-bold tracking-[1.3px] text-brand-accent">
+            SIMULATOR
+          </span>
+        </span>
+        <span className="max-w-23 text-[10px] leading-[1.3] text-brand-muted">
+          Anti-pattern controls
+        </span>
       </div>
 
-      {/* Rendering */}
-      <div className="hidden lg:flex items-center gap-3">
-        <span className="text-xs font-medium text-brand-muted uppercase tracking-wider">Rendering</span>
-        {/* Image Optimization toggle — Case 1 */}
-        {/* Layout Shift toggle — Case 2 */}
-        {/* Hydration Mismatch toggle — Case 6 */}
-        {/* Context Overhead toggle — Case 7 */}
-      </div>
-
-      {/* Computing */}
-      <div className="hidden lg:flex items-center gap-3">
-        <span className="text-xs font-medium text-brand-muted uppercase tracking-wider">Computing</span>
-        {/* Heavy Mounting toggle — Case 3 */}
-        {/* Over-memoization toggle — Case 8 */}
-      </div>
-
-      {/* Mobile: "Controls" button opens bottom sheet */}
-      <button className="lg:hidden rounded-lg border border-brand-border bg-brand-bg px-3 py-1.5 text-xs font-medium text-brand-accent">
-        Controls
-      </button>
+      <ControlPanelTogglers />
     </div>
   );
 }
