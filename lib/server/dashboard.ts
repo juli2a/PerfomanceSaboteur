@@ -25,6 +25,7 @@ interface DummyProduct {
   discountPercentage: number;
   rating: number;
   stock: number;
+  sku: string;
 }
 
 interface DummyUser {
@@ -42,8 +43,7 @@ interface DummyUser {
 
 function getDailySimConfig(): { ordersCount: number; usersCount: number } {
   const d = new Date();
-  const seed =
-    d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
+  const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
   return {
     ordersCount: 130 + (seed % 21),
     usersCount: 90 + (seed % 31),
@@ -108,7 +108,9 @@ export const getCarts = cache(
       return { timestamp: d.toISOString(), value: cart.discountedTotal };
     });
 
-    const totalRevenue = Math.round(orders.reduce((sum, order) => sum + order.value, 0));
+    const totalRevenue = Math.round(
+      orders.reduce((sum, order) => sum + order.value, 0),
+    );
     const avgCheck = Math.round(totalRevenue / actualOrdersCount);
 
     console.log("[getCarts] KPI:", {
@@ -119,7 +121,12 @@ export const getCarts = cache(
     });
 
     return {
-      kpi: { totalRevenue, totalOrders: actualOrdersCount, activeClients: usersCount, avgCheck },
+      kpi: {
+        totalRevenue,
+        totalOrders: actualOrdersCount,
+        activeClients: usersCount,
+        avgCheck,
+      },
       orders,
     };
   },
@@ -131,11 +138,10 @@ export const getProducts = cache(async (): Promise<AnalyticCardData[]> => {
   const { products } = await apiFetch<{ products: DummyProduct[] }>(
     "/products?limit=100",
   );
-  console.log("[getProducts] fetched", products.length, "products");
 
   return products.map((p) => ({
     id: String(p.id),
-    meta: { title: p.title },
+    meta: { title: p.title, sku: p.sku },
     metrics: {
       currentValue: Math.round(p.price * p.stock),
       rating: p.rating,
@@ -152,8 +158,16 @@ export const getUsers = cache(async (): Promise<CustomerData[]> => {
   // derived from the same daily seed — no runtime dependency between the two.
   const { usersCount } = getDailySimConfig();
 
-  const { users } = await apiFetch<{ users: DummyUser[] }>(`/users?limit=${usersCount}`);
-  console.log("[getUsers] fetched", users.length, "users (pool usersCount =", usersCount, ")");
+  const { users } = await apiFetch<{ users: DummyUser[] }>(
+    `/users?limit=${usersCount}`,
+  );
+  console.log(
+    "[getUsers] fetched",
+    users.length,
+    "users (pool usersCount =",
+    usersCount,
+    ")",
+  );
 
   return users
     .map((u) => ({

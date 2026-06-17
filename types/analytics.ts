@@ -18,7 +18,7 @@ export interface CartEntry {
 
 export interface AnalyticCardData {
   id: string;
-  meta: { title: string };
+  meta: { title: string; sku: string };
   metrics: {
     currentValue: number;  // price × stock (inventory value)
     rating: number;
