@@ -12,6 +12,16 @@ export function deriveLtv(userId: number, userAge: number): number {
   return Math.round(userId * 1250 + userAge * 300);
 }
 
+// Returns true (up/green) or false (down/red) based on the last changing segment.
+// Falls back to previous segments if the last is flat; all-flat → false.
+export function deriveTrend(data: number[]): boolean {
+  for (let i = data.length - 1; i > 0; i--) {
+    if (data[i] > data[i - 1]) return true
+    if (data[i] < data[i - 1]) return false
+  }
+  return false
+}
+
 // 7-point sparkline based on product id and price
 export function deriveSparkline(productId: number, basePrice: number): number[] {
   return Array.from({ length: 7 }, (_, i) =>
