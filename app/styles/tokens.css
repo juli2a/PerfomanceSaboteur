@@ -77,6 +77,10 @@
   --radius: 0.75rem;
   --radius-lg: 1rem;
   --radius-xl: 1.25rem;
+
+  /* ── Layout rhythm ── */
+  --spacing-heading-gap: 1.125rem; /* 18px — gap between a section heading (h2) and its content */
+  --spacing-heading-subtitle-gap: 0.3125rem; /* 5px — gap between a page heading (h1) and its subtitle */
 }
 
 /* ─────────────────────────────────────────────────────────

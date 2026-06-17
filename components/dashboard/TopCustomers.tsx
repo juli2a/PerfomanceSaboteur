@@ -8,7 +8,7 @@ export default async function TopCustomers() {
 
   return (
     <Card variant="global">
-      <h2 className="mb-3 text-sm font-semibold text-foreground">Top Customers</h2>
+      <h2 className="heading-2 mb-2">Top Customers</h2>
       <ul className="space-y-1">
         {customers.map((c, i) => (
           <li

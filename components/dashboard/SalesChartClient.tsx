@@ -79,9 +79,9 @@ export function SalesChartClient({ orders }: Props) {
 
   return (
     <Card variant="global">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-heading-gap flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-semibold text-foreground">Revenue</h2>
+          <h2 className="heading-2">Revenue</h2>
           <p className="text-xs text-text-2">{formatCurrency(total)} this period</p>
         </div>
         <div className="flex gap-1 rounded-lg border border-border-strong p-0.5 text-xs">

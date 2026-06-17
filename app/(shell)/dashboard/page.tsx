@@ -23,8 +23,16 @@ import {
 //   ~800ms  MicroCardsGrid             (getProducts)
 export default function DashboardPage() {
   return (
-    <div className="p-6 space-y-6">
-      <LiveIndicator />
+    <div className="space-y-4.5 px-4 py-4.5 lg:space-y-5.5 lg:p-7.5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="heading-1">Dashboard</h1>
+          <p className="mt-heading-subtitle-gap hidden text-sm text-text-2 lg:block">
+            Merchant analytics overview · last 90 days
+          </p>
+        </div>
+        <LiveIndicator />
+      </div>
 
       <Suspense fallback={<KpiSkeleton />}>
         <KpiGrid />

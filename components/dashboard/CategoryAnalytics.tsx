@@ -8,7 +8,7 @@ export default async function CategoryAnalytics() {
 
   return (
     <Card variant="global">
-      <h2 className="mb-3 text-sm font-semibold text-foreground">Categories</h2>
+      <h2 className="heading-2 mb-heading-gap">Categories</h2>
       <ul className="space-y-3">
         {categories.map((cat) => (
           <li key={cat.slug}>

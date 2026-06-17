@@ -34,10 +34,8 @@ export default function ControlPanelTogglers() {
       {ZONES.map((zone) => (
         <div key={zone.title} className="flex items-center gap-4.5">
           <span className="w-px self-stretch bg-brand-border" />
-          <div className="flex flex-col gap-1.75">
-            <span className="font-brand text-[10px] font-semibold uppercase tracking-[0.8px] text-brand-muted">
-              {zone.title}
-            </span>
+          <fieldset className="m-0 border-0 p-0">
+            <legend className="heading-brand-group mb-1.75 p-0">{zone.title}</legend>
             <div className="grid grid-flow-col grid-rows-2 gap-x-4.5 gap-y-2.25">
               {zone.items.map((item) => (
                 <div key={item.key} className="flex items-center gap-1.75">
@@ -48,7 +46,7 @@ export default function ControlPanelTogglers() {
                 </div>
               ))}
             </div>
-          </div>
+          </fieldset>
         </div>
       ))}
     </div>
