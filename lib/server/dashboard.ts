@@ -1,9 +1,22 @@
 import { cache } from "react";
 import { apiFetch } from "@/lib/server/fetcher";
-import { deriveLtv, deriveSparkline, deriveKpiTrend } from "@/lib/utils/derive";
+import {
+  deriveLtv,
+  deriveSparkline,
+  deriveKpiTrend,
+  deriveScatterIndex,
+  deriveScatterFloat,
+} from "@/lib/utils/derive";
+import {
+  getLastDay,
+  buildSalesChartData,
+  buildOrderSegments,
+  compareOrderHalves,
+} from "@/lib/utils/chart";
 import type {
   KpiData,
   CartEntry,
+  SalesChartData,
   AnalyticCardData,
   CategoryData,
   CustomerData,
@@ -41,7 +54,11 @@ interface DummyUser {
 // Both derived from today's date so all Suspense streams stay consistent
 // without coupling getCarts ↔ getUsers at runtime.
 
-function getDailySimConfig(): { seed: number; ordersCount: number; usersCount: number } {
+function getDailySimConfig(): {
+  seed: number;
+  ordersCount: number;
+  usersCount: number;
+} {
   const d = new Date();
   const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
   return {
@@ -53,11 +70,14 @@ function getDailySimConfig(): { seed: number; ordersCount: number; usersCount: n
 
 // Biases order timestamps toward later hours (peak ~16–18h).
 // Math.max(r1, r2) skews the uniform distribution rightward.
-function setRealisticTime(d: Date): Date {
-  const r1 = Math.random();
-  const r2 = Math.random();
+// index must be unique per cart so each order gets its own pseudo-random
+// draw; seed keeps the whole set stable across requests within a day.
+function setRealisticTime(d: Date, seed: number, index: number): Date {
+  const r1 = deriveScatterFloat(seed, index * 3);
+  const r2 = deriveScatterFloat(seed, index * 3 + 1);
+  const r3 = deriveScatterFloat(seed, index * 3 + 2);
   const hour = Math.floor(Math.max(r1, r2) * 24);
-  const minute = Math.floor(Math.random() * 60);
+  const minute = Math.floor(r3 * 60);
   d.setHours(hour, minute, 0, 0);
   return d;
 }
@@ -67,7 +87,7 @@ function setRealisticTime(d: Date): Date {
 // KpiGrid and SalesChart both call getCarts() but trigger only one fetch.
 
 export const getCarts = cache(
-  async (): Promise<{ kpi: KpiData; orders: CartEntry[] }> => {
+  async (): Promise<{ kpi: KpiData; salesChart: SalesChartData }> => {
     await new Promise((r) => setTimeout(r, 700));
 
     const { seed, ordersCount, usersCount } = getDailySimConfig();
@@ -76,32 +96,31 @@ export const getCarts = cache(
       `/carts?limit=${ordersCount}`,
     );
     const actualOrdersCount = carts.length; // actual count in case API returns fewer than requested
-    console.log("[getCarts] fetched", actualOrdersCount, "carts");
 
-    // Build dayCounts: 30 slots, one per calendar day (oldest → newest).
+    // Build dayCounts: 30 slots, one per calendar day (oldest → newest), ending
+    // yesterday — yesterday is the last complete day, today's is still partial.
     // Every day is guaranteed at least 1 order; remaining actualOrdersCount-30 are scattered
     // randomly so the chart has natural variance.
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const lastDay = getLastDay();
 
     const dayCounts: Array<{ date: Date; count: number }> = Array.from(
       { length: 30 },
       (_, i) => {
-        const d = new Date(today);
+        const d = new Date(lastDay);
         d.setDate(d.getDate() - (29 - i));
         return { date: d, count: 1 };
       },
     );
 
     for (let i = 30; i < actualOrdersCount; i++) {
-      dayCounts[Math.floor(Math.random() * 30)].count++;
+      dayCounts[deriveScatterIndex(seed, i, 30)].count++;
     }
 
     // Drain: assign each cart a concrete timestamp.
     // daySlotIdx advances when a day-slot is exhausted — no array mutation.
     let daySlotIdx = 0;
-    const orders: CartEntry[] = carts.map((cart) => {
-      const d = setRealisticTime(new Date(dayCounts[daySlotIdx].date));
+    const orders: CartEntry[] = carts.map((cart, i) => {
+      const d = setRealisticTime(new Date(dayCounts[daySlotIdx].date), seed, i);
 
       dayCounts[daySlotIdx].count--;
       if (dayCounts[daySlotIdx].count === 0) daySlotIdx++;
@@ -114,21 +133,42 @@ export const getCarts = cache(
     );
     const avgCheck = Math.round(totalRevenue / actualOrdersCount);
 
-    console.log("[getCarts] KPI:", {
-      totalRevenue,
-      totalOrders: actualOrdersCount,
-      activeClients: usersCount,
-      avgCheck,
-    });
+    // 10 segments of 3 days each, oldest → newest — real KPI sparklines built
+    // from the same orders the chart uses, instead of a synthetic curve.
+    const segments = buildOrderSegments(orders, lastDay, 10, 3);
+    const revenueSpark = segments.map((s) => Math.round(s.revenue));
+    const ordersSpark = segments.map((s) => s.count);
+    const avgCheckSpark = segments.map((s) =>
+      s.count > 0 ? Math.round(s.revenue / s.count) : 0,
+    );
+    // First 15 days vs last 15 days — sums over each half, not single endpoint
+    // segments, so one noisy day can't flip the trend's sign.
+    const halfDelta = compareOrderHalves(segments);
 
     return {
       kpi: {
-        totalRevenue: { value: totalRevenue, ...deriveKpiTrend(totalRevenue, seed + 1) },
-        totalOrders: { value: actualOrdersCount, ...deriveKpiTrend(actualOrdersCount, seed + 2) },
-        activeClients: { value: usersCount, ...deriveKpiTrend(usersCount, seed + 3) },
-        avgCheck: { value: avgCheck, ...deriveKpiTrend(avgCheck, seed + 4) },
+        totalRevenue: {
+          value: totalRevenue,
+          deltaPercent: halfDelta.revenue,
+          spark: revenueSpark,
+        },
+        totalOrders: {
+          value: actualOrdersCount,
+          deltaPercent: halfDelta.orders,
+          spark: ordersSpark,
+        },
+        // No order-level signal for unique clients — stays synthetic.
+        activeClients: {
+          value: usersCount,
+          ...deriveKpiTrend(usersCount, seed + 3),
+        },
+        avgCheck: {
+          value: avgCheck,
+          deltaPercent: halfDelta.avgCheck,
+          spark: avgCheckSpark,
+        },
       },
-      orders,
+      salesChart: buildSalesChartData(orders),
     };
   },
 );
@@ -162,13 +202,6 @@ export const getUsers = cache(async (): Promise<CustomerData[]> => {
   const { users } = await apiFetch<{ users: DummyUser[] }>(
     `/users?limit=${usersCount}`,
   );
-  console.log(
-    "[getUsers] fetched",
-    users.length,
-    "users (pool usersCount =",
-    usersCount,
-    ")",
-  );
 
   return users
     .map((u) => ({
@@ -188,7 +221,6 @@ export const getCategories = cache(async (): Promise<CategoryData[]> => {
   const { products } = await apiFetch<{
     products: Pick<DummyProduct, "id" | "category" | "price" | "stock">[];
   }>("/products?limit=100&select=id,category,price,stock");
-  console.log("[getCategories] fetched", products.length, "products");
 
   const buckets: Record<string, { stockValue: number; count: number }> = {};
   let grandTotal = 0;

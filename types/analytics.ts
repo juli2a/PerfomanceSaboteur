@@ -15,9 +15,18 @@ export interface KpiData {
 export interface ChartPoint {
   label: string;
   value: number;
+  count: number;
 }
 
-// One entry per order. Client aggregates into day/week/month views.
+// Pre-aggregated server-side; the client just switches which one it shows.
+export interface SalesChartData {
+  day: ChartPoint[];
+  week: ChartPoint[];
+  month: ChartPoint[];
+}
+
+// One entry per order. Server-only — aggregated into ChartPoint[] / KpiMetric
+// spark series before being sent to the client.
 export interface CartEntry {
   timestamp: string; // ISO 8601
   value: number;

@@ -28,7 +28,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="heading-1">Dashboard</h1>
           <p className="mt-heading-subtitle-gap hidden text-sm text-text-2 lg:block">
-            Merchant analytics overview · last 90 days
+            Merchant analytics overview · last 30 days
           </p>
         </div>
         <LiveIndicator />
