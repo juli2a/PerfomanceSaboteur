@@ -28,7 +28,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="heading-1">Dashboard</h1>
           <p className="mt-heading-subtitle-gap hidden text-sm text-text-2 lg:block">
-            Merchant analytics overview · last 90 days
+            Merchant analytics overview · last 30 days
           </p>
         </div>
         <LiveIndicator />
@@ -43,7 +43,7 @@ export default function DashboardPage() {
       </Suspense>
 
       <Suspense fallback={<AnalyticsPairSkeleton />}>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="flex flex-col gap-4 lg:flex-row">
           <CategoryAnalytics />
           <TopCustomers />
         </div>

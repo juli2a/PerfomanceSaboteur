@@ -17,7 +17,7 @@ const buttonVariants = cva(
         ghost:
           "border-0 text-text-3 hover:bg-raise hover:text-foreground aria-expanded:bg-raise",
         brand:
-          "bg-brand-bg border-brand-border text-brand-text shadow-[0_0_0_1px_var(--color-brand-accent-dim)] hover:bg-brand-bg-2",
+          "bg-brand-bg border-brand-border font-brand text-brand-text shadow-[0_0_0_1px_var(--color-brand-accent-dim)] hover:bg-brand-bg-2",
       },
       size: {
         default:

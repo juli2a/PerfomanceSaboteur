@@ -27,7 +27,7 @@ export default function Sidebar() {
         <Button variant="ghost" size="sm" weight="medium" className="px-2">
           Clear all
         </Button>
-        <Button variant="brand" size="sm" className="font-brand text-xs">
+        <Button variant="brand" size="sm" className="text-xs">
           Controls
         </Button>
         <div className="flex items-center gap-2">

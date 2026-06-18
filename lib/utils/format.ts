@@ -11,3 +11,12 @@ export function formatPercent(value: number): string {
 export function formatCompact(value: number): string {
   return new Intl.NumberFormat("en-US", { notation: "compact" }).format(value);
 }
+
+export function formatCompactCurrency(value: number, currency = "USD"): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency,
+    notation: "compact",
+    maximumFractionDigits: 2,
+  }).format(value);
+}

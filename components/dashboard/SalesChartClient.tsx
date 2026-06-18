@@ -1,80 +1,28 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import type { CartEntry, ChartPoint } from "@/types/analytics";
+import { useState } from "react";
+import {
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+} from "recharts";
+import type { ChartPoint, SalesChartData } from "@/types/analytics";
 import { formatCurrency } from "@/lib/utils/format";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 type Period = "day" | "week" | "month";
 
 interface Props {
-  orders: CartEntry[];
+  data: SalesChartData;
 }
 
-function aggregateOrders(orders: CartEntry[], period: Period): ChartPoint[] {
-  const now = new Date();
-
-  if (period === "day") {
-    const todayStr = now.toDateString();
-    const hours = new Array<number>(24).fill(0);
-    orders
-      .filter((o) => new Date(o.timestamp).toDateString() === todayStr)
-      .forEach((o) => {
-        hours[new Date(o.timestamp).getHours()] += o.value;
-      });
-    return hours.map((v, i) => ({
-      label: `${i.toString().padStart(2, "0")}:00`,
-      value: Math.round(v),
-    }));
-  }
-
-  if (period === "week") {
-    const slots = Array.from({ length: 7 }, (_, i) => {
-      const d = new Date(now);
-      d.setDate(d.getDate() - (6 - i));
-      d.setHours(0, 0, 0, 0);
-      return {
-        dateStr: d.toDateString(),
-        label: d.toLocaleString("en-US", { weekday: "short" }),
-        value: 0,
-      };
-    });
-    orders.forEach((o) => {
-      const dateStr = new Date(o.timestamp).toDateString();
-      const slot = slots.find((s) => s.dateStr === dateStr);
-      if (slot) slot.value += o.value;
-    });
-    return slots.map(({ label, value }) => ({ label, value: Math.round(value) }));
-  }
-
-  // month
-  const slots = Array.from({ length: 30 }, (_, i) => {
-    const d = new Date(now);
-    d.setDate(d.getDate() - (29 - i));
-    d.setHours(0, 0, 0, 0);
-    return {
-      dateStr: d.toDateString(),
-      label: `${d.getDate()} ${d.toLocaleString("en-US", { month: "short" })}`,
-      value: 0,
-    };
-  });
-  orders.forEach((o) => {
-    const dateStr = new Date(o.timestamp).toDateString();
-    const slot = slots.find((s) => s.dateStr === dateStr);
-    if (slot) slot.value += o.value;
-  });
-  return slots.map(({ label, value }) => ({ label, value: Math.round(value) }));
-}
-
-export function SalesChartClient({ orders }: Props) {
+export function SalesChartClient({ data: salesChart }: Props) {
   const [period, setPeriod] = useState<Period>("week");
 
-  useEffect(() => {
-    console.log("[Stream] SalesChart mounted at", new Date().toISOString());
-  }, []);
-
-  const data = useMemo(() => aggregateOrders(orders, period), [orders, period]);
-  const max = Math.max(...data.map((p) => p.value), 1);
+  const data = salesChart[period];
   const total = data.reduce((s, p) => s + p.value, 0);
 
   return (
@@ -82,40 +30,61 @@ export function SalesChartClient({ orders }: Props) {
       <div className="mb-heading-gap flex items-center justify-between">
         <div>
           <h2 className="heading-2">Revenue</h2>
-          <p className="text-xs text-text-2">{formatCurrency(total)} this period</p>
+          <p className="text-xs text-text-2">
+            {formatCurrency(total)} this period
+          </p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-border-strong p-0.5 text-xs">
+        <div className="flex gap-1 rounded-lg border border-border-strong p-0.5">
           {(["day", "week", "month"] as Period[]).map((p) => (
-            <button
+            <Button
               key={p}
+              type="button"
+              size="sm"
+              variant={period === p ? "default" : "ghost"}
               onClick={() => setPeriod(p)}
-              className={[
-                "rounded px-2 py-1 capitalize transition-colors",
-                period === p
-                  ? "bg-raise text-foreground"
-                  : "text-text-3 hover:text-foreground",
-              ].join(" ")}
+              className="border capitalize"
             >
               {p}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
-      {/* Bar chart — recharts replaces this when installed */}
-      <div className="flex h-48 items-end gap-px">
-        {data.map((point, i) => (
-          <div
-            key={i}
-            title={`${point.label}: ${formatCurrency(point.value)}`}
-            className="group relative flex flex-1 flex-col items-center justify-end"
-          >
-            <div
-              className="w-full min-h-px rounded-t bg-primary/70 transition-all group-hover:bg-primary"
-              style={{ height: `${(point.value / max) * 100}%` }}
+      <div className="h-48">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+            <defs>
+              <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" style={{ stopColor: "var(--color-chart-1)", stopOpacity: 0.35 }} />
+                <stop offset="100%" style={{ stopColor: "var(--color-chart-1)", stopOpacity: 0 }} />
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="label" hide />
+            <Tooltip
+              cursor={{ stroke: "var(--color-border-strong)" }}
+              content={({ active, payload }) => {
+                const point = payload?.[0]?.payload as ChartPoint | undefined;
+                if (!active || !point) return null;
+                return (
+                  <div className="rounded-md border border-border-strong bg-popover px-2 py-1 text-xs shadow-lg">
+                    <p className="text-text-3">{point.label}</p>
+                    <p className="font-medium text-foreground">{formatCurrency(point.value)}</p>
+                    <p className="text-text-3">
+                      {point.count} order{point.count === 1 ? "" : "s"}
+                    </p>
+                  </div>
+                );
+              }}
             />
-          </div>
-        ))}
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke="var(--color-chart-1)"
+              strokeWidth={1.8}
+              fill="url(#salesGradient)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
       </div>
 
       <div className="mt-1 flex justify-between text-[10px] text-text-3">

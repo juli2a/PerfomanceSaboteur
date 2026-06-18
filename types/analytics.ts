@@ -1,16 +1,32 @@
+// value: current period; deltaPercent + spark: derived vs. an implied previous period
+export interface KpiMetric {
+  value: number;
+  deltaPercent: number;
+  spark: number[];
+}
+
 export interface KpiData {
-  totalRevenue: number;
-  totalOrders: number;
-  activeClients: number;
-  avgCheck: number;
+  totalRevenue: KpiMetric;
+  totalOrders: KpiMetric;
+  activeClients: KpiMetric;
+  avgCheck: KpiMetric;
 }
 
 export interface ChartPoint {
   label: string;
   value: number;
+  count: number;
 }
 
-// One entry per order. Client aggregates into day/week/month views.
+// Pre-aggregated server-side; the client just switches which one it shows.
+export interface SalesChartData {
+  day: ChartPoint[];
+  week: ChartPoint[];
+  month: ChartPoint[];
+}
+
+// One entry per order. Server-only — aggregated into ChartPoint[] / KpiMetric
+// spark series before being sent to the client.
 export interface CartEntry {
   timestamp: string; // ISO 8601
   value: number;

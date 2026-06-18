@@ -1,5 +1,7 @@
 import { getUsers } from "@/lib/server/dashboard";
 import { formatCurrency } from "@/lib/utils/format";
+import { deriveHue } from "@/lib/utils/derive";
+import { cn } from "@/lib/utils/cn";
 import { ClientLogger } from "@/components/simulator/ClientLogger";
 import { Card } from "@/components/ui/card";
 
@@ -7,29 +9,45 @@ export default async function TopCustomers() {
   const customers = await getUsers();
 
   return (
-    <Card variant="global">
-      <h2 className="heading-2 mb-2">Top Customers</h2>
-      <ul className="space-y-1">
-        {customers.map((c, i) => (
-          <li
-            key={c.id}
-            className="flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-raise/50"
-          >
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-raise text-xs text-text-3">
-              {i + 1}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm text-foreground">{c.name}</p>
-              <p className="truncate text-xs text-muted-foreground">{c.company}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-medium text-foreground">
-                {formatCurrency(c.ltv)}
-              </p>
-              <p className="text-xs text-muted-foreground">{c.orders} orders</p>
-            </div>
-          </li>
-        ))}
+    <Card variant="global" className="lg:flex-1">
+      <h2 className="heading-2 mb-heading-gap">Top Customers</h2>
+      <ul>
+        {customers.map((c, i) => {
+          const hue = deriveHue(c.id);
+          const initials = c.name
+            .split(" ")
+            .map((part) => part[0])
+            .join("");
+
+          return (
+            <li
+              key={c.id}
+              className={cn(
+                "flex items-center gap-3 py-2.5 lg:gap-3.5 lg:py-3",
+                i < customers.length - 1 && "border-b border-border",
+              )}
+            >
+              <span
+                className="flex size-8.5 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white lg:size-9.5 lg:text-[13px]"
+                style={{
+                  background: `linear-gradient(135deg, hsl(${hue} 60% 55%), hsl(${hue + 30} 60% 45%))`,
+                }}
+              >
+                {initials}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-foreground">{c.name}</p>
+                <p className="truncate text-[11px] text-text-3 sm:text-xs">{c.company}</p>
+              </div>
+              <div className="text-right">
+                <p className="tabular-nums text-sm font-semibold text-foreground">
+                  {formatCurrency(c.ltv)}
+                </p>
+                <p className="text-xs text-text-3">{c.orders} orders</p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
       <ClientLogger label="TopCustomers" />
     </Card>
