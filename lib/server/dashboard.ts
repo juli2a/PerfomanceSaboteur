@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { apiFetch } from "@/lib/server/fetcher";
-import { deriveLtv, deriveSparkline } from "@/lib/utils/derive";
+import { deriveLtv, deriveSparkline, deriveKpiTrend } from "@/lib/utils/derive";
 import type {
   KpiData,
   CartEntry,
@@ -41,10 +41,11 @@ interface DummyUser {
 // Both derived from today's date so all Suspense streams stay consistent
 // without coupling getCarts ↔ getUsers at runtime.
 
-function getDailySimConfig(): { ordersCount: number; usersCount: number } {
+function getDailySimConfig(): { seed: number; ordersCount: number; usersCount: number } {
   const d = new Date();
   const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
   return {
+    seed,
     ordersCount: 130 + (seed % 21),
     usersCount: 90 + (seed % 31),
   };
@@ -69,7 +70,7 @@ export const getCarts = cache(
   async (): Promise<{ kpi: KpiData; orders: CartEntry[] }> => {
     await new Promise((r) => setTimeout(r, 700));
 
-    const { ordersCount, usersCount } = getDailySimConfig();
+    const { seed, ordersCount, usersCount } = getDailySimConfig();
 
     const { carts } = await apiFetch<{ carts: DummyCart[] }>(
       `/carts?limit=${ordersCount}`,
@@ -122,10 +123,10 @@ export const getCarts = cache(
 
     return {
       kpi: {
-        totalRevenue,
-        totalOrders: actualOrdersCount,
-        activeClients: usersCount,
-        avgCheck,
+        totalRevenue: { value: totalRevenue, ...deriveKpiTrend(totalRevenue, seed + 1) },
+        totalOrders: { value: actualOrdersCount, ...deriveKpiTrend(actualOrdersCount, seed + 2) },
+        activeClients: { value: usersCount, ...deriveKpiTrend(usersCount, seed + 3) },
+        avgCheck: { value: avgCheck, ...deriveKpiTrend(avgCheck, seed + 4) },
       },
       orders,
     };

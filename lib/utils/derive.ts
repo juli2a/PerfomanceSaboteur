@@ -28,3 +28,25 @@ export function deriveSparkline(productId: number, basePrice: number): number[] 
     Math.round(basePrice * (0.85 + 0.03 * ((productId * 17 + i * 13) % 11))),
   );
 }
+
+// Avatar gradient hue (0-359) for a customer's initials badge
+export function deriveHue(userId: number): number {
+  return (userId * 47) % 360;
+}
+
+// Builds a deterministic 12-point upward sparkline ending at currentValue, plus the %
+// growth vs. the implied starting point. Growth is always positive — this demo never
+// shows a declining KPI.
+export function deriveKpiTrend(
+  currentValue: number,
+  seed: number,
+): { deltaPercent: number; spark: number[] } {
+  const growthPercent = 2 + (seed % 12);
+  const startValue = currentValue / (1 + growthPercent / 100);
+  const spark = Array.from({ length: 12 }, (_, index) => {
+    const progress = index / 11;
+    const wobble = 1 + Math.sin(seed + index * 7) * 0.04;
+    return Math.round((startValue + (currentValue - startValue) * progress) * wobble);
+  });
+  return { deltaPercent: growthPercent, spark };
+}

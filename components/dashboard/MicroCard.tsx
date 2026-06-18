@@ -57,13 +57,15 @@ export default function MicroCard({
             {value}
           </p>
           <div className="mt-1.5 flex items-center gap-1">
-            <span className="text-[11px] leading-none text-text-3">★</span>
             <span
               className={cn(
-                "tabular-nums text-xs font-semibold",
+                "text-[11px] leading-none",
                 isGood ? "text-pos" : "text-alert",
               )}
             >
+              ★
+            </span>
+            <span className="tabular-nums text-xs font-semibold text-foreground">
               {rating.toFixed(1)}
             </span>
           </div>

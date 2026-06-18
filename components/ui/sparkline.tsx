@@ -35,6 +35,7 @@ export function Sparkline({ data, isGood, width = 92, height = 30, strokeWidth =
       width={width}
       height={height}
       viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="none"
       role="img"
       aria-label={isTrendingUp ? "Trending up" : "Trending down"}
       className={cn("shrink-0 overflow-visible", className)}

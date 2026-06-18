@@ -1,8 +1,15 @@
+// value: current period; deltaPercent + spark: derived vs. an implied previous period
+export interface KpiMetric {
+  value: number;
+  deltaPercent: number;
+  spark: number[];
+}
+
 export interface KpiData {
-  totalRevenue: number;
-  totalOrders: number;
-  activeClients: number;
-  avgCheck: number;
+  totalRevenue: KpiMetric;
+  totalOrders: KpiMetric;
+  activeClients: KpiMetric;
+  avgCheck: KpiMetric;
 }
 
 export interface ChartPoint {
