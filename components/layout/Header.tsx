@@ -4,11 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import ControlPanel from "@/components/layout/ControlPanel";
+import MobileControlSheet from "@/components/layout/MobileControlSheet";
 import MobileDrawer from "@/components/layout/MobileDrawer";
 import Logo from "@/components/layout/Logo";
+import { Button } from "@/components/ui/button";
 
 export default function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [controlsOpen, setControlsOpen] = useState(false);
 
   return (
     <>
@@ -53,16 +56,20 @@ export default function Header() {
         </div>
 
         {/* ── Mobile: Controls button ── */}
-        <button
+        <Button
+          variant="brand"
+          size="sm"
+          onClick={() => setControlsOpen(true)}
           aria-label="Open simulator controls"
-          className="relative z-10 ml-auto mr-4 flex items-center gap-1.75 rounded-2.5 border border-brand-border bg-brand-bg px-2.75 py-1.75 font-brand text-[12px] font-semibold text-brand-text shadow-[0_0_0_1px_var(--brand-accent-dim)] lg:hidden"
+          className="relative z-10 ml-auto mr-4 lg:hidden"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-brand-accent shadow-[0_0_7px_var(--brand-accent)]" />
+          <span className="h-1.5 w-1.5 rounded-full mr-1 bg-brand-accent shadow-[0_0_7px_var(--brand-accent)]" />
           Controls
-        </button>
+        </Button>
       </header>
 
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <MobileControlSheet open={controlsOpen} onOpenChange={setControlsOpen} />
     </>
   );
 }
