@@ -20,3 +20,12 @@ export function formatCompactCurrency(value: number, currency = "USD"): string {
     maximumFractionDigits: 2,
   }).format(value);
 }
+
+// DummyJSON category slugs are kebab-case ("mens-shirts") — title-case them
+// for display. Filtering still matches against the raw slug.
+export function formatCategoryLabel(slug: string): string {
+  return slug
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}

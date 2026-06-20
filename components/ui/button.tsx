@@ -13,7 +13,7 @@ const buttonVariants = cva(
         outline:
           "border-border-strong bg-transparent text-text-2 hover:bg-[rgba(255,255,255,0.08)] aria-expanded:bg-raise aria-expanded:text-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:brightness-[1.18] aria-expanded:bg-secondary",
+          "rounded-sm border-border-strong bg-surface-2 text-foreground hover:bg-raise aria-expanded:bg-raise",
         ghost:
           "border-0 text-text-3 hover:bg-raise hover:text-foreground aria-expanded:bg-raise",
         brand:

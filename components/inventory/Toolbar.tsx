@@ -1,23 +1,61 @@
 "use client";
 
-// Desktop: search input + category dropdown + Bulk Actions button
+import { Search } from "lucide-react";
+
+import { useInventoryFiltersStore } from "@/store/inventory-filters";
+import { formatCategoryLabel } from "@/lib/utils/format";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Chip } from "@/components/ui/chip";
+import CategoryFilter from "@/components/inventory/CategoryFilter";
+import BulkActions from "@/components/inventory/BulkActions";
+
+interface ToolbarProps {
+  categories: string[];
+}
+
+// Desktop: search input + category multi-select + Bulk Actions button
 // Mobile: full-width search + filter icon (collapsed) + Bulk Actions hidden
-export default function Toolbar() {
+export default function Toolbar({ categories }: ToolbarProps) {
+  const selectedCategories = useInventoryFiltersStore(
+    (state) => state.categories,
+  );
+  const toggleCategory = useInventoryFiltersStore(
+    (state) => state.toggleCategory,
+  );
+  const clearCategories = useInventoryFiltersStore(
+    (state) => state.clearCategories,
+  );
+
   return (
-    <div className="flex items-center gap-3 border-b border-border bg-background px-4 py-3">
-      <input
-        type="search"
-        placeholder="Search products…"
-        className="flex-1 rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:ring-2 focus:ring-ring/30"
-      />
-      {/* Category dropdown — desktop */}
-      <select className="hidden rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-sm text-text-2 lg:block">
-        <option>All categories</option>
-      </select>
-      {/* Bulk Actions — desktop */}
-      <button className="hidden rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/80 lg:block">
-        Bulk Actions
-      </button>
+    <div className="flex flex-col gap-3 bg-background py-3">
+      <div className="flex items-center gap-3">
+        <div className="relative flex-1 lg:max-w-90">
+          <Search className="pointer-events-none absolute top-1/2 left-3.75 size-4 -translate-y-1/2 text-text-3" />
+          <Input
+            type="search"
+            placeholder="Search products or SKU…"
+            className="h-11 border-border bg-surface pl-9.5"
+          />
+        </div>
+
+        <CategoryFilter categories={categories} />
+
+        <BulkActions />
+      </div>
+
+      {selectedCategories.size > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          {[...selectedCategories].map((category) => (
+            <Chip key={category} onRemove={() => toggleCategory(category)}>
+              {formatCategoryLabel(category)}
+            </Chip>
+          ))}
+          <Button variant="ghost" size="xs" onClick={clearCategories}>
+            Clear all
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

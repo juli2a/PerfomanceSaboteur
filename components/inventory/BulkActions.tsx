@@ -1,0 +1,179 @@
+"use client";
+
+import { useState } from "react";
+import { ChevronDown, RefreshCw } from "lucide-react";
+
+import { LOGISTIC_STATUSES, type LogisticStatus } from "@/types/inventory";
+import { useInventorySelectionStore } from "@/store/inventory-selection";
+import { useInventoryStatusStore } from "@/store/inventory-status";
+import { updateLogisticStatus } from "@/lib/server/inventory-actions";
+import { getStatusDotClass, getStatusTone } from "@/lib/utils/inventory";
+import { cn } from "@/lib/utils/cn";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Chip } from "@/components/ui/chip";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+
+// A colored dot + plain label — the status picker's own row style, distinct
+// from the tinted Badge pill used for the status column elsewhere.
+function StatusDotLabel({ status }: { status: LogisticStatus }) {
+  return (
+    <span className="flex items-center gap-2.25">
+      <span className={cn("size-1.75 shrink-0 rounded-full", getStatusDotClass(status))} />
+      {status}
+    </span>
+  );
+}
+
+// Toolbar's "Bulk Actions" panel — a Select + a button, not a list of menu
+// actions, so it's a Popover rather than a DropdownMenu (Menu semantics
+// expect menuitem children, and nesting a Select's own listbox inside one
+// fights it for keyboard focus). The Select previously appeared to overlap
+// its own trigger instead of opening below it — that's base-ui's
+// `alignItemWithTrigger` (on by default, mimicking native <select>, which
+// overlaps the trigger so the selected item lines up with it); disabled in
+// components/ui/select.tsx so it behaves like the rest of this app's
+// dropdowns.
+//
+// Pick a status, confirm in a modal, then PATCH every selected product.
+// DummyJSON doesn't persist writes, so the new status is also applied via
+// inventory-status's optimistic overlay — otherwise the table would have
+// no way to show the result of the demo.
+export default function BulkActions() {
+  const selected = useInventorySelectionStore((state) => state.selected);
+  const clearSelection = useInventorySelectionStore((state) => state.clear);
+  const setStatuses = useInventoryStatusStore((state) => state.setStatuses);
+
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [status, setStatus] = useState<LogisticStatus>(LOGISTIC_STATUSES[0]);
+  const [pending, setPending] = useState(false);
+
+  const hasSelection = selected.size > 0;
+  const selectedProducts = [...selected.values()];
+  const noopChange =
+    selectedProducts.length > 0 &&
+    selectedProducts.every((product) => product.logisticStatus === status);
+
+  const handleConfirm = async () => {
+    setPending(true);
+    const ids = [...selected.keys()];
+    await updateLogisticStatus(ids, status);
+    setStatuses(ids, status);
+    clearSelection();
+    setPending(false);
+    setConfirmOpen(false);
+  };
+
+  return (
+    <>
+      <div className="ml-auto hidden items-center gap-2.5 lg:flex">
+        {hasSelection && (
+          <Chip onRemove={clearSelection} removeLabel="Clear selection">
+            {selected.size} selected
+          </Chip>
+        )}
+        <Popover open={panelOpen} onOpenChange={setPanelOpen}>
+          <PopoverTrigger disabled={!hasSelection} className={cn(buttonVariants(), "group")}>
+            Bulk Actions
+            <ChevronDown className="size-3.5 transition-transform group-data-popup-open:rotate-180" />
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-66 rounded bg-raise p-4">
+            <p className="mb-2.5 text-[12.5px] font-semibold text-text-2">Change Status:</p>
+            <Select value={status} onValueChange={(value) => setStatus(value as LogisticStatus)}>
+              <SelectTrigger className="h-11 bg-surface-2 text-[13px] font-medium text-foreground">
+                <SelectValue>
+                  {(value: LogisticStatus) => <StatusDotLabel status={value} />}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent className="w-(--anchor-width) text-[13px]">
+                {LOGISTIC_STATUSES.map((s) => (
+                  <SelectItem key={s} value={s} className="py-2.25">
+                    <StatusDotLabel status={s} />
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              className="mt-3 w-full"
+              disabled={!hasSelection}
+              onClick={() => {
+                setPanelOpen(false);
+                setConfirmOpen(true);
+              }}
+            >
+              Ok
+            </Button>
+            {!hasSelection && (
+              <p className="mt-2.25 text-center text-[11.5px] text-text-3">
+                Select products first
+              </p>
+            )}
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent className="sm:max-w-140 gap-0 px-12.5 py-7.5">
+          <div className="mb-4 flex items-center gap-3.25">
+            <span className="grid size-10.5 shrink-0 place-items-center rounded-md bg-accent-dim text-primary">
+              <RefreshCw className="size-5" />
+            </span>
+            <DialogTitle>Confirm status change</DialogTitle>
+          </div>
+
+          <DialogDescription>
+            Are you sure you want to set the following status for these products?
+          </DialogDescription>
+
+          <div className="my-3.5 flex justify-center">
+            <Badge tone={getStatusTone(status)} dot>
+              {status}
+            </Badge>
+          </div>
+
+          <div className="mb-6 max-h-60 overflow-y-auto rounded-md border border-border bg-surface-2 p-1.5">
+            {selectedProducts.map((product) => (
+              <div
+                key={product.id}
+                className="flex items-center justify-between gap-3.5 border-b border-border px-2.75 py-2.5 last:border-b-0"
+              >
+                <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-foreground">
+                  {product.title}
+                </span>
+                <Badge tone={getStatusTone(product.logisticStatus)} size="sm" dot>
+                  {product.logisticStatus}
+                </Badge>
+                <span className="shrink-0 font-mono text-[11.5px] text-text-3">
+                  {product.sku}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end gap-3">
+            <Button variant="outline" className="px-6.5" onClick={() => setConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button className="px-7.5" disabled={pending || noopChange} onClick={handleConfirm}>
+              Ok
+            </Button>
+          </div>
+          {noopChange && (
+            <p className="mt-2.5 text-center text-[11.5px] text-text-3">
+              Selected products already have this status.
+            </p>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
