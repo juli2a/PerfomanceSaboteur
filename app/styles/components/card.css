@@ -1,7 +1,5 @@
 @layer components {
-  .card-global {
-    position: relative;
-    overflow: hidden;
+  .card-surface-bg {
     background-color: var(--color-card);
     background-image:
       radial-gradient(
@@ -14,6 +12,11 @@
         rgba(0, 255, 200, 0.018),
         transparent 62%
       );
+  }
+
+  .card-global {
+    position: relative;
+    overflow: hidden;
     border-top: 1px solid rgba(255, 255, 255, 0.12);
     border-right: 1px solid rgba(255, 255, 255, 0.04);
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);

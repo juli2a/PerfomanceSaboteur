@@ -18,7 +18,7 @@ function Card({
       data-slot="card"
       data-size={variant === "global" ? size : undefined}
       className={cn(
-        variant === "global" ? "card-global" : "card-default",
+        variant === "global" ? "card-surface-bg card-global" : "card-default",
         disabled && "opacity-40",
         className
       )}

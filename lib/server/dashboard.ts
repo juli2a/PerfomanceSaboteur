@@ -180,6 +180,8 @@ export const getProducts = cache(async (): Promise<AnalyticCardData[]> => {
     "/products?limit=100",
   );
 
+  console.log("Fetched products:", products);
+
   return products.map((p) => ({
     id: String(p.id),
     meta: { title: p.title, sku: p.sku },
