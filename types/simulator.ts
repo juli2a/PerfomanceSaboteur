@@ -16,4 +16,8 @@ export interface SimulatorState {
   setToggle: (key: CaseKey, value: boolean) => void;
   vitals: { lcp: number | null; cls: number | null; inp: number | null };
   setVital: (key: keyof SimulatorState["vitals"], value: number) => void;
+  // Which case's guide is open in the right slide-out panel — null when closed.
+  // Not persisted: it's a transient UI state, not something that should survive a refresh.
+  activeGuideKey: CaseKey | null;
+  setActiveGuide: (key: CaseKey | null) => void;
 }

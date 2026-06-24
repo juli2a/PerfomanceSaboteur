@@ -57,6 +57,7 @@
   /* ── Simulator shell ── */
   --color-brand-bg: var(--brand-bg);
   --color-brand-bg-2: var(--brand-bg-2);
+  --color-brand-bg-3: var(--brand-bg-3);
   --color-brand-border: var(--brand-border);
   --color-brand-accent: var(--brand-accent);
   --color-brand-accent-dim: var(--brand-accent-dim);
@@ -118,6 +119,7 @@
 
   --_sim-bg: #1a1610;
   --_sim-bg-2: #13110b;
+  --_sim-bg-3: #31281c;
   --_sim-border: rgba(244, 167, 60, 0.22);
   --_sim-accent: #f4a73c;
   --_sim-accent-dim: rgba(244, 167, 60, 0.16);
@@ -184,6 +186,7 @@
   /* ── Layer 3: Brand / simulator shell ── */
   --brand-bg: var(--_sim-bg);
   --brand-bg-2: var(--_sim-bg-2);
+  --brand-bg-3: var(--_sim-bg-3);
   --brand-border: var(--_sim-border);
   --brand-accent: var(--_sim-accent);
   --brand-accent-dim: var(--_sim-accent-dim);

@@ -1,0 +1,66 @@
+import { Check, Lightbulb, X } from "lucide-react";
+
+import type { CaseTip } from "@/lib/simulator-toggles";
+import CaseCodeSection from "@/components/simulator/CaseCodeSection";
+
+interface CaseTipContentProps {
+  tip: CaseTip;
+  // Already server-rendered by CaseCodeBlock (see lib/server/case-info.tsx)
+  // — undefined means that case has no snippet on disk yet.
+  badCodeBlock?: React.ReactNode;
+  goodCodeBlock?: React.ReactNode;
+}
+
+interface TipSectionProps {
+  title: string;
+  body: string;
+}
+
+function TipSection({ title, body }: TipSectionProps) {
+  return (
+    <div>
+      <p className="mb-1.75 text-[15px] font-semibold text-foreground">
+        {title}
+        <span className="text-brand-accent">:</span>
+      </p>
+      <p className="text-[13.5px] leading-[1.6] text-brand-muted">{body}</p>
+    </div>
+  );
+}
+
+// Renders a case's tip (problem / reproduction / effect / anti-pattern /
+// best practice / summary) — shared between the desktop right-hand guide
+// panel (CaseDetailPanel) and the mobile Sheet's info panel
+// (MobileControlSheet) so both surfaces show identical content.
+export default function CaseTipContent({
+  tip,
+  badCodeBlock,
+  goodCodeBlock,
+}: CaseTipContentProps) {
+  return (
+    <div className="flex flex-col gap-heading-gap">
+      <TipSection title="Problem" body={tip.problem} />
+      <TipSection title="Try it (toggle on)" body={tip.reproduction} />
+      <TipSection title="You'll see" body={tip.effect} />
+      <CaseCodeSection
+        icon={<X className="size-3.75" />}
+        label="Anti-pattern"
+        description={tip.badCode}
+        codeBlock={badCodeBlock}
+        tone="anti"
+      />
+      <CaseCodeSection
+        icon={<Check className="size-3.75" />}
+        label="Best practice"
+        description={tip.goodCode}
+        codeBlock={goodCodeBlock}
+        tone="best"
+      />
+      <div className="h-px bg-brand-border" />
+      <div className="flex items-start gap-2.75">
+        <Lightbulb className="mt-px size-4 shrink-0 text-brand-accent" />
+        <p className="text-[13.5px] font-medium leading-[1.55] text-brand-accent">{tip.summary}</p>
+      </div>
+    </div>
+  );
+}

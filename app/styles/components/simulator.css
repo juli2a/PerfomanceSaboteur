@@ -3,11 +3,20 @@
     box-shadow: 0 0 10px var(--color-brand-accent);
   }
 
+  /* Hides the scrollbar but keeps the element scrollable — used where
+     scrolling is driven by arrow buttons instead of a visible track
+     (e.g. the control panel's toggle zones). */
+  .scrollbar-hidden {
+    scrollbar-width: none;
+  }
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Amber control panel card */
   .sim-card {
     display: flex;
     align-items: center;
-    gap: calc(var(--spacing) * 4.5);
     border-radius: 14px;
     border: 1px solid rgba(244, 167, 60, 0.42);
     padding: calc(var(--spacing) * 2.75) calc(var(--spacing) * 3.75);

@@ -14,6 +14,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import type { AmplifiedProduct } from "@/types/inventory";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useInventoryFiltersStore } from "@/store/inventory-filters";
+import { useInventorySearchStore } from "@/store/inventory-search";
 import ProductCard from "@/components/inventory/ProductCard";
 import ProductTableRow from "@/components/inventory/ProductTableRow";
 import SelectAllCheckbox from "@/components/inventory/SelectAllCheckbox";
@@ -67,6 +68,18 @@ export default function ProductTable({ products }: ProductTableProps) {
   const selectedCategories = useInventoryFiltersStore(
     (state) => state.categories,
   );
+  const matchedIds = useInventorySearchStore((state) => state.matchedIds);
+
+  // Search matches only base DummyJSON ids (1-100, see Toolbar/Case 4) —
+  // every batch duplicate beyond the first keeps an id above that range, so
+  // this naturally surfaces just the one canonical row per match instead of
+  // 20 near-identical "(Batch N)" rows. Pre-filtered here (not via
+  // columnFilters) since it narrows the underlying dataset rather than a
+  // displayed column's value.
+  const searchedProducts = useMemo(
+    () => (matchedIds === null ? products : products.filter((product) => matchedIds.has(product.id))),
+    [products, matchedIds],
+  );
 
   // Memoized so the reference is stable across renders when the selection
   // hasn't changed — react-table's controlled `state.columnFilters` treats
@@ -82,7 +95,7 @@ export default function ProductTable({ products }: ProductTableProps) {
   );
 
   const table = useReactTable({
-    data: products,
+    data: searchedProducts,
     columns,
     state: { columnFilters },
     getRowId: (row) => String(row.id),

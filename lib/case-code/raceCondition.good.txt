@@ -1,0 +1,15 @@
+useEffect(() => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => {
+    fetch(`/api/inventory-search?q=${encodeURIComponent(query)}`, {
+      signal: controller.signal,
+    })
+      .then((res) => res.json())
+      .then((data) => setMatchedIds(new Set(data.ids)));
+  }, 300);
+
+  return () => {
+    clearTimeout(timer);
+    controller.abort();
+  };
+}, [query]);

@@ -31,7 +31,12 @@ export default function DashboardPage() {
             Merchant analytics overview · last 30 days
           </p>
         </div>
-        <LiveIndicator />
+        <div className="hidden items-center gap-3.5 lg:flex">
+          <span className="whitespace-nowrap text-[13px] text-text-2">
+            Updated <span className="font-semibold tabular-nums text-foreground">—</span>
+          </span>
+          <LiveIndicator />
+        </div>
       </div>
 
       <Suspense fallback={<KpiSkeleton />}>

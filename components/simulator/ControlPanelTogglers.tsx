@@ -1,0 +1,85 @@
+"use client";
+
+import { Fragment } from "react";
+import { FileText } from "lucide-react";
+
+import EdgeScroller from "@/components/ui/edge-scroller";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils/cn";
+import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
+import { useSimulatorStore } from "@/store/simulator";
+import type { CaseKey } from "@/types/simulator";
+
+interface GuideButtonProps {
+  caseKey: CaseKey;
+  label: string;
+}
+
+// Opens this case's guide in the right-hand slide-out panel (CaseDetailPanel)
+// — replaces the old info popover so the guide gets room for code snippets.
+function GuideButton({ caseKey, label }: GuideButtonProps) {
+  const isActive = useSimulatorStore((state) => state.activeGuideKey === caseKey);
+  const setActiveGuide = useSimulatorStore((state) => state.setActiveGuide);
+
+  return (
+    <button
+      type="button"
+      onClick={() => setActiveGuide(isActive ? null : caseKey)}
+      aria-label={`${isActive ? "Hide" : "Show"} guide: ${label}`}
+      aria-expanded={isActive}
+      className={cn(
+        "inline-flex size-5 shrink-0 cursor-pointer items-center justify-center rounded-xs border border-transparent outline-none transition-colors",
+        isActive
+          ? "border-brand-accent bg-brand-accent text-brand-bg"
+          : "text-brand-muted hover:border-brand-border hover:bg-brand-accent-dim hover:text-brand-accent",
+      )}
+    >
+      <FileText size={13} />
+    </button>
+  );
+}
+
+export default function ControlPanelTogglers() {
+  const toggles = useSimulatorStore((state) => state.toggles);
+  const setToggle = useSimulatorStore((state) => state.setToggle);
+
+  return (
+    <EdgeScroller scrollLeftLabel="Scroll controls left" scrollRightLabel="Scroll controls right">
+      {SIMULATOR_CASES.map((zone, index) => (
+        <Fragment key={zone.title}>
+          {/* No divider before the first zone — it sits right after
+              ControlPanel's own SimulatorKicker border. Between zones, a
+              flexible spacer (not a uniform gap) absorbs the panel's extra
+              width, and a trailing one does the same after the last zone —
+              matches the design's spacer-based distribution. */}
+          {index > 0 && (
+            <>
+              <span className="min-w-5 flex-1 shrink-0" />
+              <span className="mr-4 w-px shrink-0 self-stretch bg-brand-border" />
+            </>
+          )}
+          <fieldset className="m-0 shrink-0 border-0 p-0">
+            <legend className="heading-brand-group mb-1.75 p-0">{zone.title}</legend>
+            <div className="grid grid-flow-col grid-rows-2 gap-x-4.5 gap-y-2.25">
+              {zone.items.map((item) => (
+                <div key={item.key} className="flex items-center gap-1.75">
+                  <Switch
+                    color="brand"
+                    size="sm"
+                    checked={toggles[item.key]}
+                    onCheckedChange={(checked) => setToggle(item.key, checked)}
+                  />
+                  <span className="whitespace-nowrap text-[12.5px] font-medium text-text-2">
+                    {item.label}
+                  </span>
+                  <GuideButton caseKey={item.key} label={item.label} />
+                </div>
+              ))}
+            </div>
+          </fieldset>
+        </Fragment>
+      ))}
+      <span className="min-w-5 flex-1 shrink-0" />
+    </EdgeScroller>
+  );
+}
