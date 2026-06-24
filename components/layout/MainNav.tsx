@@ -2,27 +2,93 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
+  Package,
+  X,
+} from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { useSidebarStore } from "@/store/sidebar";
 import { cn } from "@/lib/utils/cn";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard",        Icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
   { href: "/inventory", label: "Inventory Control", Icon: Package },
 ];
 
 interface MainNavProps {
   onNavigate?: () => void;
   linkClassName?: string;
+  // Only the desktop Sidebar (which can collapse) sets this — it makes
+  // MainNav read/write the shared collapse state itself and render the
+  // collapse toggle on the "WORKSPACE" row. MobileDrawer leaves it unset and
+  // always renders the full, uncollapsed nav.
+  collapsible?: boolean;
+  // Only MobileDrawer sets this — renders an X button, absolutely
+  // positioned in the top-right corner of the nearest positioned ancestor
+  // (the drawer's fixed <aside>), to close it.
+  onClose?: () => void;
 }
 
-export default function MainNav({ onNavigate, linkClassName }: MainNavProps) {
+export default function MainNav({
+  onNavigate,
+  linkClassName,
+  collapsible = false,
+  onClose,
+}: MainNavProps) {
   const pathname = usePathname();
+  const collapsed = useSidebarStore((state) => collapsible && state.collapsed);
+  const setCollapsed = useSidebarStore((state) => state.setCollapsed);
 
   return (
     <nav className="flex flex-col gap-1.5">
-      <span className="px-3.5 pb-2.5 pt-1.5 text-[10.5px] font-semibold tracking-[1px] text-text-3">
-        WORKSPACE
-      </span>
+      {onClose && (
+        <Button
+          variant="outline"
+          size="icon-sm"
+          onClick={onClose}
+          aria-label="Close menu"
+          className="absolute right-heading-gap top-heading-gap"
+        >
+          <X size={18} />
+        </Button>
+      )}
+      {(!collapsed || collapsible) && (
+        <div
+          className={cn(
+            // h-13 = py-2.5 (20px) + the collapse button's own height
+            // (size-8 = 32px) — fixed, not just a min, so this row is
+            // exactly as tall on mobile (no button, just text) as on
+            // desktop, where gap-1.5 alone wouldn't otherwise look the same.
+            "flex h-13 items-center py-2.5",
+            collapsed ? "justify-center" : "justify-between px-3.5",
+          )}
+        >
+          {!collapsed && (
+            <span className="text-[10.5px] font-semibold tracking-[1px] text-text-3">
+              WORKSPACE
+            </span>
+          )}
+          {collapsible && (
+            <Button
+              variant="outline"
+              size="icon-sm"
+              onClick={() => setCollapsed(!collapsed)}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {collapsed ? (
+                <ChevronRight size={16} />
+              ) : (
+                <ChevronLeft size={16} />
+              )}
+            </Button>
+          )}
+        </div>
+      )}
       {NAV_ITEMS.map(({ href, label, Icon }) => {
         const active = pathname === href || pathname.startsWith(href + "/");
         return (
@@ -30,16 +96,35 @@ export default function MainNav({ onNavigate, linkClassName }: MainNavProps) {
             key={href}
             href={href}
             onClick={onNavigate}
+            title={collapsed ? label : undefined}
             className={cn(
-              "flex items-center gap-3.25 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors",
+              // leading-[18px] keeps the label's line box the same height as
+              // the icon slot below (size-4.5 = 18px) — without it, the
+              // label's default text-sm line-height (20px) makes the row
+              // taller than the icon-only collapsed row, shifting every item
+              // below it down a couple px when the sidebar expands.
+              "flex items-center gap-3.25 rounded px-3.5 py-3 text-sm font-medium leading-[18px] transition-colors whitespace-nowrap",
               linkClassName,
               active
                 ? "nav-item-active bg-accent-dim font-semibold text-foreground"
                 : "text-text-2 hover:bg-raise hover:text-foreground",
             )}
           >
-            <Icon size={18} className={active ? "text-accent" : "text-text-3"} />
-            {label}
+            {/* Fixed-size slot, always left-anchored — so the icon's position
+                never depends on justify-content (which can't transition and
+                would otherwise snap instantly while the sidebar's width is
+                still animating). */}
+            <span className="grid size-4.5 shrink-0 place-items-center">
+              <Icon
+                size={18}
+                className={active ? "text-accent" : "text-text-3"}
+              />
+            </span>
+            {!collapsed && (
+              <span className="animate-in fade-in-10 duration-600">
+                {label}
+              </span>
+            )}
           </Link>
         );
       })}

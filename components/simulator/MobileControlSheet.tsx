@@ -13,23 +13,32 @@ import {
 } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils/cn";
-import { SIMULATOR_TOGGLE_ZONES } from "@/lib/simulator-toggles";
-import SimulatorKicker from "@/components/layout/SimulatorKicker";
+import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
+import { useSimulatorStore } from "@/store/simulator";
+import type { CaseKey } from "@/types/simulator";
+import SimulatorKicker from "@/components/simulator/SimulatorKicker";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  caseTipContent: Partial<Record<CaseKey, React.ReactNode>>;
 }
 
-function ToggleRow({ label, tip }: { label: string; tip: string }) {
-  const [isOn, setIsOn] = useState(false);
+interface ToggleRowProps {
+  label: string;
+  tipContent: React.ReactNode;
+  checked: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}
+
+function ToggleRow({ label, tipContent, checked, onCheckedChange }: ToggleRowProps) {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   return (
     <div
       className={cn(
         "overflow-hidden rounded border transition-colors",
-        isOn
+        checked
           ? "border-brand-border bg-brand-accent-dim"
           : "border-border bg-transparent",
       )}
@@ -52,18 +61,21 @@ function ToggleRow({ label, tip }: { label: string; tip: string }) {
         >
           <InfoIcon className="size-3.25" />
         </button>
-        <Switch color="brand" checked={isOn} onCheckedChange={setIsOn} />
+        <Switch color="brand" checked={checked} onCheckedChange={onCheckedChange} />
       </label>
       {isInfoOpen && (
-        <p className="px-3.5 pb-3 text-[11.5px] leading-[1.4] text-text-2">
-          {tip}
-        </p>
+        <div className="px-3.5 pb-3 text-[15px] leading-[1.4] text-text-2">
+          {tipContent}
+        </div>
       )}
     </div>
   );
 }
 
-export default function MobileControlSheet({ open, onOpenChange }: Props) {
+export default function MobileControlSheet({ open, onOpenChange, caseTipContent }: Props) {
+  const toggles = useSimulatorStore((state) => state.toggles);
+  const setToggle = useSimulatorStore((state) => state.setToggle);
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent>
@@ -71,18 +83,24 @@ export default function MobileControlSheet({ open, onOpenChange }: Props) {
           <SimulatorKicker size="lg" />
           <SheetClose
             render={
-              <Button variant="ghost" size="icon-sm" aria-label="Close" />
+              <Button variant="outline" size="icon-sm" aria-label="Close" />
             }
           >
-            <X className="size-5" />
+            <X size={18} />
           </SheetClose>
         </SheetHeader>
         <SheetBody className="flex flex-col gap-4.5 px-4.5 py-3.5">
-          {SIMULATOR_TOGGLE_ZONES.map((zone) => (
+          {SIMULATOR_CASES.map((zone) => (
             <div key={zone.title} className="flex flex-col gap-2.25">
               <span className="heading-brand-group">{zone.title}</span>
               {zone.items.map((item) => (
-                <ToggleRow key={item.key} label={item.label} tip={item.tip} />
+                <ToggleRow
+                  key={item.key}
+                  label={item.label}
+                  tipContent={caseTipContent[item.key]}
+                  checked={toggles[item.key]}
+                  onCheckedChange={(checked) => setToggle(item.key, checked)}
+                />
               ))}
             </div>
           ))}

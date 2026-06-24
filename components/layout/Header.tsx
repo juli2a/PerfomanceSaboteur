@@ -3,35 +3,58 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import ControlPanel from "@/components/layout/ControlPanel";
-import MobileControlSheet from "@/components/layout/MobileControlSheet";
+import ControlPanel from "@/components/simulator/ControlPanel";
+import MobileControlSheet from "@/components/simulator/MobileControlSheet";
 import MobileDrawer from "@/components/layout/MobileDrawer";
 import Logo from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils/cn";
+import { useSidebarStore } from "@/store/sidebar";
+import { useSimulatorStore } from "@/store/simulator";
+import type { CaseKey } from "@/types/simulator";
 
-export default function Header() {
+interface HeaderProps {
+  caseTipContent: Partial<Record<CaseKey, React.ReactNode>>;
+}
+
+export default function Header({ caseTipContent }: HeaderProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(false);
+  const toggles = useSimulatorStore((state) => state.toggles);
+  const hasActiveAntiPattern = Object.values(toggles).some(Boolean);
+  const sidebarCollapsed = useSidebarStore((state) => state.collapsed);
 
   return (
     <>
       <header className="sticky top-0 z-50 flex h-[60px] items-center border-b border-border bg-surface-2 lg:h-24">
-        {/* ── Desktop (lg+): logo zone (width matches sidebar) ── */}
+        {/* ── Desktop (lg+): logo zone (width tracks the sidebar) ──
+            pl-heading-gap is constant (not toggled) so the badge stays
+            left-anchored — toggling justify-center here would snap it to
+            the middle of the still-wide box instantly (justify-content
+            can't transition), then it'd visibly drift left as the width
+            shrinks. */}
         <Link
           href="/dashboard"
-          className="hidden w-[248px] shrink-0 items-center pl-4.5 lg:flex"
+          className={cn(
+            "hidden shrink-0 items-center pl-heading-gap transition-[width] duration-280 lg:flex",
+            sidebarCollapsed ? "w-[76px]" : "w-[248px]",
+          )}
         >
-          <Logo size="md" />
+          <Logo size="md" iconOnly={sidebarCollapsed} animated />
         </Link>
 
-        {/* ── Mobile: hamburger ── */}
-        <button
-          onClick={() => setDrawerOpen(true)}
-          aria-label="Open menu"
-          className="flex items-center p-4 text-text-2 lg:hidden"
+        {/* ── Mobile: hamburger (toggles the drawer; the drawer itself owns
+            the X close button) ── */}
+        <Button
+          variant="outline"
+          size="icon-sm"
+          onClick={() => setDrawerOpen((open) => !open)}
+          aria-label={drawerOpen ? "Close menu" : "Open menu"}
+          aria-expanded={drawerOpen}
+          className="ml-4 mr-4 lg:hidden"
         >
-          <Menu size={21} />
-        </button>
+          <Menu size={18} />
+        </Button>
 
         {/* ── <640: logo, left after the hamburger ── */}
         <Link href="/dashboard" className="flex items-center sm:hidden">
@@ -46,13 +69,9 @@ export default function Header() {
           <Logo size="md" />
         </Link>
 
-        {/* ── Desktop: control panel + timestamp ── */}
-        <div className="hidden flex-1 items-center gap-[18px] px-[30px] lg:flex">
+        {/* ── Desktop: control panel (stretches full width) ── */}
+        <div className="hidden min-w-0 flex-1 items-center px-[30px] lg:flex">
           <ControlPanel />
-
-          <span className="shrink-0 text-[12.5px] text-text-2">
-            Updated <span className="tabular-nums text-foreground">—</span>
-          </span>
         </div>
 
         {/* ── Mobile: Controls button ── */}
@@ -63,13 +82,24 @@ export default function Header() {
           aria-label="Open simulator controls"
           className="relative z-10 ml-auto mr-4 lg:hidden"
         >
-          <span className="h-1.5 w-1.5 rounded-full mr-1 bg-brand-accent shadow-[0_0_7px_var(--brand-accent)]" />
+          <span
+            className={cn(
+              "h-1.5 w-1.5 rounded-full mr-1",
+              hasActiveAntiPattern
+                ? "bg-brand-accent shadow-[0_0_7px_var(--brand-accent)]"
+                : "bg-brand-muted",
+            )}
+          />
           Controls
         </Button>
       </header>
 
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <MobileControlSheet open={controlsOpen} onOpenChange={setControlsOpen} />
+      <MobileControlSheet
+        open={controlsOpen}
+        onOpenChange={setControlsOpen}
+        caseTipContent={caseTipContent}
+      />
     </>
   );
 }

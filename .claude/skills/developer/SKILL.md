@@ -21,7 +21,7 @@ description: use this skill to write code on javascript, typescript.
 
 ## Style and Component Principles
 
-- Design files `design/lumen.jsx` and `design/lumen-mobile.jsx` are the source of truth for visuals. If code intentionally diverges from the design, keep the code, not the design.
+- Design files `design/lumen.jsx`, `design/lumen-mobile.jsx` and `design/Lumen Signal.html` are the source of truth for visuals. If code intentionally diverges from the design, keep the code, not the design.
 - A visually distinct element in the design is a separate component in code.
 - Each component has a single responsibility: if a component contains both a shell and content, split them.
 - Shared logic (navigation, tokens, utilities) lives in one place and is imported, never duplicated.
