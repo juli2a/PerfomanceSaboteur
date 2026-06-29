@@ -7,7 +7,7 @@ const badgeVariants = cva(
   {
     variants: {
       tone: {
-        pos: "text-pos bg-pos/12",
+        positive: "text-pos bg-pos/12",
         alert: "text-alert bg-alert/12",
         amber: "text-amber bg-amber/12",
         instock: "text-status-instock bg-status-instock/12",

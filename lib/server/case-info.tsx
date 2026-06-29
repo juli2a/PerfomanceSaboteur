@@ -22,6 +22,7 @@ export function getCaseTipContent(): Partial<Record<CaseKey, React.ReactNode>> {
         item.key,
         <CaseTipContent
           key={item.key}
+          caseKey={item.key}
           tip={item.tip}
           badCodeBlock={badCodeSnippet ? <CaseCodeBlock code={badCodeSnippet} /> : undefined}
           goodCodeBlock={goodCodeSnippet ? <CaseCodeBlock code={goodCodeSnippet} /> : undefined}

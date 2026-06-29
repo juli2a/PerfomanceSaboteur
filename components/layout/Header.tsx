@@ -70,7 +70,7 @@ export default function Header({ caseTipContent }: HeaderProps) {
         </Link>
 
         {/* ── Desktop: control panel (stretches full width) ── */}
-        <div className="hidden min-w-0 flex-1 items-center px-[30px] lg:flex">
+        <div className="hidden min-w-0 flex-1 items-center pl-[30px] lg:flex">
           <ControlPanel />
         </div>
 

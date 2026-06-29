@@ -2,8 +2,11 @@ import { Check, Lightbulb, X } from "lucide-react";
 
 import type { CaseTip } from "@/lib/simulator-toggles";
 import CaseCodeSection from "@/components/simulator/control-panel/CaseCodeSection";
+import TryItToggleButton from "@/components/simulator/control-panel/TryItToggleButton";
+import type { CaseKey } from "@/types/simulator";
 
 interface CaseTipContentProps {
+  caseKey: CaseKey;
   tip: CaseTip;
   // Already server-rendered by CaseCodeBlock (see lib/server/case-info.tsx)
   // — undefined means that case has no snippet on disk yet.
@@ -14,15 +17,19 @@ interface CaseTipContentProps {
 interface TipSectionProps {
   title: string;
   body: string;
+  action?: React.ReactNode;
 }
 
-function TipSection({ title, body }: TipSectionProps) {
+function TipSection({ title, body, action }: TipSectionProps) {
   return (
     <div>
-      <p className="mb-1.75 text-[15px] font-semibold text-foreground">
-        {title}
-        <span className="text-brand-accent">:</span>
-      </p>
+      <div className="mb-1.75 flex min-h-6 items-center justify-between gap-2">
+        <p className="text-[15px] font-semibold text-foreground">
+          {title}
+          <span className="text-brand-accent">:</span>
+        </p>
+        {action}
+      </div>
       <p className="text-[13.5px] leading-[1.6] text-brand-muted">{body}</p>
     </div>
   );
@@ -33,6 +40,7 @@ function TipSection({ title, body }: TipSectionProps) {
 // panel (CaseDetailPanel) and the mobile Sheet's info panel
 // (MobileControlSheet) so both surfaces show identical content.
 export default function CaseTipContent({
+  caseKey,
   tip,
   badCodeBlock,
   goodCodeBlock,
@@ -40,7 +48,11 @@ export default function CaseTipContent({
   return (
     <div className="flex flex-col gap-heading-gap">
       <TipSection title="Problem" body={tip.problem} />
-      <TipSection title="Try it (toggle on)" body={tip.reproduction} />
+      <TipSection
+        title="Try it"
+        body={tip.reproduction}
+        action={<TryItToggleButton caseKey={caseKey} />}
+      />
       <TipSection title="You'll see" body={tip.effect} />
       <CaseCodeSection
         icon={<X className="size-3.75" />}

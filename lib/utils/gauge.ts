@@ -48,7 +48,7 @@ interface RatingPresentation {
 }
 
 const RATING_PRESENTATION: Record<VitalRating, RatingPresentation> = {
-  good: { tone: "pos", label: "Good", color: "var(--color-pos)", textClass: "text-pos" },
+  good: { tone: "positive", label: "Good", color: "var(--color-pos)", textClass: "text-pos" },
   degraded: { tone: "amber", label: "Degraded", color: "var(--color-amber)", textClass: "text-amber" },
   poor: { tone: "alert", label: "Poor", color: "var(--color-alert)", textClass: "text-alert" },
 };
