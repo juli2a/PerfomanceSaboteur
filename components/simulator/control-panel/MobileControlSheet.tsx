@@ -14,9 +14,9 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils/cn";
 import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
-import { useSimulatorStore } from "@/store/simulator";
+import { useSimControlStore } from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";
-import SimulatorKicker from "@/components/simulator/SimulatorKicker";
+import SimulatorKicker from "@/components/simulator/control-panel/SimulatorKicker";
 
 interface Props {
   open: boolean;
@@ -31,7 +31,12 @@ interface ToggleRowProps {
   onCheckedChange: (checked: boolean) => void;
 }
 
-function ToggleRow({ label, tipContent, checked, onCheckedChange }: ToggleRowProps) {
+function ToggleRow({
+  label,
+  tipContent,
+  checked,
+  onCheckedChange,
+}: ToggleRowProps) {
   const [isInfoOpen, setIsInfoOpen] = useState(false);
 
   return (
@@ -61,7 +66,11 @@ function ToggleRow({ label, tipContent, checked, onCheckedChange }: ToggleRowPro
         >
           <InfoIcon className="size-3.25" />
         </button>
-        <Switch color="brand" checked={checked} onCheckedChange={onCheckedChange} />
+        <Switch
+          color="brand"
+          checked={checked}
+          onCheckedChange={onCheckedChange}
+        />
       </label>
       {isInfoOpen && (
         <div className="px-3.5 pb-3 text-[15px] leading-[1.4] text-text-2">
@@ -72,9 +81,13 @@ function ToggleRow({ label, tipContent, checked, onCheckedChange }: ToggleRowPro
   );
 }
 
-export default function MobileControlSheet({ open, onOpenChange, caseTipContent }: Props) {
-  const toggles = useSimulatorStore((state) => state.toggles);
-  const setToggle = useSimulatorStore((state) => state.setToggle);
+export default function MobileControlSheet({
+  open,
+  onOpenChange,
+  caseTipContent,
+}: Props) {
+  const toggles = useSimControlStore((state) => state.toggles);
+  const setToggle = useSimControlStore((state) => state.setToggle);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

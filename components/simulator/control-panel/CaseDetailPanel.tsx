@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 import { getSimulatorCase } from "@/lib/simulator-toggles";
-import { useSimulatorStore } from "@/store/simulator";
+import { useSimControlStore } from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";
 
 interface CaseDetailPanelProps {
@@ -22,9 +22,11 @@ const PANEL_WIDTH_CLASS = "w-[510px]";
 // guide (incl. code snippets) gets real room. Lives in the shell's content
 // flex row (app/(shell)/layout.tsx) as a sibling of <main>, so opening it
 // shrinks main instead of overlapping it.
-export default function CaseDetailPanel({ caseTipContent }: CaseDetailPanelProps) {
-  const activeGuideKey = useSimulatorStore((state) => state.activeGuideKey);
-  const setActiveGuide = useSimulatorStore((state) => state.setActiveGuide);
+export default function CaseDetailPanel({
+  caseTipContent,
+}: CaseDetailPanelProps) {
+  const activeGuideKey = useSimControlStore((state) => state.activeGuideKey);
+  const setActiveGuide = useSimControlStore((state) => state.setActiveGuide);
   const isOpen = activeGuideKey !== null;
 
   // Keep rendering the last open case's content while the panel slides
@@ -43,7 +45,12 @@ export default function CaseDetailPanel({ caseTipContent }: CaseDetailPanelProps
         isOpen ? PANEL_WIDTH_CLASS : "w-0",
       )}
     >
-      <div className={cn("flex h-full flex-col border-l border-brand-border bg-brand-bg", PANEL_WIDTH_CLASS)}>
+      <div
+        className={cn(
+          "flex h-full flex-col border-l border-brand-border bg-brand-bg",
+          PANEL_WIDTH_CLASS,
+        )}
+      >
         <div className="flex items-start justify-between gap-3 border-b border-border px-5.5 py-5">
           <div className="min-w-0">
             <span className="mb-2 flex items-center gap-1.75">
@@ -54,7 +61,9 @@ export default function CaseDetailPanel({ caseTipContent }: CaseDetailPanelProps
               {caseInfo?.label}
             </p>
             {caseInfo && (
-              <p className="mt-0.75 text-xs text-brand-muted">{caseInfo.zoneTitle} anti-pattern</p>
+              <p className="mt-0.75 text-xs text-brand-muted">
+                {caseInfo.zoneTitle} anti-pattern
+              </p>
             )}
           </div>
           <Button

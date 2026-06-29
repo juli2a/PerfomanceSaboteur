@@ -63,4 +63,14 @@
     font-weight: 600;
     color: var(--color-foreground);
   }
+
+  /* Simulator alert title — eyebrow label inside a warning card, e.g. "Race Condition Alert" */
+  .heading-brand-alert {
+    font-family: var(--font-brand);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--color-brand-alert);
+  }
 }

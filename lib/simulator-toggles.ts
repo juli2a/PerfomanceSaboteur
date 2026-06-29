@@ -11,16 +11,23 @@ export interface CaseTip {
   summary: string;
 }
 
+// Split title/body so PerformancePanel can render them as a SimulatorAlert
+// card directly — title is the short uppercase label, body the explanation.
+export interface CaseAlert {
+  title: string;
+  body: string;
+}
+
 export interface ToggleItem {
   label: string;
   key: CaseKey;
   tip: CaseTip;
-  alert: string;
+  alert: CaseAlert;
 }
 
 // Shared case definitions for the simulator control panel — consumed by both
 // the desktop ControlPanelTogglers and the mobile MobileControlSheet.
-// `key` matches `CaseKey` exactly so both can read/write `useSimulatorStore`
+// `key` matches `CaseKey` exactly so both can read/write `useSimControlStore`
 // without a separate name-mapping table.
 // `tip`/`alert` are filled in by the content-maker skill
 // (.claude/skills/content-maker/SKILL.md).
@@ -45,8 +52,10 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           summary:
             "Debounce and cancel requests triggered by fast-changing input — never trust that responses arrive in the same order they were sent.",
         },
-        alert:
-          "Race Condition Alert: stale response overwrote a newer search result",
+        alert: {
+          title: "Race Condition",
+          body: "Stale response overwrote a newer search result.",
+        },
       },
       {
         label: "Waterfall", //case 5
@@ -59,7 +68,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           goodCode: "",
           summary: "",
         },
-        alert: "",
+        alert: { title: "", body: "" },
       },
     ],
   },
@@ -77,7 +86,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           goodCode: "",
           summary: "",
         },
-        alert: "",
+        alert: { title: "", body: "" },
       },
       {
         label: "Images optimization", //case 1
@@ -90,7 +99,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           goodCode: "",
           summary: "",
         },
-        alert: "",
+        alert: { title: "", body: "" },
       },
       {
         label: "Hydration mismatch", //case 6
@@ -103,7 +112,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           goodCode: "",
           summary: "",
         },
-        alert: "",
+        alert: { title: "", body: "" },
       },
       {
         label: "Context overhead", //case 7
@@ -116,7 +125,13 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           goodCode: "",
           summary: "",
         },
-        alert: "",
+        alert: {
+          title: "Context Overhead",
+          // Static prefix only — the live count comes from the
+          // FlashOnUpdate settle-window counter (see docs/case7.md) and is
+          // appended at render time, e.g. `${body}: ${count}`.
+          body: "Rerendered Nodes on Action",
+        },
       },
     ],
   },
@@ -134,7 +149,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           goodCode: "",
           summary: "",
         },
-        alert: "",
+        alert: { title: "", body: "" },
       },
       {
         label: "Over memoization", //case 8
@@ -147,7 +162,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           goodCode: "",
           summary: "",
         },
-        alert: "",
+        alert: { title: "", body: "" },
       },
     ],
   },
@@ -157,7 +172,9 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
 // Rendering / Computing) it belongs to — e.g. so PerformancePanel can show a
 // case's authored `alert` text, and the right-hand guide panel can show its
 // zone as a subtitle, without scanning SIMULATOR_CASES twice.
-export function getSimulatorCase(key: CaseKey): ToggleItem & { zoneTitle: string } {
+export function getSimulatorCase(
+  key: CaseKey,
+): ToggleItem & { zoneTitle: string } {
   for (const zone of SIMULATOR_CASES) {
     const item = zone.items.find((candidate) => candidate.key === key);
     if (item) return { ...item, zoneTitle: zone.title };

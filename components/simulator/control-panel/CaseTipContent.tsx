@@ -1,7 +1,7 @@
 import { Check, Lightbulb, X } from "lucide-react";
 
 import type { CaseTip } from "@/lib/simulator-toggles";
-import CaseCodeSection from "@/components/simulator/CaseCodeSection";
+import CaseCodeSection from "@/components/simulator/control-panel/CaseCodeSection";
 
 interface CaseTipContentProps {
   tip: CaseTip;

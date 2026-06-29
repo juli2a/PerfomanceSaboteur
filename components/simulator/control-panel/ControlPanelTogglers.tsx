@@ -7,7 +7,7 @@ import EdgeScroller from "@/components/ui/edge-scroller";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils/cn";
 import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
-import { useSimulatorStore } from "@/store/simulator";
+import { useSimControlStore } from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";
 
 interface GuideButtonProps {
@@ -18,8 +18,10 @@ interface GuideButtonProps {
 // Opens this case's guide in the right-hand slide-out panel (CaseDetailPanel)
 // — replaces the old info popover so the guide gets room for code snippets.
 function GuideButton({ caseKey, label }: GuideButtonProps) {
-  const isActive = useSimulatorStore((state) => state.activeGuideKey === caseKey);
-  const setActiveGuide = useSimulatorStore((state) => state.setActiveGuide);
+  const isActive = useSimControlStore(
+    (state) => state.activeGuideKey === caseKey,
+  );
+  const setActiveGuide = useSimControlStore((state) => state.setActiveGuide);
 
   return (
     <button
@@ -40,11 +42,14 @@ function GuideButton({ caseKey, label }: GuideButtonProps) {
 }
 
 export default function ControlPanelTogglers() {
-  const toggles = useSimulatorStore((state) => state.toggles);
-  const setToggle = useSimulatorStore((state) => state.setToggle);
+  const toggles = useSimControlStore((state) => state.toggles);
+  const setToggle = useSimControlStore((state) => state.setToggle);
 
   return (
-    <EdgeScroller scrollLeftLabel="Scroll controls left" scrollRightLabel="Scroll controls right">
+    <EdgeScroller
+      scrollLeftLabel="Scroll controls left"
+      scrollRightLabel="Scroll controls right"
+    >
       {SIMULATOR_CASES.map((zone, index) => (
         <Fragment key={zone.title}>
           {/* No divider before the first zone — it sits right after
@@ -59,7 +64,9 @@ export default function ControlPanelTogglers() {
             </>
           )}
           <fieldset className="m-0 shrink-0 border-0 p-0">
-            <legend className="heading-brand-group mb-1.75 p-0">{zone.title}</legend>
+            <legend className="heading-brand-group mb-1.75 p-0">
+              {zone.title}
+            </legend>
             <div className="grid grid-flow-col grid-rows-2 gap-x-4.5 gap-y-2.25">
               {zone.items.map((item) => (
                 <div key={item.key} className="flex items-center gap-1.75">

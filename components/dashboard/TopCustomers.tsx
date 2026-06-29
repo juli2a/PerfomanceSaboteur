@@ -2,7 +2,6 @@ import { getUsers } from "@/lib/server/dashboard";
 import { formatCurrency } from "@/lib/utils/format";
 import { deriveHue } from "@/lib/utils/derive";
 import { cn } from "@/lib/utils/cn";
-import { ClientLogger } from "@/components/simulator/ClientLogger";
 import { Card } from "@/components/ui/card";
 
 export default async function TopCustomers() {
@@ -36,8 +35,12 @@ export default async function TopCustomers() {
                 {initials}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-foreground">{c.name}</p>
-                <p className="truncate text-[11px] text-text-3 sm:text-xs">{c.company}</p>
+                <p className="truncate text-sm font-medium text-foreground">
+                  {c.name}
+                </p>
+                <p className="truncate text-[11px] text-text-3 sm:text-xs">
+                  {c.company}
+                </p>
               </div>
               <div className="text-right">
                 <p className="tabular-nums text-sm font-semibold text-foreground">
@@ -49,7 +52,6 @@ export default async function TopCustomers() {
           );
         })}
       </ul>
-      <ClientLogger label="TopCustomers" />
     </Card>
   );
 }

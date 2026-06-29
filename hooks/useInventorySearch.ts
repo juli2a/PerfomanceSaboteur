@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useInventorySearchStore } from "@/store/inventory-search";
+import { useSimControlStore } from "@/store/simulator-control";
 import { useSimulatorCase } from "@/hooks/useSimulatorCase";
 
 const DEBOUNCE_MS = 300;
@@ -21,9 +22,13 @@ interface SearchResponse {
 export function useInventorySearch() {
   const query = useInventorySearchStore((state) => state.query);
   const setMatchedIds = useInventorySearchStore((state) => state.setMatchedIds);
-  const setIsSearching = useInventorySearchStore((state) => state.setIsSearching);
+  const setIsSearching = useInventorySearchStore(
+    (state) => state.setIsSearching,
+  );
   const setIsStale = useInventorySearchStore((state) => state.setIsStale);
   const isRaceConditionOn = useSimulatorCase("raceCondition");
+  const triggerAlert = useSimControlStore((state) => state.triggerAlert);
+  const closeAlert = useSimControlStore((state) => state.closeAlert);
 
   const latestSeqRef = useRef(0);
   const appliedSeqRef = useRef(0);
@@ -33,6 +38,7 @@ export function useInventorySearch() {
       setMatchedIds(null);
       setIsSearching(false);
       setIsStale(false);
+      closeAlert("raceCondition");
       return;
     }
 
@@ -41,19 +47,24 @@ export function useInventorySearch() {
     async function run(signal?: AbortSignal) {
       setIsSearching(true);
       try {
-        const res = await fetch(`/api/inventory-search?q=${encodeURIComponent(query)}`, {
-          signal,
-        });
+        const res = await fetch(
+          `/api/inventory-search?q=${encodeURIComponent(query)}`,
+          {
+            signal,
+          },
+        );
         const data: SearchResponse = await res.json();
 
         if (seq < appliedSeqRef.current) {
           // Reachable only on the bad path — the good path's AbortController
           // guarantees a stale request's response never lands here.
           setIsStale(true);
+          triggerAlert("raceCondition");
         } else if (seq === latestSeqRef.current) {
           // This is the response for the most recently typed query — the
           // display is correct again, clear any earlier race-condition alert.
           setIsStale(false);
+          closeAlert("raceCondition");
         }
         appliedSeqRef.current = Math.max(appliedSeqRef.current, seq);
         setMatchedIds(new Set(data.ids));
@@ -75,5 +86,13 @@ export function useInventorySearch() {
       clearTimeout(timer);
       controller.abort();
     };
-  }, [query, isRaceConditionOn, setMatchedIds, setIsSearching, setIsStale]);
+  }, [
+    query,
+    isRaceConditionOn,
+    setMatchedIds,
+    setIsSearching,
+    setIsStale,
+    triggerAlert,
+    closeAlert,
+  ]);
 }

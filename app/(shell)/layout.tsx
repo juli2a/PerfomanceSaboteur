@@ -1,7 +1,7 @@
 import Header from "@/components/layout/Header";
 import Sidebar from "@/components/layout/Sidebar";
-import CaseDetailPanel from "@/components/simulator/CaseDetailPanel";
-import PerformancePanel from "@/components/simulator/PerformancePanel";
+import CaseDetailPanel from "@/components/simulator/control-panel/CaseDetailPanel";
+import PerformancePanel from "@/components/simulator/performance-panel/PerformancePanel";
 import { getCaseTipContent } from "@/lib/server/case-info";
 
 // Shell layout: Header (with mobile drawer) + Sidebar (desktop) + CaseDetailPanel + PerformancePanel
