@@ -76,6 +76,9 @@
   .sim-panel-mobile-content[data-open] {
     grid-template-rows: 1fr;
   }
+  .sim-panel-mobile-content[data-instant] {
+    transition: none;
+  }
 
   .sim-panel-mobile-content-row {
     overflow: hidden;

@@ -4,12 +4,12 @@ import { InfoIcon, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetBody,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-} from "@/components/ui/sheet";
+  Drawer,
+  DrawerBody,
+  DrawerClose,
+  DrawerContent,
+  DrawerHeader,
+} from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils/cn";
 import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
@@ -89,7 +89,7 @@ function ToggleRow({
   );
 }
 
-export default function MobileControlSheet({
+export default function MobileControlDrawer({
   open,
   onOpenChange,
   caseTipContent,
@@ -105,19 +105,19 @@ export default function MobileControlSheet({
   );
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent>
-        <SheetHeader>
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent>
+        <DrawerHeader>
           <SimulatorKicker size="lg" />
-          <SheetClose
+          <DrawerClose
             render={
               <Button variant="outline" size="icon-sm" aria-label="Close" />
             }
           >
             <X size={18} />
-          </SheetClose>
-        </SheetHeader>
-        <SheetBody
+          </DrawerClose>
+        </DrawerHeader>
+        <DrawerBody
           className="flex flex-col gap-4.5 px-4.5 py-3.5"
           style={{ paddingBottom: mobilePanelHeight + 14 }}
         >
@@ -136,8 +136,8 @@ export default function MobileControlSheet({
               ))}
             </div>
           ))}
-        </SheetBody>
-      </SheetContent>
-    </Sheet>
+        </DrawerBody>
+      </DrawerContent>
+    </Drawer>
   );
 }

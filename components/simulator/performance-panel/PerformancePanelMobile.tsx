@@ -187,7 +187,7 @@ export default function PerformancePanelMobile({
             )}
           </span>
         </button>
-        <div className="sim-panel-mobile-content" data-open={open || undefined}>
+        <div className="sim-panel-mobile-content" data-open={open || undefined} data-instant={controlsOpen || undefined}>
           <div className="sim-panel-mobile-content-row flex flex-col gap-2.75 px-4">
             <div className="flex gap-2">
               <VitalReadout {...lcp} />
