@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { MediaContext } from "@/context/MediaContext";
 import { useSimControlStore } from "@/store/simulator-control";
 
 // Mobile and desktop both read the same activeGuideKey, so an open guide
@@ -14,12 +14,13 @@ import { useSimControlStore } from "@/store/simulator-control";
 // has nowhere to show), and entering desktop must close it (it has no
 // desktop equivalent to stay open in).
 export function useSyncControlsAcrossBreakpoint() {
-  const isMobile = useIsMobile();
+  const isMobile = useContext(MediaContext);
   const activeGuideKey = useSimControlStore((state) => state.activeGuideKey);
   const setControlsOpen = useSimControlStore((state) => state.setControlsOpen);
   const wasMobileRef = useRef(isMobile);
 
   useEffect(() => {
+    if (isMobile === undefined) return;
     if (wasMobileRef.current === isMobile) return;
     wasMobileRef.current = isMobile;
 

@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 import { getSimulatorCase } from "@/lib/simulator-toggles";
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { MediaContext } from "@/context/MediaContext";
 import { useSimControlStore } from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";
 
@@ -26,7 +26,7 @@ const PANEL_WIDTH_CLASS = "w-[510px]";
 export default function CaseDetailPanel({
   caseTipContent,
 }: CaseDetailPanelProps) {
-  const isMobile = useIsMobile();
+  const isMobile = useContext(MediaContext);
   const activeGuideKey = useSimControlStore((state) => state.activeGuideKey);
   const setActiveGuide = useSimControlStore((state) => state.setActiveGuide);
   const isOpen = activeGuideKey !== null;
@@ -43,7 +43,7 @@ export default function CaseDetailPanel({
   // shows inline inside MobileControlSheet's own row instead. Without this
   // guard, opening a guide on mobile would also try to slide this 510px
   // panel open underneath the sheet.
-  if (isMobile) return null;
+  if (isMobile !== false) return null;
 
   return (
     <div

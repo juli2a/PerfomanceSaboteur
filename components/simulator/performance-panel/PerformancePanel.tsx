@@ -8,7 +8,8 @@ import {
 } from "@/lib/simulator-thresholds";
 import { getSimulatorCase } from "@/lib/simulator-toggles";
 import { getOverallRating, getValueRating } from "@/lib/utils/gauge";
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { useContext } from "react";
+import { MediaContext } from "@/context/MediaContext";
 import { useSimControlStore } from "@/store/simulator-control";
 import { useSimPerformanceStore } from "@/store/simulator-performance";
 import PerformancePanelDesktop from "@/components/simulator/performance-panel/PerformancePanelDesktop";
@@ -26,7 +27,7 @@ import type { CaseKey } from "@/types/simulator";
 // hooks, all called from SimulatorReporters in the root layout) — this
 // component only reads the store, it doesn't measure anything itself.
 export default function PerformancePanel() {
-  const isMobile = useIsMobile();
+  const isMobile = useContext(MediaContext);
   const caseAlerts = useSimControlStore((state) => state.caseAlerts);
   const dismissAlert = useSimControlStore((state) => state.dismissAlert);
   const shownAlertKeys = (Object.keys(caseAlerts) as CaseKey[]).filter(
@@ -78,6 +79,8 @@ export default function PerformancePanel() {
     interactionLatencyRating,
     overallRating,
   };
+
+  if (isMobile === undefined) return null;
 
   return isMobile ? (
     <PerformancePanelMobile {...metrics} />

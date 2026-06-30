@@ -2,7 +2,8 @@
 
 import { Filter, ChevronDown, X } from "lucide-react";
 
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { useContext } from "react";
+import { MediaContext } from "@/context/MediaContext";
 import { useInventoryFiltersStore } from "@/store/inventory-filters";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
@@ -32,10 +33,12 @@ interface CategoryFilterProps {
 // Mobile: same multi-select list, collapsed into a funnel-icon bottom sheet.
 // Both branches render the same CategoryFilterList — see that file for why.
 export default function CategoryFilter({ categories }: CategoryFilterProps) {
-  const isMobile = useIsMobile();
+  const isMobile = useContext(MediaContext);
   const selectedCategories = useInventoryFiltersStore((state) => state.categories);
   const clearCategories = useInventoryFiltersStore((state) => state.clearCategories);
   const hasSelection = selectedCategories.size > 0;
+
+  if (isMobile === undefined) return null;
 
   if (isMobile) {
     return (

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Chakra_Petch, Manrope } from "next/font/google";
 import SimulatorReporters from "@/components/simulator/performance-panel/SimulatorReporters";
+import { MediaProvider } from "@/context/MediaContext";
 import "./globals.css";
 
 const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin"] });
@@ -21,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${manrope.variable} ${chakraPetch.variable} dark h-full`}>
       <body className="h-full">
         <SimulatorReporters />
-        {children}
+        <MediaProvider>{children}</MediaProvider>
       </body>
     </html>
   );
