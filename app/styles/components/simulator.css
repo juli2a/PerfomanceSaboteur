@@ -47,9 +47,43 @@
       0 8px 26px rgba(0, 0, 0, 0.32);
   }
 
+  /* Mobile Performance Panel — bottom bar counterpart to .sim-card,
+     full-width and flat-topped (border-top only, no radius) instead of a
+     floating rounded corner widget. Same gradient family, opaque since it
+     sits at the bottom of the page over scrollable content. */
+  .sim-panel-mobile {
+    background: linear-gradient(
+      155deg,
+      rgba(34, 27, 16, 0.97),
+      rgba(15, 12, 8, 0.97)
+    );
+    border-top: 1px solid rgba(244, 167, 60, 0.42);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 -10px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Expand/collapse animation for the mobile panel body.
+     CSS grid trick: grid-template-rows 0fr→1fr animates to height:auto
+     without JavaScript height measurement. The inner row needs
+     overflow:hidden so 0fr actually clips the content to zero. */
+  .sim-panel-mobile-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease-out;
+    overflow: hidden;
+  }
+  .sim-panel-mobile-content[data-open] {
+    grid-template-rows: 1fr;
+  }
+
+  .sim-panel-mobile-content-row {
+    overflow: hidden;
+  }
+
   /* Red simulator alert card — case warnings that overlay page content,
-     stacked above the floating Performance Panel (desktop) / Web Vitals
-     dock (mobile). Same gradient/shadow family as .sim-card, red-toned. */
+     stacked above the floating Performance Panel, desktop or mobile. Same
+     gradient/shadow family as .sim-card, red-toned. */
   .sim-alert {
     position: relative;
     border-radius: var(--radius-lg);

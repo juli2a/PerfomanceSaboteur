@@ -26,6 +26,8 @@ export const useSimControlStore = create<SimControlState>()(
         set((state) => ({ toggles: { ...state.toggles, [key]: value } })),
       activeGuideKey: null,
       setActiveGuide: (key) => set({ activeGuideKey: key }),
+      controlsOpen: false,
+      setControlsOpen: (open) => set({ controlsOpen: open }),
       caseAlerts: {},
       triggerAlert: (key) =>
         set((state) =>

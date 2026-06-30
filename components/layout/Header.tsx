@@ -9,6 +9,7 @@ import MobileDrawer from "@/components/layout/MobileDrawer";
 import Logo from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { useSyncControlsAcrossBreakpoint } from "@/hooks/useSyncControlsAcrossBreakpoint";
 import { useSidebarStore } from "@/store/sidebar";
 import { useSimControlStore } from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";
@@ -18,8 +19,10 @@ interface HeaderProps {
 }
 
 export default function Header({ caseTipContent }: HeaderProps) {
+  useSyncControlsAcrossBreakpoint();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [controlsOpen, setControlsOpen] = useState(false);
+  const controlsOpen = useSimControlStore((state) => state.controlsOpen);
+  const setControlsOpen = useSimControlStore((state) => state.setControlsOpen);
   const toggles = useSimControlStore((state) => state.toggles);
   const hasActiveAntiPattern = Object.values(toggles).some(Boolean);
   const sidebarCollapsed = useSidebarStore((state) => state.collapsed);

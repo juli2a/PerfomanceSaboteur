@@ -33,10 +33,21 @@ export interface VitalReading {
 export interface SimControlState {
   toggles: Record<CaseKey, boolean>;
   setToggle: (key: CaseKey, value: boolean) => void;
-  // Which case's guide is open in the right slide-out panel — null when closed.
-  // Not persisted: it's a transient UI state, not something that should survive a refresh.
+  // Which case's guide is open — the right slide-out panel on desktop, a
+  // row's inline info on the mobile control sheet — null when none is.
+  // Shared between both surfaces so opening one closes whichever was open on
+  // the other. Not persisted: it's transient UI state, not something that
+  // should survive a refresh.
   activeGuideKey: CaseKey | null;
   setActiveGuide: (key: CaseKey | null) => void;
+  // Whether the mobile simulator-controls bottom sheet is open. A distinct
+  // concept from activeGuideKey above — this sheet can be open with no guide
+  // expanded inside it (e.g. just flipping a switch). Lives here (rather
+  // than as Header's own local state) so the mobile Performance Panel dock
+  // can force itself open while it's open — see docs/ui.md "Floating
+  // Performance Panel" → Mobile (`dockOpen = vitalsExpanded || controlsOpen`).
+  controlsOpen: boolean;
+  setControlsOpen: (open: boolean) => void;
   caseAlerts: Partial<Record<CaseKey, AlertStatus>>;
   triggerAlert: (key: CaseKey) => void;
   // Two call sites, same effect — kept as separate names so each call site
@@ -75,4 +86,11 @@ export interface SimPerformanceState {
   // anti-pattern is fixed, without needing a page reload.
   interactionLatency: number;
   setInteractionLatency: (ms: number) => void;
+  // Current rendered height (px) of the mobile Performance Panel — it's
+  // always expanded while the simulator controls sheet is open, so
+  // MobileControlSheet reads this to reserve the same amount of bottom
+  // padding in its own scroll area, keeping its last rows from ending up
+  // hidden behind the panel.
+  mobilePanelHeight: number;
+  setMobilePanelHeight: (height: number) => void;
 }

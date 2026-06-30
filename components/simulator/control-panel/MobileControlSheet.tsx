@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { InfoIcon, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -15,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils/cn";
 import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
 import { useSimControlStore } from "@/store/simulator-control";
+import { useSimPerformanceStore } from "@/store/simulator-performance";
 import type { CaseKey } from "@/types/simulator";
 import SimulatorKicker from "@/components/simulator/control-panel/SimulatorKicker";
 
@@ -25,19 +25,27 @@ interface Props {
 }
 
 interface ToggleRowProps {
+  caseKey: CaseKey;
   label: string;
   tipContent: React.ReactNode;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
 }
 
+// Shares activeGuideKey with the desktop guide panel's GuideButton — only
+// one case's info can be open at a time, here or there, so opening a row's
+// info here closes any other row already expanded (and vice versa).
 function ToggleRow({
+  caseKey,
   label,
   tipContent,
   checked,
   onCheckedChange,
 }: ToggleRowProps) {
-  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const isInfoOpen = useSimControlStore(
+    (state) => state.activeGuideKey === caseKey,
+  );
+  const setActiveGuide = useSimControlStore((state) => state.setActiveGuide);
 
   return (
     <div
@@ -54,7 +62,7 @@ function ToggleRow({
         </span>
         <button
           type="button"
-          onClick={() => setIsInfoOpen((value) => !value)}
+          onClick={() => setActiveGuide(isInfoOpen ? null : caseKey)}
           aria-label={`${label} info`}
           aria-expanded={isInfoOpen}
           className={cn(
@@ -88,6 +96,13 @@ export default function MobileControlSheet({
 }: Props) {
   const toggles = useSimControlStore((state) => state.toggles);
   const setToggle = useSimControlStore((state) => state.setToggle);
+  // The mobile Performance Panel is always forced open (and thus at its
+  // tallest) while this sheet is open, and sits on top of this sheet's own
+  // bottom edge — reserving the same height as bottom padding keeps the
+  // last toggle rows reachable by scrolling instead of stuck behind it.
+  const mobilePanelHeight = useSimPerformanceStore(
+    (state) => state.mobilePanelHeight,
+  );
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -102,13 +117,17 @@ export default function MobileControlSheet({
             <X size={18} />
           </SheetClose>
         </SheetHeader>
-        <SheetBody className="flex flex-col gap-4.5 px-4.5 py-3.5">
+        <SheetBody
+          className="flex flex-col gap-4.5 px-4.5 py-3.5"
+          style={{ paddingBottom: mobilePanelHeight + 14 }}
+        >
           {SIMULATOR_CASES.map((zone) => (
             <div key={zone.title} className="flex flex-col gap-2.25">
               <span className="heading-brand-group">{zone.title}</span>
               {zone.items.map((item) => (
                 <ToggleRow
                   key={item.key}
+                  caseKey={item.key}
                   label={item.label}
                   tipContent={caseTipContent[item.key]}
                   checked={toggles[item.key]}

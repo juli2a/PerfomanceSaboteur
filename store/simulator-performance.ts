@@ -15,4 +15,6 @@ export const useSimPerformanceStore = create<SimPerformanceState>()((set) => ({
   setBlockingTime: (ms) => set({ blockingTime: ms }),
   interactionLatency: 0,
   setInteractionLatency: (ms) => set({ interactionLatency: ms }),
+  mobilePanelHeight: 0,
+  setMobilePanelHeight: (height) => set({ mobilePanelHeight: height }),
 }));
