@@ -1,7 +1,7 @@
 "use client";
 
-import ControlPanelTogglers from "@/components/simulator/ControlPanelTogglers";
-import SimulatorKicker from "@/components/simulator/SimulatorKicker";
+import ControlPanelTogglers from "@/components/simulator/control-panel/ControlPanelTogglers";
+import SimulatorKicker from "@/components/simulator/control-panel/SimulatorKicker";
 
 export default function ControlPanel() {
   return (

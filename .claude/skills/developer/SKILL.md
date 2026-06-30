@@ -25,7 +25,7 @@ description: use this skill to write code on javascript, typescript.
 - A visually distinct element in the design is a separate component in code.
 - Each component has a single responsibility: if a component contains both a shell and content, split them.
 - Shared logic (navigation, tokens, utilities) lives in one place and is imported, never duplicated.
-- **Avoid DOM Duplication:** Never duplicate HTML elements to show or hide them across different screen sizes if the layout changes can be controlled entirely via CSS.
+- **Avoid DOM Duplication:** Never duplicate HTML elements to show or hide them across different screen sizes if the layout changes can be controlled entirely via CSS. Don't render both variants and hide one with `hidden lg:flex` / `lg:hidden` — use `useIsMobile()` and render only the one that's needed (see `ProductTable.tsx`).
 - No static inline styles (`style={{}}`). Inline styles are only justified when the value depends on state or props at runtime.
 - **Pixel rounding:** Round non-integer design values **up** to whole px. Exception: keep fractions where the size is small and the difference is visually meaningful (e.g. `1.5px`, `2.5px`).
 - **Style hygiene:** Remove no-op declarations. Prefer inheritance over duplication — move shared styles to the parent. Minimise parent→child overrides: fix the parent or remove the child override, not both.
@@ -45,6 +45,10 @@ Run this mentally before writing **every** numeric CSS value:
 - [ ] **Token exists?** — use the token, not a hardcoded value. If the value repeats and no token exists, request one.
 - [ ] **`calc()` result (not a flexible value)** — resolves to a whole px? If not, use a fixed value or an exact multiplier.
 - [ ] **Border-radius** — using the nearest scale token, not an arbitrary value?
+
+## External Tool Suggestions
+
+When a linter, TypeScript, or IDE diagnostic suggests a change, evaluate semantic correctness first — don't apply automatically. Technical equivalence (same px value, same type) is not sufficient justification. If unclear — ask instead of acting.
 
 ## CSS Design Tokens
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useContext, useMemo, useRef } from "react";
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -12,7 +12,7 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 import type { AmplifiedProduct } from "@/types/inventory";
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { MediaContext } from "@/context/MediaContext";
 import { useInventoryFiltersStore } from "@/store/inventory-filters";
 import { useInventorySearchStore } from "@/store/inventory-search";
 import ProductCard from "@/components/inventory/ProductCard";
@@ -64,7 +64,7 @@ interface ProductTableProps {
 // keeps the same scroll offset, instead of two independent containers each
 // tracking their own (and one silently losing its position while hidden).
 export default function ProductTable({ products }: ProductTableProps) {
-  const isMobile = useIsMobile();
+  const isMobile = useContext(MediaContext);
   const selectedCategories = useInventoryFiltersStore(
     (state) => state.categories,
   );
@@ -125,6 +125,8 @@ export default function ProductTable({ products }: ProductTableProps) {
     estimateSize: () => (isMobile ? CARD_HEIGHT_PX : ROW_HEIGHT_PX),
     overscan: isMobile ? 6 : 10,
   });
+
+  if (isMobile === undefined) return null;
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden rounded-xl border-t">

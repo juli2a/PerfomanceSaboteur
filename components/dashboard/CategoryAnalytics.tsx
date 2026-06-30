@@ -1,6 +1,5 @@
 import { getCategories } from "@/lib/server/dashboard";
 import { formatCurrency } from "@/lib/utils/format";
-import { ClientLogger } from "@/components/simulator/ClientLogger";
 import { Card } from "@/components/ui/card";
 
 export default async function CategoryAnalytics() {
@@ -32,7 +31,6 @@ export default async function CategoryAnalytics() {
           </li>
         ))}
       </ul>
-      <ClientLogger label="CategoryAnalytics" />
     </Card>
   );
 }

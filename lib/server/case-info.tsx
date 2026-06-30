@@ -1,8 +1,8 @@
 import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
 import { getBadCodeSnippet, getGoodCodeSnippet } from "@/lib/server/case-code";
 import type { CaseKey } from "@/types/simulator";
-import CaseTipContent from "@/components/simulator/CaseTipContent";
-import CaseCodeBlock from "@/components/simulator/CaseCodeBlock";
+import CaseTipContent from "@/components/simulator/control-panel/CaseTipContent";
+import CaseCodeBlock from "@/components/simulator/control-panel/CaseCodeBlock";
 
 // Pre-renders every case's tip — including server-highlighted code blocks —
 // once, server-side. Must be called from a Server Component (e.g.
@@ -22,6 +22,7 @@ export function getCaseTipContent(): Partial<Record<CaseKey, React.ReactNode>> {
         item.key,
         <CaseTipContent
           key={item.key}
+          caseKey={item.key}
           tip={item.tip}
           badCodeBlock={badCodeSnippet ? <CaseCodeBlock code={badCodeSnippet} /> : undefined}
           goodCodeBlock={goodCodeSnippet ? <CaseCodeBlock code={goodCodeSnippet} /> : undefined}

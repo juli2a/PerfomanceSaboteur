@@ -2,7 +2,9 @@
 
 import { Filter, ChevronDown, X } from "lucide-react";
 
-import { useIsMobile } from "@/hooks/useIsMobile";
+import { useContext } from "react";
+import { MediaContext } from "@/context/MediaContext";
+import { useSimPerformanceStore } from "@/store/simulator-performance";
 import { useInventoryFiltersStore } from "@/store/inventory-filters";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
@@ -13,15 +15,15 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetClose,
-  SheetBody,
-  SheetFooter,
-} from "@/components/ui/sheet";
+  Drawer,
+  DrawerTrigger,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+  DrawerBody,
+  DrawerFooter,
+} from "@/components/ui/drawer";
 import CategoryFilterList from "@/components/inventory/CategoryFilterList";
 
 interface CategoryFilterProps {
@@ -32,15 +34,18 @@ interface CategoryFilterProps {
 // Mobile: same multi-select list, collapsed into a funnel-icon bottom sheet.
 // Both branches render the same CategoryFilterList — see that file for why.
 export default function CategoryFilter({ categories }: CategoryFilterProps) {
-  const isMobile = useIsMobile();
+  const isMobile = useContext(MediaContext);
+  const panelHeight = useSimPerformanceStore((state) => state.mobilePanelHeight);
   const selectedCategories = useInventoryFiltersStore((state) => state.categories);
   const clearCategories = useInventoryFiltersStore((state) => state.clearCategories);
   const hasSelection = selectedCategories.size > 0;
 
+  if (isMobile === undefined) return null;
+
   if (isMobile) {
     return (
-      <Sheet>
-        <SheetTrigger
+      <Drawer>
+        <DrawerTrigger
           aria-label="Filter by category"
           className={cn(
             "relative grid size-11 shrink-0 place-items-center rounded border",
@@ -53,18 +58,18 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
           {hasSelection && (
             <span className="absolute top-2 right-2 size-1.75 rounded-full bg-primary shadow-[0_0_6px_var(--color-primary)]" />
           )}
-        </SheetTrigger>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Filter by Category</SheetTitle>
-            <SheetClose aria-label="Close" className="text-text-2">
+        </DrawerTrigger>
+        <DrawerContent bottomOffset={panelHeight}>
+          <DrawerHeader>
+            <DrawerTitle>Filter by Category</DrawerTitle>
+            <DrawerClose aria-label="Close" className="text-text-2">
               <X className="size-5" />
-            </SheetClose>
-          </SheetHeader>
-          <SheetBody className="flex flex-col px-3.5 pt-2.5 pb-5.5">
+            </DrawerClose>
+          </DrawerHeader>
+          <DrawerBody className="flex flex-col px-3.5 pt-2.5 pb-5.5">
             <CategoryFilterList categories={categories} isMobile />
-          </SheetBody>
-          <SheetFooter className="grid grid-cols-2 items-center gap-2.5">
+          </DrawerBody>
+          <DrawerFooter className="grid grid-cols-2 items-center gap-2.5">
             <div className="flex justify-center">
               {hasSelection && (
                 <Button variant="ghost" onClick={clearCategories}>
@@ -72,10 +77,10 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
                 </Button>
               )}
             </div>
-            <SheetClose render={<Button className="w-full">OK</Button>} />
-          </SheetFooter>
-        </SheetContent>
-      </Sheet>
+            <DrawerClose render={<Button className="w-full">OK</Button>} />
+          </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     );
   }
 

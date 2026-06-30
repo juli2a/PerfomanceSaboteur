@@ -3,14 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
-import ControlPanel from "@/components/simulator/ControlPanel";
-import MobileControlSheet from "@/components/simulator/MobileControlSheet";
+import ControlPanel from "@/components/simulator/control-panel/ControlPanel";
+import MobileControlSheet from "@/components/simulator/control-panel/MobileControlSheet";
 import MobileDrawer from "@/components/layout/MobileDrawer";
 import Logo from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { useSyncControlsAcrossBreakpoint } from "@/hooks/useSyncControlsAcrossBreakpoint";
 import { useSidebarStore } from "@/store/sidebar";
-import { useSimulatorStore } from "@/store/simulator";
+import { useSimControlStore } from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";
 
 interface HeaderProps {
@@ -18,9 +19,11 @@ interface HeaderProps {
 }
 
 export default function Header({ caseTipContent }: HeaderProps) {
+  useSyncControlsAcrossBreakpoint();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [controlsOpen, setControlsOpen] = useState(false);
-  const toggles = useSimulatorStore((state) => state.toggles);
+  const controlsOpen = useSimControlStore((state) => state.controlsOpen);
+  const setControlsOpen = useSimControlStore((state) => state.setControlsOpen);
+  const toggles = useSimControlStore((state) => state.toggles);
   const hasActiveAntiPattern = Object.values(toggles).some(Boolean);
   const sidebarCollapsed = useSidebarStore((state) => state.collapsed);
 
@@ -70,7 +73,7 @@ export default function Header({ caseTipContent }: HeaderProps) {
         </Link>
 
         {/* ── Desktop: control panel (stretches full width) ── */}
-        <div className="hidden min-w-0 flex-1 items-center px-[30px] lg:flex">
+        <div className="hidden min-w-0 flex-1 items-center pl-[30px] lg:flex">
           <ControlPanel />
         </div>
 

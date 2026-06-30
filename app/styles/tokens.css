@@ -63,6 +63,8 @@
   --color-brand-accent-dim: var(--brand-accent-dim);
   --color-brand-text: var(--brand-text);
   --color-brand-muted: var(--brand-muted);
+  --color-brand-alert: var(--brand-alert);
+  --color-brand-alert-muted: var(--brand-alert-muted);
 
   /* ── Typography ── */
   --font-sans: var(--font-manrope), system-ui, sans-serif;
@@ -125,6 +127,8 @@
   --_sim-accent-dim: rgba(244, 167, 60, 0.16);
   --_sim-text: #ecdfc9;
   --_sim-muted: #b39c77;
+  --_sim-alert: #ff8190;
+  --_sim-alert-muted: #f3cdd2;
 
   /* ── Layer 1: shadcn semantic tokens ── */
   --background: var(--_surface-1);
@@ -187,9 +191,12 @@
   --brand-bg: var(--_sim-bg);
   --brand-bg-2: var(--_sim-bg-2);
   --brand-bg-3: var(--_sim-bg-3);
+  --brand-bg-4: var(--_surface-3);
   --brand-border: var(--_sim-border);
   --brand-accent: var(--_sim-accent);
   --brand-accent-dim: var(--_sim-accent-dim);
   --brand-text: var(--_sim-text);
   --brand-muted: var(--_sim-muted);
+  --brand-alert: var(--_sim-alert);
+  --brand-alert-muted: var(--_sim-alert-muted);
 }

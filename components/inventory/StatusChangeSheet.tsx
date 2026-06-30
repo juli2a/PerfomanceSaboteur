@@ -1,28 +1,29 @@
 "use client";
 
 import { useState } from "react";
+import { useSimPerformanceStore } from "@/store/simulator-performance";
 import Image from "next/image";
 import { Check, RefreshCw, X } from "lucide-react";
 
 import { LOGISTIC_STATUSES, type AmplifiedProduct, type LogisticStatus } from "@/types/inventory";
 import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetTrigger,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetClose,
-  SheetBody,
-  SheetFooter,
-} from "@/components/ui/sheet";
+  Drawer,
+  DrawerTrigger,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+  DrawerBody,
+  DrawerFooter,
+} from "@/components/ui/drawer";
 import { getStatusDotClass, getStatusRowClass } from "@/lib/utils/inventory";
 import { formatCurrency } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
 import { useInventoryStatusStore } from "@/store/inventory-status";
 import { updateLogisticStatus } from "@/lib/server/inventory-actions";
 
-interface StatusChangeSheetProps {
+interface StatusChangeDrawerProps {
   product: AmplifiedProduct;
   currentStatus: LogisticStatus;
 }
@@ -30,8 +31,9 @@ interface StatusChangeSheetProps {
 // Mobile per-product status-change sheet, triggered from ProductCard's
 // "Change" button. Same PATCH + optimistic-overlay pattern as Bulk
 // Actions, just scoped to a single product.
-export default function StatusChangeSheet({ product, currentStatus }: StatusChangeSheetProps) {
+export default function StatusChangeDrawer({ product, currentStatus }: StatusChangeDrawerProps) {
   const setStatuses = useInventoryStatusStore((state) => state.setStatuses);
+  const panelHeight = useSimPerformanceStore((state) => state.mobilePanelHeight);
 
   const [open, setOpen] = useState(false);
   const [pick, setPick] = useState<LogisticStatus | null>(null);
@@ -52,19 +54,19 @@ export default function StatusChangeSheet({ product, currentStatus }: StatusChan
   };
 
   return (
-    <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetTrigger render={<Button variant="secondary" size="sm" aria-label="Change status" />}>
+    <Drawer open={open} onOpenChange={handleOpenChange}>
+      <DrawerTrigger render={<Button variant="secondary" size="sm" aria-label="Change status" />}>
         <RefreshCw className="size-3.75" />
         Change
-      </SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Change status</SheetTitle>
-          <SheetClose aria-label="Close" className="text-text-2">
+      </DrawerTrigger>
+      <DrawerContent bottomOffset={panelHeight}>
+        <DrawerHeader>
+          <DrawerTitle>Change status</DrawerTitle>
+          <DrawerClose aria-label="Close" className="text-text-2">
             <X className="size-5" />
-          </SheetClose>
-        </SheetHeader>
-        <SheetBody className="flex flex-col px-3.5 pt-3 pb-5.5">
+          </DrawerClose>
+        </DrawerHeader>
+        <DrawerBody className="flex flex-col px-3.5 pt-3 pb-5.5">
           <div className="mb-4.5 flex items-center gap-3.25 rounded-md border border-border bg-surface-2 p-3.25">
             <Image
               src={product.thumbnail}
@@ -118,14 +120,14 @@ export default function StatusChangeSheet({ product, currentStatus }: StatusChan
               );
             })}
           </div>
-        </SheetBody>
-        <SheetFooter className="grid grid-cols-2 gap-2.5">
-          <SheetClose render={<Button variant="outline" className="w-full" />}>Cancel</SheetClose>
+        </DrawerBody>
+        <DrawerFooter className="grid grid-cols-2 gap-2.5">
+          <DrawerClose render={<Button variant="outline" className="w-full" />}>Cancel</DrawerClose>
           <Button className="w-full" disabled={!pick || pending} onClick={handleChange}>
             Change
           </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }

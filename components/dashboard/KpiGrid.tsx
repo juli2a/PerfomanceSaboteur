@@ -5,7 +5,6 @@ import {
   formatCompactCurrency,
 } from "@/lib/utils/format";
 import KpiCard from "./KpiCard";
-import { ClientLogger } from "@/components/simulator/ClientLogger";
 
 export default async function KpiGrid() {
   const { kpi } = await getCarts();
@@ -49,7 +48,6 @@ export default async function KpiGrid() {
       <p className="absolute -bottom-4 lg:-bottom-4.5 right-4 text-[11px] text-text-3">
         * vs previous 15 days
       </p>
-      <ClientLogger label="KpiGrid" />
     </section>
   );
 }
