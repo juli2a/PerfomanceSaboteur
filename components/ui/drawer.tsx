@@ -42,8 +42,9 @@ function DrawerOverlay({
 function DrawerContent({
   className,
   children,
+  bottomOffset = 0,
   ...props
-}: DrawerPrimitive.Popup.Props) {
+}: DrawerPrimitive.Popup.Props & { bottomOffset?: number }) {
   return (
     <DrawerPortal>
       <DrawerOverlay />
@@ -54,6 +55,7 @@ function DrawerContent({
             "absolute inset-x-0 bottom-0 flex max-h-[88%] flex-col rounded-t-xl border-t border-border bg-popover text-popover-foreground shadow-lg outline-none transition-transform duration-300 ease-out data-starting-style:translate-y-full data-ending-style:translate-y-full",
             className,
           )}
+          style={{ paddingBottom: bottomOffset }}
           {...props}
         >
           <div className="flex shrink-0 justify-center pt-2.25 pb-0.75 touch-none select-none">

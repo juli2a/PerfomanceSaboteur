@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSimPerformanceStore } from "@/store/simulator-performance";
 import Image from "next/image";
 import { Check, RefreshCw, X } from "lucide-react";
 
@@ -32,6 +33,7 @@ interface StatusChangeDrawerProps {
 // Actions, just scoped to a single product.
 export default function StatusChangeDrawer({ product, currentStatus }: StatusChangeDrawerProps) {
   const setStatuses = useInventoryStatusStore((state) => state.setStatuses);
+  const panelHeight = useSimPerformanceStore((state) => state.mobilePanelHeight);
 
   const [open, setOpen] = useState(false);
   const [pick, setPick] = useState<LogisticStatus | null>(null);
@@ -57,7 +59,7 @@ export default function StatusChangeDrawer({ product, currentStatus }: StatusCha
         <RefreshCw className="size-3.75" />
         Change
       </DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent bottomOffset={panelHeight}>
         <DrawerHeader>
           <DrawerTitle>Change status</DrawerTitle>
           <DrawerClose aria-label="Close" className="text-text-2">

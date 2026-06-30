@@ -46,6 +46,10 @@ Run this mentally before writing **every** numeric CSS value:
 - [ ] **`calc()` result (not a flexible value)** — resolves to a whole px? If not, use a fixed value or an exact multiplier.
 - [ ] **Border-radius** — using the nearest scale token, not an arbitrary value?
 
+## External Tool Suggestions
+
+When a linter, TypeScript, or IDE diagnostic suggests a change, evaluate semantic correctness first — don't apply automatically. Technical equivalence (same px value, same type) is not sufficient justification. If unclear — ask instead of acting.
+
 ## CSS Design Tokens
 
 `app/styles/tokens.css` has 4 layers. Components only consume layers 1–2 (shadcn semantic + Lumen extended) for product UI, and layer 3 (`brand-*`) for simulator shell. Never reference layer 0 primitives (`--_green`, `--_sim-accent`, etc.) in components. Use tokens if they exist; if not, if value is repeated often, request a new token instead of hardcoding a value.

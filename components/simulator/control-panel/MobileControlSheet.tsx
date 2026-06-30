@@ -106,7 +106,7 @@ export default function MobileControlDrawer({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent>
+      <DrawerContent bottomOffset={mobilePanelHeight}>
         <DrawerHeader>
           <SimulatorKicker size="lg" />
           <DrawerClose
@@ -117,10 +117,7 @@ export default function MobileControlDrawer({
             <X size={18} />
           </DrawerClose>
         </DrawerHeader>
-        <DrawerBody
-          className="flex flex-col gap-4.5 px-4.5 py-3.5"
-          style={{ paddingBottom: mobilePanelHeight + 14 }}
-        >
+        <DrawerBody className="flex flex-col gap-4.5 px-4.5 py-3.5">
           {SIMULATOR_CASES.map((zone) => (
             <div key={zone.title} className="flex flex-col gap-2.25">
               <span className="heading-brand-group">{zone.title}</span>

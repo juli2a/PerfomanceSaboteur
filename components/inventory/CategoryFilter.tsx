@@ -4,6 +4,7 @@ import { Filter, ChevronDown, X } from "lucide-react";
 
 import { useContext } from "react";
 import { MediaContext } from "@/context/MediaContext";
+import { useSimPerformanceStore } from "@/store/simulator-performance";
 import { useInventoryFiltersStore } from "@/store/inventory-filters";
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ interface CategoryFilterProps {
 // Both branches render the same CategoryFilterList — see that file for why.
 export default function CategoryFilter({ categories }: CategoryFilterProps) {
   const isMobile = useContext(MediaContext);
+  const panelHeight = useSimPerformanceStore((state) => state.mobilePanelHeight);
   const selectedCategories = useInventoryFiltersStore((state) => state.categories);
   const clearCategories = useInventoryFiltersStore((state) => state.clearCategories);
   const hasSelection = selectedCategories.size > 0;
@@ -57,7 +59,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
             <span className="absolute top-2 right-2 size-1.75 rounded-full bg-primary shadow-[0_0_6px_var(--color-primary)]" />
           )}
         </DrawerTrigger>
-        <DrawerContent>
+        <DrawerContent bottomOffset={panelHeight}>
           <DrawerHeader>
             <DrawerTitle>Filter by Category</DrawerTitle>
             <DrawerClose aria-label="Close" className="text-text-2">
