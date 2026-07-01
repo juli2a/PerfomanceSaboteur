@@ -3,6 +3,17 @@ import { persist } from "zustand/middleware";
 
 import type { CaseKey, SimControlState } from "@/types/simulator";
 
+// Cases whose anti-pattern must be visible in the server-rendered HTML
+// itself (the metric they degrade — LCP, TTFB — is only measured on a real
+// navigation, never on an in-place client update). Their toggle state lives
+// in a cookie instead of localStorage: Server Components read the cookie
+// directly, and the store below seeds from that same cookie at creation, so
+// there's no separate async rehydration step that could race a real user
+// toggle. Every other case is pure client-side live demonstration (flip the
+// switch, watch the already-mounted React tree degrade) — those stay in
+// localStorage via `persist`, since cookies don't give free reactivity.
+export const SSR_COOKIE_CASES: readonly CaseKey[] = ["imageOptimization"];
+
 const DEFAULT_TOGGLES: Record<CaseKey, boolean> = {
   imageOptimization: false,
   layoutShift: false,
@@ -14,10 +25,11 @@ const DEFAULT_TOGGLES: Record<CaseKey, boolean> = {
   overMemoization: false,
 };
 
-// Only `toggles` is persisted — survives refresh (required for Case 5,
-// whose cookie-mirrored value is read server-side on reload). Guide and
-// alert state are transient UI state, not something that should survive a
-// refresh.
+// Only `toggles` is persisted — survives refresh. Guide and alert state are
+// transient UI state, not something that should survive a refresh.
+// SSR_COOKIE_CASES keys are stripped out of the persisted blob (their source
+// of truth is the cookie, not localStorage) and restored via `merge` from
+// the cookie-seeded initial state above, never from the stored blob.
 export const useSimControlStore = create<SimControlState>()(
   persist(
     (set) => ({
@@ -52,8 +64,29 @@ export const useSimControlStore = create<SimControlState>()(
         }),
     }),
     {
-      name: "simulator-toggles",
-      partialize: (state) => ({ toggles: state.toggles }),
+      name: "simulator-cases",
+      partialize: (state) => ({
+        toggles: Object.fromEntries(
+          Object.entries(state.toggles).filter(
+            ([key]) => !SSR_COOKIE_CASES.includes(key as CaseKey),
+          ),
+        ) as Record<CaseKey, boolean>,
+      }),
+      // Default merge would replace `toggles` wholesale with the persisted
+      // (partialized) blob, wiping the cookie-seeded SSR_COOKIE_CASES values
+      // since they were never in that blob. Merge field-by-field instead so
+      // those keys keep coming from the cookie-seeded initial state, and
+      // only the localStorage-backed keys come from the stored blob.
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as
+          | Partial<SimControlState>
+          | undefined;
+        return {
+          ...currentState,
+          ...persisted,
+          toggles: { ...currentState.toggles, ...persisted?.toggles },
+        };
+      },
     },
   ),
 );

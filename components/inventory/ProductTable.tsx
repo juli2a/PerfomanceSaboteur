@@ -55,6 +55,11 @@ const FLEX_COLUMN_ID = "name";
 const ROW_HEIGHT_PX = 58;
 const CARD_HEIGHT_PX = 122;
 
+// Cases that disable virtualization render this many rows as a flat DOM list.
+// Case 1 (imageOptimization): forces all images to load at once → network congestion → LCP impact.
+// Case 7 (contextOverhead): exposes unnecessary re-renders across the full visible set.
+const FLAT_ROW_LIMIT = 200;
+
 interface ProductTableProps {
   products: AmplifiedProduct[];
 }
@@ -65,6 +70,11 @@ interface ProductTableProps {
 // tracking their own (and one silently losing its position while hidden).
 export default function ProductTable({ products }: ProductTableProps) {
   const isMobile = useContext(MediaContext);
+
+  // skipVirtualization is shared by multiple cases — each one adds its own
+  // toggle here so ProductTable doesn't need a new prop per case.
+  const skipVirtualization = false;
+
   const selectedCategories = useInventoryFiltersStore(
     (state) => state.categories,
   );
@@ -77,7 +87,10 @@ export default function ProductTable({ products }: ProductTableProps) {
   // columnFilters) since it narrows the underlying dataset rather than a
   // displayed column's value.
   const searchedProducts = useMemo(
-    () => (matchedIds === null ? products : products.filter((product) => matchedIds.has(product.id))),
+    () =>
+      matchedIds === null
+        ? products
+        : products.filter((product) => matchedIds.has(product.id)),
     [products, matchedIds],
   );
 
@@ -155,38 +168,57 @@ export default function ProductTable({ products }: ProductTableProps) {
             <span role="columnheader">Status</span>
           </div>
         )}
-        <div
-          role="rowgroup"
-          style={{ height: virtualizer.getTotalSize(), position: "relative" }}
-        >
-          {virtualizer.getVirtualItems().map((virtualItem) => {
-            const product = rows[virtualItem.index].original;
-            return (
-              <div
-                key={virtualItem.key}
-                data-index={virtualItem.index}
-                ref={virtualizer.measureElement}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  transform: `translateY(${virtualItem.start}px)`,
-                  paddingBottom: isMobile ? 8 : 0,
-                }}
-              >
-                {isMobile ? (
+        {skipVirtualization ? (
+          <div role="rowgroup">
+            {rows.slice(0, FLAT_ROW_LIMIT).map((row) => {
+              const product = row.original;
+              return isMobile ? (
+                <div key={product.id} style={{ paddingBottom: 8 }}>
                   <ProductCard product={product} />
-                ) : (
-                  <ProductTableRow
-                    product={product}
-                    gridTemplateColumns={gridTemplateColumns}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </div>
+                </div>
+              ) : (
+                <ProductTableRow
+                  key={product.id}
+                  product={product}
+                  gridTemplateColumns={gridTemplateColumns}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div
+            role="rowgroup"
+            style={{ height: virtualizer.getTotalSize(), position: "relative" }}
+          >
+            {virtualizer.getVirtualItems().map((virtualItem) => {
+              const product = rows[virtualItem.index].original;
+              return (
+                <div
+                  key={virtualItem.key}
+                  data-index={virtualItem.index}
+                  ref={virtualizer.measureElement}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    transform: `translateY(${virtualItem.start}px)`,
+                    paddingBottom: isMobile ? 8 : 0,
+                  }}
+                >
+                  {isMobile ? (
+                    <ProductCard product={product} />
+                  ) : (
+                    <ProductTableRow
+                      product={product}
+                      gridTemplateColumns={gridTemplateColumns}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

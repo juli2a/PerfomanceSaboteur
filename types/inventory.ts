@@ -20,6 +20,7 @@ export interface BaseProduct {
   price: number;
   stock: number;
   thumbnail: string;
+  images: string[];
   discountPercentage: number;
   rating: number;
   brand?: string;

@@ -53,7 +53,7 @@ export default function CaseCodeSection({
           </button>
         )}
       </div>
-      <p className="text-[13px] leading-[1.55] text-brand-muted">{description}</p>
+      <p className="leading-[1.55] text-brand-muted">{description}</p>
       {isOpen && codeBlock}
     </div>
   );

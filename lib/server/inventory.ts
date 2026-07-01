@@ -19,6 +19,7 @@ interface DummyProduct {
   price: number;
   stock: number;
   thumbnail: string;
+  images: string[];
   discountPercentage: number;
   rating: number;
   brand?: string;
@@ -80,6 +81,7 @@ export const getAmplifiedProducts = cache(
         price,
         stock,
         thumbnail,
+        images,
         discountPercentage,
         rating,
         brand,
@@ -92,6 +94,7 @@ export const getAmplifiedProducts = cache(
         price,
         stock,
         thumbnail,
+        images,
         discountPercentage,
         rating,
         brand,

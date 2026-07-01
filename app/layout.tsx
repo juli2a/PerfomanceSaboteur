@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Chakra_Petch, Manrope } from "next/font/google";
-import SimulatorReporters from "@/components/simulator/performance-panel/SimulatorReporters";
+import SimulatorEffects from "@/components/simulator/performance-panel/SimulatorEffects";
 import { MediaProvider } from "@/context/MediaContext";
 import "./globals.css";
 
@@ -17,11 +17,18 @@ export const metadata: Metadata = {
 };
 
 // Root layout: dark theme, fonts, web-vitals reporter
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${manrope.variable} ${chakraPetch.variable} dark h-full`}>
-      <body className="h-full">
-        <SimulatorReporters />
+    <html
+      lang="en"
+      className={`${manrope.variable} ${chakraPetch.variable} dark h-full`}
+    >
+      <body className="h-full overflow-hidden">
+        <SimulatorEffects />
         <MediaProvider>{children}</MediaProvider>
       </body>
     </html>

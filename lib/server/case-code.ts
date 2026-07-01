@@ -6,7 +6,7 @@ import type { CaseKey } from "@/types/simulator";
 const SNIPPETS_DIR = path.join(process.cwd(), "lib", "case-code");
 
 // Reads a case's real source excerpt straight from lib/case-code/ — kept
-// as plain .txt files (not string literals in lib/simulator-toggles.ts, a
+// as plain .txt files (not string literals in lib/simulator-cases.ts, a
 // module shared with client components) so they stay easy to read and edit
 // on their own. Returns null when a case has no snippet yet.
 function readSnippet(key: CaseKey, variant: "bad" | "good"): string | null {

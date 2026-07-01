@@ -6,8 +6,9 @@ import { FileText } from "lucide-react";
 import EdgeScroller from "@/components/ui/edge-scroller";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils/cn";
-import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
+import { SIMULATOR_CASES } from "@/lib/simulator-cases";
 import { useSimControlStore } from "@/store/simulator-control";
+import { useToggleCase } from "@/hooks/useToggleCase";
 import type { CaseKey } from "@/types/simulator";
 
 interface GuideButtonProps {
@@ -43,7 +44,7 @@ function GuideButton({ caseKey, label }: GuideButtonProps) {
 
 export default function ControlPanelTogglers() {
   const toggles = useSimControlStore((state) => state.toggles);
-  const setToggle = useSimControlStore((state) => state.setToggle);
+  const toggleCase = useToggleCase();
 
   return (
     <EdgeScroller
@@ -74,7 +75,7 @@ export default function ControlPanelTogglers() {
                     color="brand"
                     size="sm"
                     checked={toggles[item.key]}
-                    onCheckedChange={(checked) => setToggle(item.key, checked)}
+                    onCheckedChange={(checked) => toggleCase(item.key, checked)}
                   />
                   <span className="whitespace-nowrap text-[12.5px] font-medium text-text-2">
                     {item.label}

@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
-import { getSimulatorCase } from "@/lib/simulator-toggles";
+import { getSimulatorCase } from "@/lib/simulator-cases";
 import { MediaContext } from "@/context/MediaContext";
 import { useSimControlStore } from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";

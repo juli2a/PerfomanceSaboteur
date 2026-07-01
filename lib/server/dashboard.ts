@@ -247,6 +247,42 @@ export const getCategories = cache(async (): Promise<CategoryData[]> => {
     .slice(0, 8);
 });
 
+interface BannerDummyProduct {
+  id: number;
+  title: string;
+  sku: string;
+  images: string[];
+  discountPercentage: number;
+}
+
+export interface BannerProduct {
+  id: number;
+  title: string;
+  sku: string;
+  images: string[];
+  // discountPercentage used as GM% proxy — same convention as getProducts().
+  marginality: number;
+}
+
+// Draws from a 100-product pool and keeps the 5 with the best GM%, so the
+// hero banner leads with the most profitable products instead of an
+// arbitrary API-order slice.
+export const getBannerProducts = cache(async (): Promise<BannerProduct[]> => {
+  const { products } = await apiFetch<{ products: BannerDummyProduct[] }>(
+    "/products?limit=100&select=id,title,sku,images,discountPercentage",
+  );
+  return products
+    .map(({ id, title, sku, images, discountPercentage }) => ({
+      id,
+      title,
+      sku,
+      images,
+      marginality: Math.round(discountPercentage),
+    }))
+    .sort((a, b) => b.marginality - a.marginality)
+    .slice(0, 5);
+});
+
 // ─── Composite fetchers (Case 5) ───────────────────────────────────────────────
 
 export async function getDashboardData() {

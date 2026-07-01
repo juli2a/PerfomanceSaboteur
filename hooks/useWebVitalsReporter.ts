@@ -10,7 +10,7 @@ function toVitalRating(rating: Metric["rating"]): VitalRating {
   return rating === "needs-improvement" ? "degraded" : rating;
 }
 
-// Called once from SimulatorReporters — subscribes to web-vitals (LCP, CLS,
+// Called once from SimulatorEffects — subscribes to web-vitals (LCP, CLS,
 // INP) and writes readings to the simulator store; PerformancePanel reads
 // from there.
 export function useWebVitalsReporter() {

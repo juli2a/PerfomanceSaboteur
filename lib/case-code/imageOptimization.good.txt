@@ -1,0 +1,11 @@
+import Image from "next/image";
+...
+<Image
+  src={slide.imageUrl}
+  alt={slide.title}
+  width={300}
+  height={300}
+  className="absolute inset-0 h-full w-full object-contain"
+  loading={i === 0 ? "eager" : undefined}
+  fetchPriority={i === 0 ? "high" : undefined}
+/>

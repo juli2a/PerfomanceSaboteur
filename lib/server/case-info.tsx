@@ -1,4 +1,4 @@
-import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
+import { SIMULATOR_CASES } from "@/lib/simulator-cases";
 import { getBadCodeSnippet, getGoodCodeSnippet } from "@/lib/server/case-code";
 import type { CaseKey } from "@/types/simulator";
 import CaseTipContent from "@/components/simulator/control-panel/CaseTipContent";
@@ -24,8 +24,14 @@ export function getCaseTipContent(): Partial<Record<CaseKey, React.ReactNode>> {
           key={item.key}
           caseKey={item.key}
           tip={item.tip}
-          badCodeBlock={badCodeSnippet ? <CaseCodeBlock code={badCodeSnippet} /> : undefined}
-          goodCodeBlock={goodCodeSnippet ? <CaseCodeBlock code={goodCodeSnippet} /> : undefined}
+          badCodeBlock={
+            badCodeSnippet ? <CaseCodeBlock code={badCodeSnippet} /> : undefined
+          }
+          goodCodeBlock={
+            goodCodeSnippet ? (
+              <CaseCodeBlock code={goodCodeSnippet} />
+            ) : undefined
+          }
         />,
       ];
     }),

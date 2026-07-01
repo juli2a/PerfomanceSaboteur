@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import LiveIndicator from "@/components/dashboard/LiveIndicator";
+import TopProductsBanner from "@/components/dashboard/TopProductsBanner";
 import KpiGrid from "@/components/dashboard/KpiGrid";
 import SalesChart from "@/components/dashboard/SalesChart";
 import CategoryAnalytics from "@/components/dashboard/CategoryAnalytics";
 import TopCustomers from "@/components/dashboard/TopCustomers";
 import MicroCardsGrid from "@/components/dashboard/MicroCardsGrid";
 import {
+  BannerSkeleton,
   KpiSkeleton,
   ChartSkeleton,
   AnalyticsPairSkeleton,
@@ -33,18 +35,25 @@ export default function DashboardPage() {
         </div>
         <div className="hidden items-center gap-3.5 lg:flex">
           <span className="whitespace-nowrap text-[13px] text-text-2">
-            Updated <span className="font-semibold tabular-nums text-foreground">—</span>
+            Updated{" "}
+            <span className="font-semibold tabular-nums text-foreground">
+              —
+            </span>
           </span>
           <LiveIndicator />
         </div>
       </div>
 
-      <Suspense fallback={<KpiSkeleton />}>
-        <KpiGrid />
+      <Suspense fallback={<BannerSkeleton />}>
+        <TopProductsBanner />
       </Suspense>
 
       <Suspense fallback={<ChartSkeleton />}>
         <SalesChart />
+      </Suspense>
+
+      <Suspense fallback={<KpiSkeleton />}>
+        <KpiGrid />
       </Suspense>
 
       <Suspense fallback={<AnalyticsPairSkeleton />}>

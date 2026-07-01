@@ -1,6 +1,6 @@
 import { Check, Lightbulb, X } from "lucide-react";
 
-import type { CaseTip } from "@/lib/simulator-toggles";
+import type { CaseTip } from "@/lib/simulator-cases";
 import CaseCodeSection from "@/components/simulator/control-panel/CaseCodeSection";
 import TryItToggleButton from "@/components/simulator/control-panel/TryItToggleButton";
 import type { CaseKey } from "@/types/simulator";
@@ -30,7 +30,7 @@ function TipSection({ title, body, action }: TipSectionProps) {
         </p>
         {action}
       </div>
-      <p className="text-[13.5px] leading-[1.6] text-brand-muted">{body}</p>
+      <p className="leading-[1.6] text-brand-muted">{body}</p>
     </div>
   );
 }
@@ -46,7 +46,7 @@ export default function CaseTipContent({
   goodCodeBlock,
 }: CaseTipContentProps) {
   return (
-    <div className="flex flex-col gap-heading-gap">
+    <div className="flex flex-col gap-heading-gap text-base">
       <TipSection title="Problem" body={tip.problem} />
       <TipSection
         title="Try it"
@@ -71,7 +71,9 @@ export default function CaseTipContent({
       <div className="h-px bg-brand-border" />
       <div className="flex items-start gap-2.75">
         <Lightbulb className="mt-px size-4 shrink-0 text-brand-accent" />
-        <p className="text-[13.5px] font-medium leading-[1.55] text-brand-accent">{tip.summary}</p>
+        <p className="font-medium leading-[1.55] text-brand-accent">
+          {tip.summary}
+        </p>
       </div>
     </div>
   );
