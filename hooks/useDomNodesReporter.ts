@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useSimPerformanceStore } from "@/store/simulator-performance";
 import { useSimulatorCase } from "@/hooks/useSimulatorCase";
 
-// Called once from SimulatorReporters — recomputes the page's total DOM
+// Called once from SimulatorEffects — recomputes the page's total DOM
 // element count on every navigation, plus whenever Case 3 (Heavy Mounting)
 // toggles, since that's the case this counter exists to demonstrate.
 export function useDomNodesReporter() {

@@ -89,15 +89,21 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         alert: { title: "", body: "" },
       },
       {
-        label: "Images optimization", //case 1
+        label: "Unoptimized Images", //case 1
         key: "imageOptimization",
         tip: {
-          problem: "",
-          reproduction: "",
-          effect: "",
-          badCode: "",
-          goodCode: "",
-          summary: "",
+          problem:
+            "The hero banner's first slide — the page's actual LCP element — skips Next.js's image optimization and priority hint, and loads exactly like every offscreen slide instead.",
+          reproduction:
+            "Go to the Dashboard, then switch the toggle on and off a few times and wait for the page to reload — compare the LCP reading between the two states.",
+          effect:
+            "With the toggle on, LCP is noticeably higher because the banner image loads through an unoptimized path (our sample images are already small and already WebP, so we added an artificial loading delay to stand in for a real, uncompressed origin).",
+          badCode:
+            "Renders every slide as a plain <img> with no priority or lazy-loading hint, so the first slide — the one that's actually the LCP element — loads no faster than the hidden ones.",
+          goodCode:
+            "Renders every slide with next/image; the first slide gets priority (an eager, high fetch-priority load, since it's the LCP element) while the rest lazy-load by default.",
+          summary:
+            "Always optimize image size and format — reach for what your framework already offers (like next/image) and give whichever image is the real LCP candidate a priority hint instead of treating it like any other offscreen image.",
         },
         alert: { title: "", body: "" },
       },

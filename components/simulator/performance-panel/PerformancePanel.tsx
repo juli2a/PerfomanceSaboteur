@@ -6,7 +6,7 @@ import {
   INP_GOOD,
   INP_POOR,
 } from "@/lib/simulator-thresholds";
-import { getSimulatorCase } from "@/lib/simulator-toggles";
+import { getSimulatorCase } from "@/lib/simulator-cases";
 import { getOverallRating, getValueRating } from "@/lib/utils/gauge";
 import { useContext } from "react";
 import { MediaContext } from "@/context/MediaContext";
@@ -24,7 +24,7 @@ import type { CaseKey } from "@/types/simulator";
 // single source of truth for what's "Good"/"Degraded"/"Poor" everywhere.
 // domNodes/blockingTime/interactionLatency are written elsewhere (the
 // useDomNodesReporter/useBlockingTimeReporter/useInteractionLatencyReporter
-// hooks, all called from SimulatorReporters in the root layout) — this
+// hooks, all called from SimulatorEffects in the root layout) — this
 // component only reads the store, it doesn't measure anything itself.
 export default function PerformancePanel() {
   const isMobile = useContext(MediaContext);

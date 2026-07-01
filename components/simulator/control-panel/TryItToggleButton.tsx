@@ -1,6 +1,7 @@
 "use client";
 
 import { useSimControlStore } from "@/store/simulator-control";
+import { useToggleCase } from "@/hooks/useToggleCase";
 import { Button } from "@/components/ui/button";
 import type { CaseKey } from "@/types/simulator";
 
@@ -13,7 +14,7 @@ interface TryItToggleButtonProps {
 // toggle is already on — turning it on is this button's only job.
 export default function TryItToggleButton({ caseKey }: TryItToggleButtonProps) {
   const isOn = useSimControlStore((state) => state.toggles[caseKey]);
-  const setToggle = useSimControlStore((state) => state.setToggle);
+  const toggleCase = useToggleCase();
 
   if (isOn) return null;
 
@@ -22,7 +23,7 @@ export default function TryItToggleButton({ caseKey }: TryItToggleButtonProps) {
       variant="brand"
       size="xs"
       className="toggle-cta-border-pulse"
-      onClick={() => setToggle(caseKey, true)}
+      onClick={() => toggleCase(caseKey, true)}
     >
       Toggle On
     </Button>

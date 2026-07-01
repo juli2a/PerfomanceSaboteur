@@ -8,7 +8,6 @@ import KpiCard from "./KpiCard";
 
 export default async function KpiGrid() {
   const { kpi } = await getCarts();
-  console.log("KPI Data:", kpi);
 
   const cards = [
     {

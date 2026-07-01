@@ -12,9 +12,10 @@ import {
 } from "@/components/ui/drawer";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils/cn";
-import { SIMULATOR_CASES } from "@/lib/simulator-toggles";
+import { SIMULATOR_CASES } from "@/lib/simulator-cases";
 import { useSimControlStore } from "@/store/simulator-control";
 import { useSimPerformanceStore } from "@/store/simulator-performance";
+import { useToggleCase } from "@/hooks/useToggleCase";
 import type { CaseKey } from "@/types/simulator";
 import SimulatorKicker from "@/components/simulator/control-panel/SimulatorKicker";
 
@@ -95,7 +96,7 @@ export default function MobileControlDrawer({
   caseTipContent,
 }: Props) {
   const toggles = useSimControlStore((state) => state.toggles);
-  const setToggle = useSimControlStore((state) => state.setToggle);
+  const toggleCase = useToggleCase();
   // The mobile Performance Panel is always forced open (and thus at its
   // tallest) while this sheet is open, and sits on top of this sheet's own
   // bottom edge — reserving the same height as bottom padding keeps the
@@ -128,7 +129,7 @@ export default function MobileControlDrawer({
                   label={item.label}
                   tipContent={caseTipContent[item.key]}
                   checked={toggles[item.key]}
-                  onCheckedChange={(checked) => setToggle(item.key, checked)}
+                  onCheckedChange={(checked) => toggleCase(item.key, checked)}
                 />
               ))}
             </div>

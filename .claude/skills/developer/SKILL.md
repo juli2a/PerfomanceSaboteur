@@ -23,7 +23,7 @@ description: use this skill to write code on javascript, typescript.
 
 - Design files `design/lumen.jsx`, `design/lumen-mobile.jsx` and `design/Lumen Signal.html` are the source of truth for visuals. If code intentionally diverges from the design, keep the code, not the design.
 - A visually distinct element in the design is a separate component in code.
-- Each component has a single responsibility: if a component contains both a shell and content, split them.
+- Each component has a single responsibility: if a component mixes generic interaction/mechanics (e.g. scroll/carousel behavior, open/close state) with domain-specific content (e.g. product data, business copy), split them.
 - Shared logic (navigation, tokens, utilities) lives in one place and is imported, never duplicated.
 - **Avoid DOM Duplication:** Never duplicate HTML elements to show or hide them across different screen sizes if the layout changes can be controlled entirely via CSS. Don't render both variants and hide one with `hidden lg:flex` / `lg:hidden` — use `useIsMobile()` and render only the one that's needed (see `ProductTable.tsx`).
 - No static inline styles (`style={{}}`). Inline styles are only justified when the value depends on state or props at runtime.

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { useSimPerformanceStore } from "@/store/simulator-performance";
 
-// Called once from SimulatorReporters — observes Event Timing entries
+// Called once from SimulatorEffects — observes Event Timing entries
 // (click/tap/key interactions) via PerformanceObserver and reports each
 // one's duration as "Interaction Latency" in the floating Performance Panel.
 //

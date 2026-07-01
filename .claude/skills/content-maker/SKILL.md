@@ -7,7 +7,7 @@ description: use this skill to write descriptions for cases.
 
 Writes the explanatory content for PerfSaboteur's anti-pattern "case" toggles:
 the `tip` and `alert` fields in `SIMULATOR_CASES`
-(`lib/simulator-toggles.ts`), keyed by `CaseKey` (`types/simulator.ts`).
+(`lib/simulator-cases.ts`), keyed by `CaseKey` (`types/simulator.ts`).
 
 ## Audience
 
@@ -29,14 +29,14 @@ isn't backed by the doc.
 
 The toggle's display name. Must clearly name the _specific problem_ turning
 the toggle on causes — not an abstract pattern name. If the current label in
-`lib/simulator-toggles.ts` is already clear, keep it; propose a better one
+`lib/simulator-cases.ts` is already clear, keep it; propose a better one
 only when it's vague.
 
 ### `tip`
 
 An object with six string fields — `problem`, `reproduction`, `effect`,
 `badCode`, `goodCode`, `summary` (see the `CaseTip` interface in
-`lib/simulator-toggles.ts`). Each field is one short, concise sentence (two
+`lib/simulator-cases.ts`). Each field is one short, concise sentence (two
 at most) of natural prose — this is a UI tooltip a demo viewer reads, not an
 engineering doc, so none of the six should read like a dry bullet list of
 technical facts, and none should be padded out longer than it needs to be.
@@ -74,4 +74,4 @@ English — this is the product's UI language.
 
 For each of the 8 cases, return `label` / `tip` (all six sub-fields) /
 `alert` in a shape that drops directly into the `items` array in
-`lib/simulator-toggles.ts` (one object per case, ready to paste).
+`lib/simulator-cases.ts` (one object per case, ready to paste).

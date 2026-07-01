@@ -29,6 +29,10 @@ export function AnalyticsPairSkeleton() {
   );
 }
 
+export function BannerSkeleton() {
+  return <Shimmer className="h-75 w-full" />;
+}
+
 export function MicroCardsSkeleton() {
   return (
     <section>
