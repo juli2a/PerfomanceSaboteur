@@ -76,23 +76,26 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
     title: "Rendering",
     items: [
       {
-        label: "Layout shift", //case 2
+        label: "Sidebar layout shift", //case 2
         key: "layoutShift",
         tip: {
           problem:
-            "The revenue chart mounts client-only with no space reserved for it, so the page's layout is unstable while it loads.",
+            "The sidebar's collapsed/expanded preference is saved to localStorage only, so the server has no way to know it and always renders the sidebar expanded — the client corrects it right after the page loads.",
           reproduction:
-            "While the Dashboard page reloads with the toggle switched on, watch the area between the header and the Top Products banner.",
+            "Collapse the sidebar with the arrow button above the nav icons, then turn this toggle on — the page reloads so the server can re-render with the change.",
           effect:
-            "The Revenue card renders with its header and period buttons but an empty chart area, then everything below it jumps down the moment the chart pops in and the card expands — CLS increases in the Performance Panel.",
+            "The sidebar and the logo next to it briefly render expanded, then animate to collapsed a moment after the page finishes loading — CLS ticks up in the Performance Panel even though the shift itself looks smooth.",
           badCode:
-            "Loads the chart in a wrapper with no fixed height, so there's nothing there at all until the chart's code loads — then it appears at full size and shoves everything below it down.",
+            "Persists the collapsed flag with zustand's persist middleware — localStorage only, so the very first server-rendered HTML always shows the sidebar expanded, whatever the user last picked.",
           goodCode:
-            "Wraps the chart in a fixed-height container sized to match the chart exactly, showing a skeleton in that same space until the real chart mounts — so nothing ever moves.",
+            "Mirrors the same flag into a cookie the server can read, so the Server Component renders the sidebar at its real width from the first paint — nothing to correct after the client mounts.",
           summary:
-            "Reserve real estate for anything that mounts after the initial paint — client-only widgets, embeds, lazy components — instead of letting the page reflow around whatever shows up later.",
+            "Any UI preference that changes layout — a collapsed sidebar, a dismissed banner, a saved column width — needs to be readable server-side (a cookie, not just localStorage), or it will shift into place after every load.",
         },
-        alert: { title: "", body: "" },
+        alert: {
+          title: "Layout Shift",
+          body: "Sidebar width corrected after the page had already rendered.",
+        },
       },
       {
         label: "Unoptimized Images", //case 1

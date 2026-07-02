@@ -6,18 +6,16 @@ import type { SalesChartData } from "@/types/analytics";
 import { formatCurrency } from "@/lib/utils/format";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils/cn";
 
 type Period = "day" | "week" | "month";
 
 interface Props {
   data: SalesChartData;
-  isUnstable: boolean;
 }
 
 // recharts measures the DOM to size itself, so it's client-only regardless;
-// ssr:false additionally keeps it out of the very first paint entirely — see
-// docs/case2.md (Case 2 / CLS) for why that gap matters here.
+// ssr:false additionally keeps it out of the very first paint entirely — the
+// fixed h-48 wrapper below reserves its space so nothing shifts when it mounts.
 const SalesChartCanvas = dynamic(() => import("./SalesChartCanvas"), {
   ssr: false,
   loading: () => (
@@ -25,7 +23,7 @@ const SalesChartCanvas = dynamic(() => import("./SalesChartCanvas"), {
   ),
 });
 
-export function SalesChartClient({ data: salesChart, isUnstable }: Props) {
+export function SalesChartClient({ data: salesChart }: Props) {
   const [period, setPeriod] = useState<Period>("week");
 
   const data = salesChart[period];
@@ -56,7 +54,7 @@ export function SalesChartClient({ data: salesChart, isUnstable }: Props) {
         </div>
       </div>
 
-      <div className={cn("w-full", !isUnstable && "h-48")}>
+      <div className="h-48 w-full">
         <SalesChartCanvas data={data} />
       </div>
 

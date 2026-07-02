@@ -44,16 +44,16 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <Suspense fallback={<ChartSkeleton />}>
-        <SalesChart />
-      </Suspense>
-
       <Suspense fallback={<BannerSkeleton />}>
         <TopProductsBanner />
       </Suspense>
 
       <Suspense fallback={<KpiSkeleton />}>
         <KpiGrid />
+      </Suspense>
+
+      <Suspense fallback={<ChartSkeleton />}>
+        <SalesChart />
       </Suspense>
 
       <Suspense fallback={<AnalyticsPairSkeleton />}>

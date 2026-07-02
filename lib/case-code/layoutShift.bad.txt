@@ -1,9 +1,13 @@
-const SalesChartCanvas = dynamic(() => import("./SalesChartCanvas"), {
-  ssr: false,
-});
+// store/sidebar-unstable.ts
+export const useSidebarStore = create<SidebarState>()(
+  persist(
+    (set) => ({
+      collapsed: false,
+      setCollapsed: (collapsed) => set({ collapsed }),
+    }),
+    { name: "sidebar-collapsed-unstable" },
+  ),
+);
 
-// No reserved height — chart pops in at full size once it mounts,
-// pushing everything below it down.
-<div className="w-full">
-  <SalesChartCanvas data={data} />
-</div>
+// Server has no idea what the user picked last time — it always renders
+// collapsed=false, and localStorage's real value only lands after mount.
