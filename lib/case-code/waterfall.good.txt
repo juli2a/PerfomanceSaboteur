@@ -1,0 +1,30 @@
+export function DashboardContent() {
+  return (
+    <>
+      <Suspense fallback={<BannerSkeleton />}>
+        <TopProductsBanner />
+      </Suspense>
+      <Suspense fallback={<KpiSkeleton />}>
+        <KpiGrid />
+      </Suspense>
+      <Suspense fallback={<ChartSkeleton />}>
+        <SalesChart />
+      </Suspense>
+      {/* ...remaining sections, same pattern */}
+    </>
+  );
+}
+
+export default async function KpiGrid() {
+  const { kpi } = await getCarts();
+  return <KpiGridView kpi={kpi} />;
+}
+
+export default async function SalesChart() {
+  const { salesChart } = await getCarts();
+  return <SalesChartClient data={salesChart} />;
+}
+
+// CategoryAnalytics, TopCustomers, MicroCardsGrid fetch the same way —
+// their own async wrapper, awaited only inside its own Suspense boundary.
+

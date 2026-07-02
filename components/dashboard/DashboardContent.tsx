@@ -1,0 +1,54 @@
+import { Suspense } from "react";
+import TopProductsBanner from "@/components/dashboard/TopProductsBanner";
+import KpiGrid from "@/components/dashboard/KpiGrid";
+import SalesChart from "@/components/dashboard/SalesChart";
+import CategoryAnalytics from "@/components/dashboard/CategoryAnalytics";
+import TopCustomers from "@/components/dashboard/TopCustomers";
+import MicroCardsGrid from "@/components/dashboard/MicroCardsGrid";
+import {
+  BannerSkeleton,
+  KpiSkeleton,
+  ChartSkeleton,
+  AnalyticsPairSkeleton,
+  MicroCardsSkeleton,
+} from "@/components/dashboard/skeletons";
+
+// Good path (toggle off): every section streams independently in its own
+// Suspense boundary — see lib/server/dashboard.ts for how React.cache dedupes
+// getCarts() between KpiGrid and SalesChart so they resolve together without
+// a double fetch.
+//
+// Streaming order:
+//   ~250ms  TopProductsBanner resolves  (getBannerProducts)
+//   ~400ms  CategoryAnalytics resolves  (getCategories)
+//   ~600ms  TopCustomers resolves       (getUsers)     → AnalyticsPair streams
+//   ~700ms  KpiGrid + SalesChart        (getCarts)     → two boundaries stream together
+//   ~800ms  MicroCardsGrid              (getProducts)
+export function DashboardContent() {
+  return (
+    <>
+      <Suspense fallback={<BannerSkeleton />}>
+        <TopProductsBanner />
+      </Suspense>
+
+      <Suspense fallback={<KpiSkeleton />}>
+        <KpiGrid />
+      </Suspense>
+
+      <Suspense fallback={<ChartSkeleton />}>
+        <SalesChart />
+      </Suspense>
+
+      <Suspense fallback={<AnalyticsPairSkeleton />}>
+        <div className="flex flex-col gap-4 lg:flex-row">
+          <CategoryAnalytics />
+          <TopCustomers />
+        </div>
+      </Suspense>
+
+      <Suspense fallback={<MicroCardsSkeleton />}>
+        <MicroCardsGrid />
+      </Suspense>
+    </>
+  );
+}

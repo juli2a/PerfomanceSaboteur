@@ -1,4 +1,9 @@
-import { CLS_POOR, INP_POOR, LCP_POOR } from "@/lib/simulator-thresholds";
+import {
+  CLS_POOR,
+  INP_POOR,
+  LCP_POOR,
+  TTFB_POOR,
+} from "@/lib/simulator-thresholds";
 import { formatNumber } from "@/lib/utils/format";
 import MetricGauge from "@/components/simulator/performance-panel/MetricGauge";
 import MetricStat from "@/components/simulator/performance-panel/MetricStat";
@@ -56,6 +61,15 @@ export default function PerformancePanelDesktop({
               value={vitals.inp?.value ?? 0}
               poorThreshold={INP_POOR}
               rating={vitals.inp?.rating ?? null}
+            />
+            <MetricGauge
+              label="TTFB"
+              display={
+                vitals.ttfb ? `${(vitals.ttfb.value / 1000).toFixed(1)}s` : "—"
+              }
+              value={vitals.ttfb?.value ?? 0}
+              poorThreshold={TTFB_POOR}
+              rating={vitals.ttfb?.rating ?? null}
             />
           </div>
           <span className="mx-2.5 w-px self-stretch bg-border" />

@@ -1,4 +1,9 @@
-import { CLSThresholds, INPThresholds, LCPThresholds } from "web-vitals";
+import {
+  CLSThresholds,
+  INPThresholds,
+  LCPThresholds,
+  TTFBThresholds,
+} from "web-vitals";
 
 // Official Google CWV "poor" cutoffs — re-exported here so every consumer
 // (desktop PerformancePanel, mobile MobilePerformanceDock) reads the same
@@ -7,6 +12,7 @@ export const LCP_POOR = LCPThresholds[1];
 export const CLS_POOR = CLSThresholds[1];
 export const INP_GOOD = INPThresholds[0];
 export const INP_POOR = INPThresholds[1];
+export const TTFB_POOR = TTFBThresholds[1];
 
 // Blocking Time has no official Google threshold (it's our own Long-Tasks
 // reading, not a CWV). 100ms is the classic "still feels instant" cutoff

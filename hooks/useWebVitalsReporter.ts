@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { onCLS, onINP, onLCP, type Metric } from "web-vitals";
+import { onCLS, onINP, onLCP, onTTFB, type Metric } from "web-vitals";
 
 import { useSimPerformanceStore } from "@/store/simulator-performance";
 import type { VitalRating } from "@/types/simulator";
@@ -17,7 +17,7 @@ export function useWebVitalsReporter() {
   const setVital = useSimPerformanceStore((state) => state.setVital);
 
   useEffect(() => {
-    const report = (key: "lcp" | "cls" | "inp") => (metric: Metric) =>
+    const report = (key: "lcp" | "cls" | "inp" | "ttfb") => (metric: Metric) =>
       setVital(key, {
         value: metric.value,
         rating: toVitalRating(metric.rating),
@@ -30,5 +30,9 @@ export function useWebVitalsReporter() {
     onLCP(report("lcp"), { reportAllChanges: true });
     onCLS(report("cls"), { reportAllChanges: true });
     onINP(report("inp"), { reportAllChanges: true });
+    // TTFB is a single navigation-level reading (Case 5 — Waterfall), not a
+    // live-updating stream — but Case 5's toggle always triggers a full
+    // reload, so a fresh reading arrives every time the toggle changes.
+    onTTFB(report("ttfb"));
   }, [setVital]);
 }

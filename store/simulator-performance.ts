@@ -6,7 +6,7 @@ import type { SimPerformanceState } from "@/types/simulator";
 // PerformanceObserver-based reporters each session, and must start fresh,
 // never restored from a stale localStorage snapshot.
 export const useSimPerformanceStore = create<SimPerformanceState>()((set) => ({
-  vitals: { lcp: null, cls: null, inp: null },
+  vitals: { lcp: null, cls: null, inp: null, ttfb: null },
   setVital: (key, reading) =>
     set((state) => ({ vitals: { ...state.vitals, [key]: reading } })),
   domNodes: null,
