@@ -45,6 +45,7 @@ export default function PerformancePanel() {
     vitals.lcp?.rating ?? null,
     vitals.cls?.rating ?? null,
     vitals.inp?.rating ?? null,
+    vitals.ttfb?.rating ?? null,
   ]);
   const blockingTimeRating = getValueRating(
     blockingTime,

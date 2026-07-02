@@ -37,7 +37,18 @@ Engineering only; `tip`/`alert` copy is a separate, later step owned by the
   `isRaceConditionOn`) — never `isXBad`/`isXGood`/`isXUnstable`.
 - **Isolation:** bad/good logic lives in separate, named, one-line-commented
   units, not inline branches — `runGoodPath`/`runBadPath` in
-  `hooks/useInventorySearch.ts` (same-file functions) and
+  `hooks/useInventorySearch.ts` (same-file functions),
   `useStableCollapsed`/`useUnstableCollapsed` in
-  `hooks/useSidebarCollapsed.ts` (separate hooks + stores) are the reference
-  shapes. The outer function keeps exactly one `isXOn ? bad : good` point.
+  `hooks/useSidebarCollapsed.ts` (separate hooks + stores), and
+  `DashboardContent`/`DashboardContentUnoptimized` in
+  `components/dashboard/` (separate page-level components, Case 5) are the
+  reference shapes. The outer function/page keeps exactly one
+  `isXOn ? bad : good` point — one branch, and at that single point it must
+  be obvious at a glance which side is bad and which is good (name them
+  accordingly; don't make a reader diff the two to find out).
+- **The deletion test:** at any point, could you delete the simulator —
+  every toggle, every `isXOn` branch, every bad-path file — and be left with
+  a clean, realistic admin app running the good code, no residue? If not,
+  the split is wrong: bad-path logic leaked into a shared/production file,
+  or the good path quietly depends on something toggle-specific. Use this to
+  decide where new code goes, not just to check it after.

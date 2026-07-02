@@ -58,17 +58,26 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         },
       },
       {
-        label: "Waterfall", //case 5
+        label: "Request waterfall", //case 5
         key: "waterfall",
         tip: {
-          problem: "",
-          reproduction: "",
-          effect: "",
-          badCode: "",
-          goodCode: "",
-          summary: "",
+          problem:
+            "The dashboard's four data requests are awaited one after another instead of at the same time, so their delays stack up instead of overlapping.",
+          reproduction:
+            "Switch this toggle on — the page reloads so the server can refetch sequentially.",
+          effect:
+            "The dashboard stays blank for several seconds, then the whole layout snaps in at once instead of streaming in section by section — both TTFB and LCP spike in the Performance Panel, since nothing can render until the last request finishes.",
+          badCode:
+            "Each request is awaited before the next one starts, so the server can't send even its first byte until all four — normally independent — have finished one by one.",
+          goodCode:
+            "Each dashboard section fetches its own data inside its own Suspense boundary, so all four requests fire the moment the server starts rendering instead of waiting on each other.",
+          summary:
+            "Independent data requests should never block each other behind sequential awaits — run them concurrently (Promise.all, parallel Suspense boundaries) so total latency tracks the slowest request, not the sum of all of them.",
         },
-        alert: { title: "", body: "" },
+        alert: {
+          title: "Request Waterfall",
+          body: "Requests fired one after another instead of in parallel — TTFB and LCP both spiked.",
+        },
       },
     ],
   },
@@ -76,7 +85,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
     title: "Rendering",
     items: [
       {
-        label: "Sidebar layout shift", //case 2
+        label: "Layout shift", //case 2
         key: "layoutShift",
         tip: {
           problem:

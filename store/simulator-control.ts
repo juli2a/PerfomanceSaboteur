@@ -15,6 +15,7 @@ import type { CaseKey, SimControlState } from "@/types/simulator";
 export const SSR_COOKIE_CASES: readonly CaseKey[] = [
   "imageOptimization",
   "layoutShift",
+  "waterfall",
 ];
 
 const DEFAULT_TOGGLES: Record<CaseKey, boolean> = {

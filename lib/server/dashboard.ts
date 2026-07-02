@@ -283,17 +283,3 @@ export const getBannerProducts = cache(async (): Promise<BannerProduct[]> => {
     .slice(0, 5);
 });
 
-// ─── Composite fetchers (Case 5) ───────────────────────────────────────────────
-
-export async function getDashboardData() {
-  return Promise.all([getCarts(), getProducts(), getUsers(), getCategories()]);
-}
-
-// Sequential — every call blocks the next; total latency ≈ 700+800+600+400 = 2500ms
-export async function getDashboardDataWaterfall() {
-  const carts = await getCarts();
-  const products = await getProducts();
-  const users = await getUsers();
-  const categories = await getCategories();
-  return { carts, products, users, categories };
-}

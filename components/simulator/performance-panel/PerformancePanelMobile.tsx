@@ -132,6 +132,11 @@ export default function PerformancePanelMobile({
     display: vitals.inp ? `${Math.round(vitals.inp.value)}ms` : "—",
     rating: vitals.inp?.rating ?? null,
   };
+  const ttfb: MetricPreview = {
+    label: "TTFB",
+    display: vitals.ttfb ? `${(vitals.ttfb.value / 1000).toFixed(1)}s` : "—",
+    rating: vitals.ttfb?.rating ?? null,
+  };
 
   return (
     <div>
@@ -193,6 +198,7 @@ export default function PerformancePanelMobile({
               <VitalReadout {...lcp} />
               <VitalReadout {...cls} />
               <VitalReadout {...inp} />
+              <VitalReadout {...ttfb} />
             </div>
             <div className="flex flex-wrap gap-2 border-t border-brand-border pt-2.75 pb-3.5">
               <StatTile

@@ -65,6 +65,7 @@ export interface SimPerformanceState {
     lcp: VitalReading | null;
     cls: VitalReading | null;
     inp: VitalReading | null;
+    ttfb: VitalReading | null;
   };
   setVital: (
     key: keyof SimPerformanceState["vitals"],

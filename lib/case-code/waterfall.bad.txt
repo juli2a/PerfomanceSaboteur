@@ -1,0 +1,17 @@
+export async function DashboardContent() {
+  const { kpi, salesChart } = await getCarts();
+  const products = await getProducts();
+  const users = await getUsers();
+  const categories = await getCategories();
+
+  return (
+    <>
+      <TopProductsBanner />
+      <KpiGridView kpi={kpi} />
+      <SalesChartClient data={salesChart} />
+      <CategoryAnalyticsView categories={categories} />
+      <TopCustomersView customers={users} />
+      <MicroCardsGridClient products={products} />
+    </>
+  );
+}

@@ -1,29 +1,12 @@
-import { Suspense } from "react";
+import { cookies } from "next/headers";
 import LiveIndicator from "@/components/dashboard/LiveIndicator";
-import TopProductsBanner from "@/components/dashboard/TopProductsBanner";
-import KpiGrid from "@/components/dashboard/KpiGrid";
-import SalesChart from "@/components/dashboard/SalesChart";
-import CategoryAnalytics from "@/components/dashboard/CategoryAnalytics";
-import TopCustomers from "@/components/dashboard/TopCustomers";
-import MicroCardsGrid from "@/components/dashboard/MicroCardsGrid";
-import {
-  BannerSkeleton,
-  KpiSkeleton,
-  ChartSkeleton,
-  AnalyticsPairSkeleton,
-  MicroCardsSkeleton,
-} from "@/components/dashboard/skeletons";
+import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { DashboardContentUnoptimized } from "@/components/dashboard/DashboardContentUnoptimized";
 
-// Server Component — parallel data fetching (Case 5 demo)
-// Each Suspense boundary streams independently; getCarts() is shared via React.cache()
-// so KpiGrid + SalesChart resolve together at ~700ms without a double fetch.
-//
-// Streaming order (good path):
-//   ~400ms  CategoryAnalytics resolves (getCategories)
-//   ~600ms  TopCustomers resolves      (getUsers)     → AnalyticsPair streams
-//   ~700ms  KpiGrid + SalesChart       (getCarts)     → two boundaries stream together
-//   ~800ms  MicroCardsGrid             (getProducts)
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const cookieStore = await cookies();
+  const isWaterfallOn = cookieStore.get("waterfall")?.value === "on";
+
   return (
     <div className="space-y-4.5 px-4 py-4.5 lg:space-y-5.5 lg:p-7.5">
       <div className="flex items-center justify-between">
@@ -44,28 +27,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <Suspense fallback={<BannerSkeleton />}>
-        <TopProductsBanner />
-      </Suspense>
-
-      <Suspense fallback={<KpiSkeleton />}>
-        <KpiGrid />
-      </Suspense>
-
-      <Suspense fallback={<ChartSkeleton />}>
-        <SalesChart />
-      </Suspense>
-
-      <Suspense fallback={<AnalyticsPairSkeleton />}>
-        <div className="flex flex-col gap-4 lg:flex-row">
-          <CategoryAnalytics />
-          <TopCustomers />
-        </div>
-      </Suspense>
-
-      <Suspense fallback={<MicroCardsSkeleton />}>
-        <MicroCardsGrid />
-      </Suspense>
+      {isWaterfallOn ? <DashboardContentUnoptimized /> : <DashboardContent />}
     </div>
   );
 }
