@@ -5,6 +5,30 @@ import { useBlockingTimeReporter } from "@/hooks/useBlockingTimeReporter";
 import { useDomNodesReporter } from "@/hooks/useDomNodesReporter";
 import { useInteractionLatencyReporter } from "@/hooks/useInteractionLatencyReporter";
 import { useSyncSsrCookies } from "@/hooks/useSyncSsrCookies";
+import { useSimControlStore } from "@/store/simulator-control";
+
+// Case 6 (docs/case6.md): a text-child hydration mismatch throws
+// synchronously *during* React's initial hydration pass
+// (react-dom-client.development.js's throwOnHydrationMismatch), and Next.js
+// reports it via the browser's global `reportError` (see
+// node_modules/next/dist/client/react-client-callbacks/report-global-error.js)
+// in that same synchronous call stack — before any component's useEffect
+// gets a chance to run. So this listener has to be registered at
+// module-evaluation time (the whole client bundle evaluates before
+// hydrateRoot is ever called), not inside a useEffect like the reporter
+// hooks below, which would simply miss an event that fires during the very
+// first hydration pass.
+const HYDRATION_MISMATCH_SIGNATURE =
+  "Hydration failed because the server rendered";
+
+if (typeof window !== "undefined") {
+  window.addEventListener("error", (event) => {
+    const message = event.error?.message ?? event.message ?? "";
+    if (message.includes(HYDRATION_MISMATCH_SIGNATURE)) {
+      useSimControlStore.getState().triggerAlert("hydrationMismatch");
+    }
+  });
+}
 
 // Mounted once in the root layout — the one "use client" boundary for every
 // side-effect-only hook that has no UI of its own: the PerformanceObserver

@@ -16,6 +16,7 @@ export const SSR_COOKIE_CASES: readonly CaseKey[] = [
   "imageOptimization",
   "layoutShift",
   "waterfall",
+  "hydrationMismatch",
 ];
 
 const DEFAULT_TOGGLES: Record<CaseKey, boolean> = {

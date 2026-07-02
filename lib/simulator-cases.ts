@@ -129,14 +129,23 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         label: "Hydration mismatch", //case 6
         key: "hydrationMismatch",
         tip: {
-          problem: "",
-          reproduction: "",
-          effect: "",
-          badCode: "",
-          goodCode: "",
-          summary: "",
+          problem:
+            "The dashboard's \"Updated\" time is computed with new Date().toLocaleTimeString() directly in render — the server renders it in UTC while the browser renders it in your local timezone, so the two reads never agree.",
+          reproduction:
+            "Switch this toggle on — the page reloads so the server renders the timestamp fresh.",
+          effect:
+            "The \"Updated\" time first shows the server's UTC reading, then immediately snaps to your local time once React notices the mismatch — the browser console throws a hydration-failed error, and the Performance Panel raises a Hydration Mismatch alert.",
+          badCode:
+            "Calls new Date().toLocaleTimeString() straight in the render body, so the server computes one clock reading and the client immediately computes a different one in its place.",
+          goodCode:
+            "Renders the same fixed placeholder text on the server and on the browser's very first render, then swaps in the real, browser-only timestamp right after — so the server and client never actually disagree on what to show.",
+          summary:
+            "If a value can come out differently on the server than in the browser — the time, the locale, anything based on window — don't render it on the very first pass. Show a placeholder first, then swap in the real value once you know you're running on the client.",
         },
-        alert: { title: "", body: "" },
+        alert: {
+          title: "Hydration Mismatch",
+          body: "Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client.",
+        },
       },
       {
         label: "Context overhead", //case 7

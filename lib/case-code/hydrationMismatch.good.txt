@@ -1,0 +1,13 @@
+function useStableTimestamp() {
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true, // client, every render after hydration
+    () => false, // server, and the client's first hydration pass
+  );
+  return mounted ? new Date().toLocaleTimeString() : "...";
+}
+
+export default function UpdatedAt() {
+  const time = useStableTimestamp();
+  return <span>{time}</span>;
+}

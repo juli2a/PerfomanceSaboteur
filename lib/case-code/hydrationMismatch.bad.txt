@@ -1,0 +1,4 @@
+export default function UpdatedAt() {
+  const time = new Date().toLocaleTimeString();
+  return <span>{time}</span>;
+}
