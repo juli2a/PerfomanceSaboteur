@@ -56,7 +56,12 @@ export default function BannerCarousel({ slides }: BannerCarouselProps) {
           {slides.map((slide) => (
             <div
               key={slide.id}
-              className="relative h-75 min-w-full shrink-0 overflow-hidden bg-surface-2"
+              // position set inline (not just via the "relative" class) so the
+              // fill-positioned <Image> inside always has a positioned
+              // ancestor to size against, even on the first paint before
+              // Tailwind's stylesheet has been applied.
+              style={{ position: "relative" }}
+              className="h-75 min-w-full shrink-0 overflow-hidden bg-surface-2"
             >
               {slide.content}
             </div>

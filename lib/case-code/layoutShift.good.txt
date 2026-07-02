@@ -1,0 +1,10 @@
+const SalesChartCanvas = dynamic(() => import("./SalesChartCanvas"), {
+  ssr: false,
+  loading: () => <div className="h-full w-full animate-pulse rounded-xl bg-raise" />,
+});
+
+// Fixed height matches the chart's real size — space is already
+// reserved before it mounts, so nothing moves when it does.
+<div className="h-48 w-full">
+  <SalesChartCanvas data={data} />
+</div>

@@ -1,0 +1,9 @@
+const SalesChartCanvas = dynamic(() => import("./SalesChartCanvas"), {
+  ssr: false,
+});
+
+// No reserved height — chart pops in at full size once it mounts,
+// pushing everything below it down.
+<div className="w-full">
+  <SalesChartCanvas data={data} />
+</div>

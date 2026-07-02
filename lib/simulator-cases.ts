@@ -79,12 +79,18 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         label: "Layout shift", //case 2
         key: "layoutShift",
         tip: {
-          problem: "",
-          reproduction: "",
-          effect: "",
-          badCode: "",
-          goodCode: "",
-          summary: "",
+          problem:
+            "The revenue chart mounts client-only with no space reserved for it, so the page's layout is unstable while it loads.",
+          reproduction:
+            "While the Dashboard page reloads with the toggle switched on, watch the area between the header and the Top Products banner.",
+          effect:
+            "The Revenue card renders with its header and period buttons but an empty chart area, then everything below it jumps down the moment the chart pops in and the card expands — CLS increases in the Performance Panel.",
+          badCode:
+            "Loads the chart in a wrapper with no fixed height, so there's nothing there at all until the chart's code loads — then it appears at full size and shoves everything below it down.",
+          goodCode:
+            "Wraps the chart in a fixed-height container sized to match the chart exactly, showing a skeleton in that same space until the real chart mounts — so nothing ever moves.",
+          summary:
+            "Reserve real estate for anything that mounts after the initial paint — client-only widgets, embeds, lazy components — instead of letting the page reflow around whatever shows up later.",
         },
         alert: { title: "", body: "" },
       },
