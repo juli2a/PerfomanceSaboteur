@@ -1,11 +1,14 @@
 import { cookies } from "next/headers";
 import LiveIndicator from "@/components/dashboard/LiveIndicator";
+import UpdatedAt from "@/components/dashboard/UpdatedAt";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { DashboardContentUnoptimized } from "@/components/dashboard/DashboardContentUnoptimized";
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
   const isWaterfallOn = cookieStore.get("waterfall")?.value === "on";
+  const isHydrationMismatchOn =
+    cookieStore.get("hydrationMismatch")?.value === "on";
 
   return (
     <div className="space-y-4.5 px-4 py-4.5 lg:space-y-5.5 lg:p-7.5">
@@ -19,9 +22,7 @@ export default async function DashboardPage() {
         <div className="hidden items-center gap-3.5 lg:flex">
           <span className="whitespace-nowrap text-[13px] text-text-2">
             Updated{" "}
-            <span className="font-semibold tabular-nums text-foreground">
-              —
-            </span>
+            <UpdatedAt isHydrationMismatchOn={isHydrationMismatchOn} />
           </span>
           <LiveIndicator />
         </div>
