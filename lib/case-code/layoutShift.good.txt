@@ -1,0 +1,19 @@
+// app/(shell)/layout.tsx (Server Component)
+const cookieStore = await cookies();
+const initialCollapsed = cookieStore.get("sidebarCollapsed")?.value === "on";
+// ...passed down as a prop to <Header> and <Sidebar>
+
+// store/sidebar.ts — plain state, no side effects
+export const useSidebarStore = create<SidebarState>()((set) => ({
+  collapsed: false,
+  setCollapsed: (collapsed) => set({ collapsed }),
+}));
+
+// hooks/useSidebarCollapsed.ts — the cookie write lives here, not in the store
+const setCollapsed = (collapsed: boolean) => {
+  useSidebarStore.getState().setCollapsed(collapsed);
+  document.cookie = `sidebarCollapsed=${collapsed ? "on" : "off"}; path=/; max-age=31536000`;
+};
+
+// The server reads the same cookie the client writes, so the very first
+// render already agrees — nothing to correct after mount.

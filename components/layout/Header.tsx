@@ -10,22 +10,31 @@ import Logo from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
 import { useSyncControlsAcrossBreakpoint } from "@/hooks/useSyncControlsAcrossBreakpoint";
-import { useSidebarStore } from "@/store/sidebar";
+import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 import { useSimControlStore } from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";
 
 interface HeaderProps {
   caseTipContent: Partial<Record<CaseKey, React.ReactNode>>;
+  isLayoutShiftOn: boolean;
+  initialCollapsed: boolean;
 }
 
-export default function Header({ caseTipContent }: HeaderProps) {
+export default function Header({
+  caseTipContent,
+  isLayoutShiftOn,
+  initialCollapsed,
+}: HeaderProps) {
   useSyncControlsAcrossBreakpoint();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const controlsOpen = useSimControlStore((state) => state.controlsOpen);
   const setControlsOpen = useSimControlStore((state) => state.setControlsOpen);
   const toggles = useSimControlStore((state) => state.toggles);
   const hasActiveAntiPattern = Object.values(toggles).some(Boolean);
-  const sidebarCollapsed = useSidebarStore((state) => state.collapsed);
+  const { collapsed: sidebarCollapsed } = useSidebarCollapsed(
+    isLayoutShiftOn,
+    initialCollapsed,
+  );
 
   return (
     <>

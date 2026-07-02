@@ -12,7 +12,10 @@ import type { CaseKey, SimControlState } from "@/types/simulator";
 // toggle. Every other case is pure client-side live demonstration (flip the
 // switch, watch the already-mounted React tree degrade) — those stay in
 // localStorage via `persist`, since cookies don't give free reactivity.
-export const SSR_COOKIE_CASES: readonly CaseKey[] = ["imageOptimization"];
+export const SSR_COOKIE_CASES: readonly CaseKey[] = [
+  "imageOptimization",
+  "layoutShift",
+];
 
 const DEFAULT_TOGGLES: Record<CaseKey, boolean> = {
   imageOptimization: false,

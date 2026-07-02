@@ -1,11 +1,22 @@
 "use client";
 
 import MainNav from "@/components/layout/MainNav";
-import { useSidebarStore } from "@/store/sidebar";
+import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 import { cn } from "@/lib/utils/cn";
 
-export default function Sidebar() {
-  const collapsed = useSidebarStore((state) => state.collapsed);
+interface SidebarProps {
+  isLayoutShiftOn: boolean;
+  initialCollapsed: boolean;
+}
+
+export default function Sidebar({
+  isLayoutShiftOn,
+  initialCollapsed,
+}: SidebarProps) {
+  const { collapsed, setCollapsed } = useSidebarCollapsed(
+    isLayoutShiftOn,
+    initialCollapsed,
+  );
 
   return (
     <aside
@@ -20,7 +31,7 @@ export default function Sidebar() {
           collapsed ? "px-3.5" : "px-heading-gap",
         )}
       >
-        <MainNav collapsible />
+        <MainNav collapsible collapsed={collapsed} setCollapsed={setCollapsed} />
       </div>
 
       <div className="flex-1" />

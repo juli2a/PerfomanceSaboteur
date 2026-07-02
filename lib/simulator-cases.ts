@@ -76,17 +76,26 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
     title: "Rendering",
     items: [
       {
-        label: "Layout shift", //case 2
+        label: "Sidebar layout shift", //case 2
         key: "layoutShift",
         tip: {
-          problem: "",
-          reproduction: "",
-          effect: "",
-          badCode: "",
-          goodCode: "",
-          summary: "",
+          problem:
+            "The sidebar's collapsed/expanded preference is saved to localStorage only, so the server has no way to know it and always renders the sidebar expanded — the client corrects it right after the page loads.",
+          reproduction:
+            "Collapse the sidebar with the arrow button above the nav icons, then turn this toggle on — the page reloads so the server can re-render with the change.",
+          effect:
+            "The sidebar and the logo next to it briefly render expanded, then animate to collapsed a moment after the page finishes loading — CLS ticks up in the Performance Panel even though the shift itself looks smooth.",
+          badCode:
+            "Persists the collapsed flag with zustand's persist middleware — localStorage only, so the very first server-rendered HTML always shows the sidebar expanded, whatever the user last picked.",
+          goodCode:
+            "Mirrors the same flag into a cookie the server can read, so the Server Component renders the sidebar at its real width from the first paint — nothing to correct after the client mounts.",
+          summary:
+            "Any UI preference that changes layout — a collapsed sidebar, a dismissed banner, a saved column width — needs to be readable server-side (a cookie, not just localStorage), or it will shift into place after every load.",
         },
-        alert: { title: "", body: "" },
+        alert: {
+          title: "Layout Shift",
+          body: "Sidebar width corrected after the page had already rendered.",
+        },
       },
       {
         label: "Unoptimized Images", //case 1

@@ -61,18 +61,19 @@ export default function TopProductsBannerClient({
                     src={slide.imageUrl}
                     alt=""
                     aria-hidden="true"
-                    width={48}
-                    height={48}
-                    className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-md brightness-50 md:block"
+                    fill
+                    sizes="100vw"
+                    style={{ objectFit: "cover" }}
+                    className="hidden scale-110 blur-md brightness-50 md:block"
                     loading={i === 0 ? "eager" : undefined}
                     fetchPriority={i === 0 ? "high" : undefined}
                   />
                   <Image
                     src={slide.imageUrl}
                     alt={slide.title}
-                    width={300}
-                    height={300}
-                    className="absolute inset-0 h-full w-full object-contain"
+                    fill
+                    sizes="100vw"
+                    style={{ objectFit: "contain" }}
                     loading={i === 0 ? "eager" : undefined}
                     fetchPriority={i === 0 ? "high" : undefined}
                   />

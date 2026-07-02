@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { useSidebarStore } from "@/store/sidebar";
 import { cn } from "@/lib/utils/cn";
 
 const NAV_ITEMS = [
@@ -22,11 +21,14 @@ const NAV_ITEMS = [
 interface MainNavProps {
   onNavigate?: () => void;
   linkClassName?: string;
-  // Only the desktop Sidebar (which can collapse) sets this — it makes
-  // MainNav read/write the shared collapse state itself and render the
-  // collapse toggle on the "WORKSPACE" row. MobileDrawer leaves it unset and
-  // always renders the full, uncollapsed nav.
+  // Only the desktop Sidebar (which can collapse) sets this, along with
+  // `collapsed`/`setCollapsed` (computed once in Sidebar via
+  // useSidebarCollapsed) — renders the collapse toggle on the "WORKSPACE"
+  // row. MobileDrawer leaves all three unset and always renders the full,
+  // uncollapsed nav.
   collapsible?: boolean;
+  collapsed?: boolean;
+  setCollapsed?: (collapsed: boolean) => void;
   // Only MobileDrawer sets this — renders an X button, absolutely
   // positioned in the top-right corner of the nearest positioned ancestor
   // (the drawer's fixed <aside>), to close it.
@@ -37,11 +39,12 @@ export default function MainNav({
   onNavigate,
   linkClassName,
   collapsible = false,
+  collapsed: collapsedProp = false,
+  setCollapsed = () => {},
   onClose,
 }: MainNavProps) {
   const pathname = usePathname();
-  const collapsed = useSidebarStore((state) => collapsible && state.collapsed);
-  const setCollapsed = useSidebarStore((state) => state.setCollapsed);
+  const collapsed = collapsible && collapsedProp;
 
   return (
     <nav className="flex flex-col gap-1.5">

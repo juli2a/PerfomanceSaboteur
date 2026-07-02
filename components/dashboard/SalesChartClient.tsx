@@ -1,14 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-} from "recharts";
-import type { ChartPoint, SalesChartData } from "@/types/analytics";
+import dynamic from "next/dynamic";
+import type { SalesChartData } from "@/types/analytics";
 import { formatCurrency } from "@/lib/utils/format";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +12,16 @@ type Period = "day" | "week" | "month";
 interface Props {
   data: SalesChartData;
 }
+
+// recharts measures the DOM to size itself, so it's client-only regardless;
+// ssr:false additionally keeps it out of the very first paint entirely — the
+// fixed h-48 wrapper below reserves its space so nothing shifts when it mounts.
+const SalesChartCanvas = dynamic(() => import("./SalesChartCanvas"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full w-full animate-pulse rounded-xl bg-raise" />
+  ),
+});
 
 export function SalesChartClient({ data: salesChart }: Props) {
   const [period, setPeriod] = useState<Period>("week");
@@ -50,41 +54,8 @@ export function SalesChartClient({ data: salesChart }: Props) {
         </div>
       </div>
 
-      <div className="h-48">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
-            <defs>
-              <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" style={{ stopColor: "var(--color-chart-1)", stopOpacity: 0.35 }} />
-                <stop offset="100%" style={{ stopColor: "var(--color-chart-1)", stopOpacity: 0 }} />
-              </linearGradient>
-            </defs>
-            <XAxis dataKey="label" hide />
-            <Tooltip
-              cursor={{ stroke: "var(--color-border-strong)" }}
-              content={({ active, payload }) => {
-                const point = payload?.[0]?.payload as ChartPoint | undefined;
-                if (!active || !point) return null;
-                return (
-                  <div className="rounded-md border border-border-strong bg-popover px-2 py-1 text-xs shadow-lg">
-                    <p className="text-text-3">{point.label}</p>
-                    <p className="font-medium text-foreground">{formatCurrency(point.value)}</p>
-                    <p className="text-text-3">
-                      {point.count} order{point.count === 1 ? "" : "s"}
-                    </p>
-                  </div>
-                );
-              }}
-            />
-            <Area
-              type="monotone"
-              dataKey="value"
-              stroke="var(--color-chart-1)"
-              strokeWidth={1.8}
-              fill="url(#salesGradient)"
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+      <div className="h-48 w-full">
+        <SalesChartCanvas data={data} />
       </div>
 
       <div className="mt-1 flex justify-between text-[10px] text-text-3">
