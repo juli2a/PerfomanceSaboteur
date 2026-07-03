@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { ChevronDown, RefreshCw } from "lucide-react";
 
 import { LOGISTIC_STATUSES, type LogisticStatus } from "@/types/inventory";
 import { useInventorySelectionStore } from "@/store/inventory-selection";
 import { useInventoryStatusStore } from "@/store/inventory-status";
+import { TableSelectionContext } from "@/context/TableSelectionContext";
+import { useSimulatorCase } from "@/hooks/useSimulatorCase";
 import { updateLogisticStatus } from "@/lib/server/inventory-actions";
 import { getStatusDotClass, getStatusTone } from "@/lib/utils/inventory";
 import { cn } from "@/lib/utils/cn";
@@ -47,9 +49,18 @@ function StatusDotLabel({ status }: { status: LogisticStatus }) {
 // DummyJSON doesn't persist writes, so the new status is also applied via
 // inventory-status's optimistic overlay — otherwise the table would have
 // no way to show the result of the demo.
+//
+// Case 7 (Context Overhead): reads/writes whichever selection source is
+// currently active (Zustand or the isolated Context — see
+// context/TableSelectionContext.tsx), same reasoning as SelectAllCheckbox.
 export default function BulkActions() {
-  const selected = useInventorySelectionStore((state) => state.selected);
-  const clearSelection = useInventorySelectionStore((state) => state.clear);
+  const isContextOverheadOn = useSimulatorCase("contextOverhead");
+  const zustandSelected = useInventorySelectionStore((state) => state.selected);
+  const zustandClear = useInventorySelectionStore((state) => state.clear);
+  const context = useContext(TableSelectionContext)!;
+
+  const selected = isContextOverheadOn ? context.selected : zustandSelected;
+  const clearSelection = isContextOverheadOn ? context.clear : zustandClear;
   const setStatuses = useInventoryStatusStore((state) => state.setStatuses);
 
   const [panelOpen, setPanelOpen] = useState(false);

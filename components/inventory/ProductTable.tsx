@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useMemo, useRef } from "react";
+import { useContext, useEffect, useMemo, useRef } from "react";
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -15,8 +15,11 @@ import type { AmplifiedProduct } from "@/types/inventory";
 import { MediaContext } from "@/context/MediaContext";
 import { useInventoryFiltersStore } from "@/store/inventory-filters";
 import { useInventorySearchStore } from "@/store/inventory-search";
+import { useInventorySelectionStore } from "@/store/inventory-selection";
+import { useSimulatorCase } from "@/hooks/useSimulatorCase";
 import ProductCard from "@/components/inventory/ProductCard";
 import ProductTableRow from "@/components/inventory/ProductTableRow";
+import ProductTableRowUnoptimized from "@/components/inventory/ProductTableRowUnoptimized";
 import SelectAllCheckbox from "@/components/inventory/SelectAllCheckbox";
 
 const columnHelper = createColumnHelper<AmplifiedProduct>();
@@ -70,10 +73,25 @@ interface ProductTableProps {
 // tracking their own (and one silently losing its position while hidden).
 export default function ProductTable({ products }: ProductTableProps) {
   const isMobile = useContext(MediaContext);
+  const isContextOverheadOn = useSimulatorCase("contextOverhead");
 
   // skipVirtualization is shared by multiple cases — each one adds its own
   // toggle here so ProductTable doesn't need a new prop per case.
-  const skipVirtualization = false;
+  // contextOverhead forces the flat FLAT_ROW_LIMIT list regardless of Case
+  // 3's own state — with virtualization on, only ~15-20 rows are ever
+  // mounted, and the mass-rerender contrast this case demonstrates wouldn't
+  // be visible (see docs/case7.md).
+  const skipVirtualization = isContextOverheadOn;
+
+  // Selection is deliberately isolated between the good (Zustand) and bad
+  // (Context — see TableSelectionProvider, mounted in the Inventory page
+  // above both Toolbar and this component) paths — clearing on every toggle
+  // flip means neither carries stale selections into the other. The
+  // Context side clears itself the same way, internally.
+  const clearSelection = useInventorySelectionStore((state) => state.clear);
+  useEffect(() => {
+    clearSelection();
+  }, [isContextOverheadOn, clearSelection]);
 
   const selectedCategories = useInventoryFiltersStore(
     (state) => state.categories,
@@ -141,6 +159,33 @@ export default function ProductTable({ products }: ProductTableProps) {
 
   if (isMobile === undefined) return null;
 
+  const flatRows = (
+    <div role="rowgroup">
+      {rows.slice(0, FLAT_ROW_LIMIT).map((row) => {
+        const product = row.original;
+        if (isMobile) {
+          return (
+            <div key={product.id} style={{ paddingBottom: 8 }}>
+              <ProductCard product={product} />
+            </div>
+          );
+        }
+        // Case 7's single bad/good branch point — everything else about
+        // the two row components is identical.
+        const Row = isContextOverheadOn
+          ? ProductTableRowUnoptimized
+          : ProductTableRow;
+        return (
+          <Row
+            key={product.id}
+            product={product}
+            gridTemplateColumns={gridTemplateColumns}
+          />
+        );
+      })}
+    </div>
+  );
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden rounded-xl border-t">
       <div
@@ -169,22 +214,7 @@ export default function ProductTable({ products }: ProductTableProps) {
           </div>
         )}
         {skipVirtualization ? (
-          <div role="rowgroup">
-            {rows.slice(0, FLAT_ROW_LIMIT).map((row) => {
-              const product = row.original;
-              return isMobile ? (
-                <div key={product.id} style={{ paddingBottom: 8 }}>
-                  <ProductCard product={product} />
-                </div>
-              ) : (
-                <ProductTableRow
-                  key={product.id}
-                  product={product}
-                  gridTemplateColumns={gridTemplateColumns}
-                />
-              );
-            })}
-          </div>
+          flatRows
         ) : (
           <div
             role="rowgroup"

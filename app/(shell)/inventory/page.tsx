@@ -1,5 +1,6 @@
 import Toolbar from "@/components/inventory/Toolbar";
 import ProductTable from "@/components/inventory/ProductTable";
+import { TableSelectionProvider } from "@/context/TableSelectionContext";
 import {
   getAmplifiedProducts,
   getInventoryCategories,
@@ -20,8 +21,14 @@ export default async function InventoryPage() {
           2,000 SKUs
         </p>
       </div>
-      <Toolbar categories={categories} />
-      <ProductTable products={products} />
+      {/* Case 7 (Context Overhead): shared by Toolbar's Bulk Actions/Select
+          All and ProductTable's rows, so whichever selection source is
+          active (Zustand or this isolated Context) stays consistent across
+          both, not just within the table. */}
+      <TableSelectionProvider>
+        <Toolbar categories={categories} />
+        <ProductTable products={products} />
+      </TableSelectionProvider>
     </div>
   );
 }
