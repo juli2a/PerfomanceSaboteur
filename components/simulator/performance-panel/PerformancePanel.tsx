@@ -40,6 +40,9 @@ export default function PerformancePanel() {
   const interactionLatency = useSimPerformanceStore(
     (state) => state.interactionLatency,
   );
+  const rerenderedNodes = useSimPerformanceStore(
+    (state) => state.rerenderedNodes,
+  );
 
   const overallRating = getOverallRating([
     vitals.lcp?.rating ?? null,
@@ -60,11 +63,18 @@ export default function PerformancePanel() {
 
   const alerts = shownAlertKeys.map((key) => {
     const { title, body } = getSimulatorCase(key).alert;
+    // Case 7's alert.body is a static prefix — the live settle-window count
+    // (see hooks/useRerenderNodesReporter.ts) is appended here at render
+    // time rather than baked into the case definition.
+    const displayBody =
+      key === "contextOverhead" && rerenderedNodes !== null
+        ? `${body}: ${rerenderedNodes}`
+        : body;
     return (
       <SimulatorAlert
         key={key}
         title={title}
-        body={body}
+        body={displayBody}
         onDismiss={() => dismissAlert(key)}
       />
     );

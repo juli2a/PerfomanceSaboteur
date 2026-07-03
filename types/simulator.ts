@@ -75,6 +75,12 @@ export interface SimPerformanceState {
   // useDomNodesReporter on every navigation / Case 3 toggle change, not live-polled.
   domNodes: number | null;
   setDomNodes: (count: number) => void;
+  // Rows that re-rendered from the most recent row-selection click — Case 7
+  // (Context Overhead). Published once the render-counter settle-window
+  // closes (useRerenderNodesReporter), not live-updated per render; null
+  // until the first tracked click.
+  rerenderedNodes: number | null;
+  setRerenderedNodes: (count: number) => void;
   // Duration (ms) of the most recently observed long task — "Blocking Time"
   // in the panel. Overwritten per task, not accumulated, so it reflects the
   // current freeze rather than an ever-growing session total.

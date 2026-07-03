@@ -148,18 +148,24 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         },
       },
       {
-        label: "Context overhead", //case 7
+        label: "Context re-render storm", //case 7
         key: "contextOverhead",
         tip: {
-          problem: "",
-          reproduction: "",
-          effect: "",
-          badCode: "",
-          goodCode: "",
-          summary: "",
+          problem:
+            "Row selection lives in one shared React Context instead of a per-row store selector, so every row component subscribes to the exact same value — not just the slice it actually needs.",
+          reproduction:
+            "Click a checkbox in the Inventory Control table.",
+          effect:
+            "Every visible row's Flash on Update outline fires at once, not just the one you clicked, and the Performance Panel raises a Context Re-render Storm alert naming how many rows re-rendered. Blocking Time and Interaction Latency both spike too, since re-rendering every visible row for one click is real main-thread work.",
+          badCode:
+            "Every row reads the same Context value; toggling one checkbox builds a brand-new context object, which forces every row consuming it to re-render, not just the one whose checkbox changed.",
+          goodCode:
+            "Each row subscribes to a Zustand selector scoped to just its own id, so only the row whose selection actually changed gets notified and re-renders.",
+          summary:
+            "Shared Context re-renders every consumer on any change, no matter how small — for state many components read but each only care about their own slice of (a row, an id, a field), use a store with per-item selectors instead.",
         },
         alert: {
-          title: "Context Overhead",
+          title: "Context Re-render Storm",
           // Static prefix only — the live count comes from the
           // FlashOnUpdate settle-window counter (see docs/case7.md) and is
           // appended at render time, e.g. `${body}: ${count}`.

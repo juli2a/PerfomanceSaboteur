@@ -4,6 +4,7 @@ import { useWebVitalsReporter } from "@/hooks/useWebVitalsReporter";
 import { useBlockingTimeReporter } from "@/hooks/useBlockingTimeReporter";
 import { useDomNodesReporter } from "@/hooks/useDomNodesReporter";
 import { useInteractionLatencyReporter } from "@/hooks/useInteractionLatencyReporter";
+import { useRerenderNodesReporter } from "@/hooks/useRerenderNodesReporter";
 import { useSyncSsrCookies } from "@/hooks/useSyncSsrCookies";
 import { useSimControlStore } from "@/store/simulator-control";
 
@@ -41,6 +42,7 @@ export default function SimulatorEffects() {
   useBlockingTimeReporter();
   useDomNodesReporter();
   useInteractionLatencyReporter();
+  useRerenderNodesReporter();
   useSyncSsrCookies();
 
   return null;
