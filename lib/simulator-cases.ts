@@ -181,12 +181,18 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         label: "Heavy mounting", //case 3
         key: "heavyMounting",
         tip: {
-          problem: "",
-          reproduction: "",
-          effect: "",
-          badCode: "",
-          goodCode: "",
-          summary: "",
+          problem:
+            "The Inventory table renders every one of its 2000+ rows into real DOM at once instead of only the ~15 that actually fit on screen, so mounting the page costs as much as the whole dataset — and since React can't show the new page until all of that DOM is built, the page transition itself stalls behind it.",
+          reproduction:
+            "Switch this toggle on, then go from Dashboard to Inventory Control and keep clicking around (e.g. the hero slider's arrow) while it loads.",
+          effect:
+            "The old page stays put for several seconds; the first couple of clicks still land, then the app stops responding to anything until Inventory Control finally appears. The Performance Panel shows DOM Elements past 30,000 and INP spiking into the thousands of milliseconds — on mobile or a slower machine, Blocking Time spikes too, since there's less spare CPU for React to squeeze work between frames.",
+          badCode:
+            "Maps the full, unfiltered row list straight into JSX with no limit on how many mount at once, so React has to build and commit 2000+ real row subtrees for a table that only ever shows about 15 of them.",
+          goodCode:
+            "Hands that same row list to @tanstack/react-virtual's useVirtualizer, which keeps only the rows near the current scroll position mounted and swaps which ones those are as you scroll, instead of growing the mounted count.",
+          summary:
+            "Every mounted row is real work — build it, lay it out, paint it — and the browser can't paint the result of a click (or show the next page) until that backlog clears, so INP and the stalled transition are really the same cost showing up twice; any list that can outgrow the screen (rows, chat messages, feed items) needs windowing or pagination before that growth becomes the user's problem.",
         },
         alert: { title: "", body: "" },
       },

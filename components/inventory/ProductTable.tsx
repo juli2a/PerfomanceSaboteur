@@ -59,8 +59,9 @@ const ROW_HEIGHT_PX = 58;
 const CARD_HEIGHT_PX = 122;
 
 // Cases that disable virtualization render this many rows as a flat DOM list.
-// Case 1 (imageOptimization): forces all images to load at once → network congestion → LCP impact.
 // Case 7 (contextOverhead): exposes unnecessary re-renders across the full visible set.
+// Case 3 (heavyMounting) deliberately does NOT use this cap — mounting every
+// row at once is the entire point of that case, see flatRowLimit below.
 const FLAT_ROW_LIMIT = 200;
 
 interface ProductTableProps {
@@ -74,14 +75,18 @@ interface ProductTableProps {
 export default function ProductTable({ products }: ProductTableProps) {
   const isMobile = useContext(MediaContext);
   const isContextOverheadOn = useSimulatorCase("contextOverhead");
+  const isHeavyMountingOn = useSimulatorCase("heavyMounting");
 
   // skipVirtualization is shared by multiple cases — each one adds its own
   // toggle here so ProductTable doesn't need a new prop per case.
   // contextOverhead forces the flat FLAT_ROW_LIMIT list regardless of Case
   // 3's own state — with virtualization on, only ~15-20 rows are ever
   // mounted, and the mass-rerender contrast this case demonstrates wouldn't
-  // be visible (see docs/case7.md).
-  const skipVirtualization = isContextOverheadOn;
+  // be visible (see docs/case7.md). heavyMounting (Case 3) skips
+  // virtualization too, but — unlike contextOverhead — with no row cap at
+  // all (see flatRowLimit below): mounting literally every row, unwindowed,
+  // is the anti-pattern this case demonstrates.
+  const skipVirtualization = isContextOverheadOn || isHeavyMountingOn;
 
   // Selection is deliberately isolated between the good (Zustand) and bad
   // (Context — see TableSelectionProvider, mounted in the Inventory page
@@ -159,9 +164,14 @@ export default function ProductTable({ products }: ProductTableProps) {
 
   if (isMobile === undefined) return null;
 
+  // heavyMounting (Case 3) removes the cap entirely — every one of the
+  // 2000+ rows mounts at once, unwindowed, instead of just the first
+  // FLAT_ROW_LIMIT of them.
+  const flatRowLimit = isHeavyMountingOn ? rows.length : FLAT_ROW_LIMIT;
+
   const flatRows = (
     <div role="rowgroup">
-      {rows.slice(0, FLAT_ROW_LIMIT).map((row) => {
+      {rows.slice(0, flatRowLimit).map((row) => {
         const product = row.original;
         if (isMobile) {
           return (
