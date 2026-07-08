@@ -1,6 +1,8 @@
 "use client";
 
+import AboutButton from "@/components/layout/AboutButton";
 import MainNav from "@/components/layout/MainNav";
+import { useSimPerformanceStore } from "@/store/simulator-performance";
 
 interface Props {
   open: boolean;
@@ -8,6 +10,15 @@ interface Props {
 }
 
 export default function MobileDrawer({ open, onClose }: Props) {
+  // The mobile Performance Panel floats fixed at the bottom of the viewport
+  // (above this drawer, z-60 vs z-41) — stopping the drawer's own bottom
+  // edge at the panel's current height (collapsed or expanded, via the same
+  // store MobileControlSheet reads for its bottomOffset) keeps AboutButton
+  // reachable instead of hidden behind it.
+  const mobilePanelHeight = useSimPerformanceStore(
+    (state) => state.mobilePanelHeight,
+  );
+
   return (
     <>
       {/* Backdrop */}
@@ -21,12 +32,17 @@ export default function MobileDrawer({ open, onClose }: Props) {
       {/* Drawer — starts below the header (h-[60px] on mobile/tablet), not
           at the very top, so it doesn't duplicate the header's own logo. */}
       <aside
-        className="fixed bottom-0 left-0 top-[60px] z-41 flex w-71.5 flex-col border-r border-border bg-surface-2 p-heading-gap shadow-[10px_0_44px_rgba(0,0,0,0.5)] transition-transform duration-280 ease-[cubic-bezier(0.2,0.7,0.3,1)]"
-        style={{ transform: open ? "translateX(0)" : "translateX(-100%)" }}
+        className="fixed left-0 top-[60px] z-41 flex w-71.5 flex-col overflow-x-hidden border-r border-border bg-surface-2 p-heading-gap shadow-[10px_0_44px_rgba(0,0,0,0.5)] transition-transform duration-280 ease-[cubic-bezier(0.2,0.7,0.3,1)]"
+        style={{
+          bottom: mobilePanelHeight,
+          transform: open ? "translateX(0)" : "translateX(-100%)",
+        }}
       >
         <MainNav onNavigate={onClose} onClose={onClose} linkClassName="text-[15px]" />
 
-        <div className="flex-1" />
+        <div className="mt-auto">
+          <AboutButton />
+        </div>
       </aside>
     </>
   );

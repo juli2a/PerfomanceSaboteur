@@ -31,7 +31,7 @@ function DialogOverlay({
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 isolate z-50 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+        "fixed inset-0 isolate z-70 bg-black/10 duration-100 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
         className
       )}
       {...props}
@@ -39,13 +39,30 @@ function DialogOverlay({
   )
 }
 
+const dialogSizeClass = {
+  sm: "sm:max-w-sm",
+  md: "sm:max-w-200",
+} as const
+
+// "default" is the app's own dark surface; "brand" matches the case guide
+// panel's surface (CaseDetailPanel.tsx) for popups that belong to the
+// simulator brand rather than the app UI.
+const dialogVariantClass = {
+  default: "bg-card text-card-foreground ring-1 ring-foreground/10",
+  brand: "border border-brand-border bg-brand-bg",
+} as const
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  size = "sm",
+  variant = "default",
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean
+  size?: keyof typeof dialogSizeClass
+  variant?: keyof typeof dialogVariantClass
 }) {
   return (
     <DialogPortal>
@@ -53,7 +70,9 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-card p-4 text-sm text-card-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed top-1/2 left-1/2 z-70 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-0 rounded-xl px-5 py-7.5 text-sm duration-100 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 sm:px-12.5",
+          dialogSizeClass[size],
+          dialogVariantClass[variant],
           className
         )}
         {...props}
@@ -79,13 +98,49 @@ function DialogContent({
   )
 }
 
-function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
+const dialogIconToneClass = {
+  primary: "bg-primary/14 text-primary",
+  brand: "bg-brand-accent-dim text-brand-accent",
+} as const
+
+function DialogHeader({
+  className,
+  icon,
+  iconTone = "primary",
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  icon?: React.ReactNode
+  iconTone?: keyof typeof dialogIconToneClass
+}) {
+  if (icon) {
+    return (
+      <div
+        data-slot="dialog-header"
+        className={cn("mb-4 flex items-center gap-3.25", className)}
+        {...props}
+      >
+        <span
+          className={cn(
+            "grid size-10.5 shrink-0 place-items-center rounded-md",
+            dialogIconToneClass[iconTone]
+          )}
+        >
+          {icon}
+        </span>
+        {children}
+      </div>
+    )
+  }
+
   return (
     <div
       data-slot="dialog-header"
       className={cn("flex flex-col gap-2", className)}
       {...props}
-    />
+    >
+      {children}
+    </div>
   )
 }
 
