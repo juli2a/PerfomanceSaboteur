@@ -7,7 +7,7 @@ export type CaseKey =
   | "waterfall" // Case 5 — TTFB
   | "hydrationMismatch" // Case 6 — Hydration
   | "contextOverhead" // Case 7 — Rerender nodes / FPS
-  | "overMemoization"; // Case 8 — INP
+  | "brokenMemoization"; // Case 8 — INP
 
 export type ToggleGroup = "network" | "rendering" | "computing";
 
@@ -56,6 +56,10 @@ export interface SimControlState {
   // (e.g. isStale flipping back to false).
   dismissAlert: (key: CaseKey) => void;
   closeAlert: (key: CaseKey) => void;
+  // Closes every currently-shown alert at once — used when navigating to a
+  // different page, since an alert from one page's case has no business
+  // following the user to another (see hooks/useClearAlertsOnNavigate.ts).
+  clearAlerts: () => void;
 }
 
 // Live measurements reported by the simulator's PerformanceObserver-based
@@ -75,12 +79,16 @@ export interface SimPerformanceState {
   // useDomNodesReporter on every navigation / Case 3 toggle change, not live-polled.
   domNodes: number | null;
   setDomNodes: (count: number) => void;
-  // Rows that re-rendered from the most recent row-selection click — Case 7
-  // (Context Overhead). Published once the render-counter settle-window
-  // closes (useRerenderNodesReporter), not live-updated per render; null
-  // until the first tracked click.
-  rerenderedNodes: number | null;
-  setRerenderedNodes: (count: number) => void;
+  // Nodes that re-rendered from the most recently tracked burst, keyed by
+  // case — Case 7 (Context Overhead, a row-selection click) and Case 8
+  // (Broken Memoization, a settled slider-drag burst). Published once that
+  // case's render-counter settle-window closes (useRerenderNodesReporter),
+  // not live-updated per render; absent until that case's first tracked
+  // burst. Keyed (not a single shared number) because both cases' alerts can
+  // be "shown" at once across page navigation — a single field would let one
+  // case's stale count leak into the other's alert body.
+  rerenderedNodes: Partial<Record<CaseKey, number>>;
+  setRerenderedNodes: (key: CaseKey, count: number) => void;
   // Duration (ms) of the most recently observed long task — "Blocking Time"
   // in the panel. Overwritten per task, not accumulated, so it reflects the
   // current freeze rather than an ever-growing session total.

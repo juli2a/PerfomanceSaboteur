@@ -40,7 +40,10 @@ export interface AnalyticCardData {
     rating: number;
   };
   marginality: number;     // discountPercentage used as GM% proxy
-  sparklineData: number[];
+  // A year of raw daily readings — the client-side sparkline pipeline
+  // (lib/utils/sparkline-processing.ts) cleans, smooths and downsamples
+  // this to the 7 points the mini sparkline actually displays.
+  rawHistory: number[];
 }
 
 export interface CategoryData {

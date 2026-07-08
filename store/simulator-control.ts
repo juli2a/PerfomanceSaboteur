@@ -27,7 +27,7 @@ const DEFAULT_TOGGLES: Record<CaseKey, boolean> = {
   waterfall: false,
   hydrationMismatch: false,
   contextOverhead: false,
-  overMemoization: false,
+  brokenMemoization: false,
 };
 
 // Only `toggles` is persisted — survives refresh. Guide and alert state are
@@ -67,6 +67,7 @@ export const useSimControlStore = create<SimControlState>()(
           delete caseAlerts[key];
           return { caseAlerts };
         }),
+      clearAlerts: () => set({ caseAlerts: {} }),
     }),
     {
       name: "simulator-cases",

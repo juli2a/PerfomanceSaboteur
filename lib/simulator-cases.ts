@@ -197,17 +197,30 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         alert: { title: "", body: "" },
       },
       {
-        label: "Over memoization", //case 8
-        key: "overMemoization",
+        label: "Broken memoization", //case 8
+        key: "brokenMemoization",
         tip: {
-          problem: "",
-          reproduction: "",
-          effect: "",
-          badCode: "",
-          goodCode: "",
-          summary: "",
+          problem:
+            "A component wrapped in React.memo still re-renders every time if the props it receives are rebuilt from scratch on every render — the memo check runs, fails, and gains nothing.",
+          reproduction:
+            "Drag the \"Min GM%\" slider back and forth above the KPI micro-cards.",
+          effect:
+            "All 100 cards flash on every tick, and INP and Blocking Time can both go up — each tick re-renders the whole grid and reruns every card's sparkline calculation, which is even more noticeable on mobile or a slower machine. The Performance Panel raises a Memo Overhead alert while you drag, naming how many cards re-rendered.",
+          badCode:
+            "Each card gets a freshly spread `{ ...product }` object as its prop on every render, so React.memo's reference comparison never matches. On top of that, the card also calls the expensive function that computes its sparkline data on every one of those re-renders — a separate mistake, since that calculation only depends on the product list, not the slider, so it belongs at the grid level, not inside each card.",
+          goodCode:
+            "Each card receives only the primitive fields it needs, so React.memo's comparison actually succeeds and skips the re-render. The sparkline data itself is computed once for the whole grid, not per card, since it only depends on the product list — the slider never touches it.",
+          summary:
+            "Two separate lessons here. First: memo only helps when the props reaching it are stable — a fresh object every render always fails the check, so you pay for the comparison and still get the full re-render. Second: an expensive calculation belongs wherever its real input lives — this one only depends on the product list, not the slider, so it should run once for the whole grid, not inside each card on every re-render, memoized or not.",
         },
-        alert: { title: "", body: "" },
+        alert: {
+          title: "Memo Overhead",
+          // Static prefix only — the live count comes from the
+          // FlashOnUpdate settle-window counter (see
+          // hooks/useRerenderNodesReporter.ts) and is appended at render
+          // time, e.g. `${body}: ${count}`.
+          body: "Rerendered Nodes on Action",
+        },
       },
     ],
   },

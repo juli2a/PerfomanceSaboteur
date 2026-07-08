@@ -5,6 +5,7 @@ import { useBlockingTimeReporter } from "@/hooks/useBlockingTimeReporter";
 import { useDomNodesReporter } from "@/hooks/useDomNodesReporter";
 import { useInteractionLatencyReporter } from "@/hooks/useInteractionLatencyReporter";
 import { useRerenderNodesReporter } from "@/hooks/useRerenderNodesReporter";
+import { useClearAlertsOnNavigate } from "@/hooks/useClearAlertsOnNavigate";
 import { useSyncSsrCookies } from "@/hooks/useSyncSsrCookies";
 import { useSimControlStore } from "@/store/simulator-control";
 
@@ -42,7 +43,9 @@ export default function SimulatorEffects() {
   useBlockingTimeReporter();
   useDomNodesReporter();
   useInteractionLatencyReporter();
-  useRerenderNodesReporter();
+  useRerenderNodesReporter("contextOverhead", 1);
+  useRerenderNodesReporter("brokenMemoization", 100);
+  useClearAlertsOnNavigate();
   useSyncSsrCookies();
 
   return null;

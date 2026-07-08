@@ -1,10 +1,8 @@
-import { cn } from "@/lib/utils/cn";
-import { Card } from "@/components/ui/card";
-import { Sparkline } from "@/components/ui/sparkline";
-import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
-import { CopyButton } from "@/components/ui/copy-button";
+import { memo } from "react";
+import MicroCardView from "@/components/dashboard/MicroCardView";
 
 interface Props {
+  id: string;
   title: string;
   sku: string;
   marginality: number;
@@ -14,67 +12,18 @@ interface Props {
   lowMargin: boolean;
 }
 
-export default function MicroCard({
-  title,
-  sku,
-  marginality,
-  value,
-  rating,
-  sparklineData,
-  lowMargin,
-}: Props) {
-  const isGood = rating >= 4;
-
-  return (
-    <Card
-      disabled={lowMargin}
-      className={cn("py-2.5 px-3", !lowMargin && "border-border-strong")}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <Tooltip>
-          <TooltipTrigger
-            render={<span className="truncate text-xs font-medium text-text-2" />}
-            tabIndex={0}
-          >
-            {title}
-          </TooltipTrigger>
-          <TooltipContent>
-            <p className="font-medium text-foreground">{title}</p>
-            <div className="mt-1 flex items-center gap-1 text-text-3">
-              <span>SKU {sku}</span>
-              <CopyButton value={sku} label="SKU" />
-            </div>
-          </TooltipContent>
-        </Tooltip>
-        <span className="shrink-0 whitespace-nowrap rounded-xs border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold text-text-3">
-          GM% {marginality}
-        </span>
-      </div>
-
-      <div className="mt-2.5 flex items-end justify-between gap-2.5">
-        <div>
-          <p className="tabular-nums text-base font-semibold tracking-tight text-foreground">
-            {value}
-          </p>
-          <div className="mt-1.5 flex items-center gap-1">
-            <span
-              className={cn(
-                "text-[11px] leading-none",
-                isGood ? "text-pos" : "text-alert",
-              )}
-            >
-              ★
-            </span>
-            <span className="tabular-nums text-xs font-semibold text-foreground">
-              {rating.toFixed(1)}
-            </span>
-          </div>
-        </div>
-        <Sparkline
-          data={sparklineData}
-          className="w-[92px] h-[30px] lg:w-[50px] lg:h-[17px] 3xl:w-[92px] 3xl:h-[30px]"
-        />
-      </div>
-    </Card>
-  );
-}
+// Case 8 (Broken Memoization) good path — memo done right. Every prop
+// MicroCardsGridClient hands this component is reference-stable: `title`,
+// `sku`, `marginality`, `rating` come off an unchanging product record;
+// `value` is a freshly-formatted string but with identical content each
+// render, so `Object.is` still calls it unchanged; `sparklineData` is the
+// same array reference every time (computed once in the grid's own
+// `useMemo`, not per card); and `lowMargin` only flips for the handful of
+// cards whose `marginality` sits right at the current slider threshold.
+// So on a given tick, memo's prop comparison actually pays off — it skips
+// re-rendering every card whose visual state hasn't changed, instead of
+// the "compare anyway, re-render anyway" waste in MicroCardUnoptimized, which
+// gets a freshly-spread object and a brand new callback every render.
+export default memo(function MicroCard(props: Props) {
+  return <MicroCardView {...props} />;
+});

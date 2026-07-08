@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils/cn";
 import { useRenderCounterStore } from "@/store/render-counter";
+import type { CaseKey } from "@/types/simulator";
 
 const FLASH_DURATION_MS = 400;
 
@@ -18,9 +19,10 @@ const FLASH_CLASS = cn(
 // every render after that. Whether this is one row (good path) or two
 // hundred at once (Case 7's Context Overhead bad path) is entirely a
 // function of how many wrapped components actually re-executed — this
-// component itself doesn't know or care which case is active. It also feeds
-// the shared render-counter store Case 7's settle-window reporter watches
-// (see hooks/useRerenderNodesReporter.ts); the store itself gates whether an
+// component itself doesn't know or care which case is active, only which
+// case's counter to feed (`caseKey`). It feeds that case's slot in the
+// render-counter store, which its own settle-window reporter watches (see
+// hooks/useRerenderNodesReporter.ts); the store itself gates whether an
 // increment counts, so calling it here unconditionally is safe.
 //
 // The flash itself is applied by mutating the DOM node directly (not React
@@ -30,8 +32,10 @@ const FLASH_CLASS = cn(
 // imperatively never causes a re-render of this component, so the effect
 // only ever runs once per *actual* re-render of the wrapped children.
 export default function FlashOnUpdate({
+  caseKey,
   children,
 }: {
+  caseKey: CaseKey;
   children: React.ReactNode;
 }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -47,7 +51,7 @@ export default function FlashOnUpdate({
       return;
     }
 
-    increment();
+    increment(caseKey);
 
     const node = ref.current;
     if (!node) return;
