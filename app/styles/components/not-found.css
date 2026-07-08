@@ -1,0 +1,22 @@
+@layer components {
+  /* 404 page — faint radial glow behind the centered error content */
+  .not-found-glow {
+    background-image: radial-gradient(
+      120% 150% at 50% -10%,
+      color-mix(in srgb, var(--color-primary) 5%, transparent),
+      transparent 62%
+    );
+  }
+
+  /* 404 number — gradient text clip, foreground fading to muted */
+  .not-found-number {
+    background-image: linear-gradient(
+      160deg,
+      var(--color-foreground),
+      var(--color-text-3)
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+}

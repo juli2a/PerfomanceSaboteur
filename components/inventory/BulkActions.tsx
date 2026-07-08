@@ -22,7 +22,13 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // A colored dot + plain label — the status picker's own row style, distinct
 // from the tinted Badge pill used for the status column elsewhere.
@@ -133,13 +139,10 @@ export default function BulkActions() {
       </div>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-        <DialogContent className="sm:max-w-140 gap-0 px-12.5 py-7.5">
-          <div className="mb-4 flex items-center gap-3.25">
-            <span className="grid size-10.5 shrink-0 place-items-center rounded-md bg-accent-dim text-primary">
-              <RefreshCw className="size-5" />
-            </span>
+        <DialogContent className="sm:max-w-140">
+          <DialogHeader icon={<RefreshCw className="size-5" />}>
             <DialogTitle>Confirm status change</DialogTitle>
-          </div>
+          </DialogHeader>
 
           <DialogDescription>
             Are you sure you want to set the following status for these products?

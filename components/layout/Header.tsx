@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import ControlPanel from "@/components/simulator/control-panel/ControlPanel";
@@ -9,6 +9,7 @@ import MobileDrawer from "@/components/layout/MobileDrawer";
 import Logo from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { MediaContext } from "@/context/MediaContext";
 import { useSyncControlsAcrossBreakpoint } from "@/hooks/useSyncControlsAcrossBreakpoint";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 import { useSimControlStore } from "@/store/simulator-control";
@@ -27,6 +28,21 @@ export default function Header({
 }: HeaderProps) {
   useSyncControlsAcrossBreakpoint();
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // The nav drawer is a mobile-only surface (its trigger is lg:hidden), but
+  // its own open state doesn't know that — left open while crossing into
+  // desktop, it stays visually open at its mobile top offset (h-[60px],
+  // vs the desktop header's h-24), same class of bug
+  // useSyncControlsAcrossBreakpoint already handles for the controls sheet.
+  const isMobile = useContext(MediaContext);
+  const wasMobileRef = useRef(isMobile);
+  useEffect(() => {
+    if (isMobile === undefined) return;
+    if (wasMobileRef.current === isMobile) return;
+    wasMobileRef.current = isMobile;
+    if (!isMobile) setDrawerOpen(false);
+  }, [isMobile]);
+
   const controlsOpen = useSimControlStore((state) => state.controlsOpen);
   const setControlsOpen = useSimControlStore((state) => state.setControlsOpen);
   const toggles = useSimControlStore((state) => state.toggles);

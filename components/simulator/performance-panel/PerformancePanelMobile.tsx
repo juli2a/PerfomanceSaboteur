@@ -114,7 +114,14 @@ export default function PerformancePanelMobile({
       setMobilePanelHeight(el.offsetHeight),
     );
     observer.observe(el);
-    return () => observer.disconnect();
+    // Zero it back out on unmount (e.g. switching to desktop, where
+    // PerformancePanelDesktop takes over instead) — otherwise consumers
+    // like MobileDrawer keep reserving space for a panel that's no longer
+    // in the DOM, going by whatever height this one last measured.
+    return () => {
+      observer.disconnect();
+      setMobilePanelHeight(0);
+    };
   }, [setMobilePanelHeight]);
 
   const lcp: MetricPreview = {

@@ -1,5 +1,6 @@
 "use client";
 
+import AboutButton from "@/components/layout/AboutButton";
 import MainNav from "@/components/layout/MainNav";
 import { useSidebarCollapsed } from "@/hooks/useSidebarCollapsed";
 import { cn } from "@/lib/utils/cn";
@@ -21,7 +22,7 @@ export default function Sidebar({
   return (
     <aside
       className={cn(
-        "hidden shrink-0 flex-col overflow-y-auto border-r border-border bg-surface-2 pb-15 transition-[width] duration-280 lg:flex",
+        "hidden shrink-0 flex-col overflow-x-hidden overflow-y-auto border-r border-border bg-surface-2 pb-15 transition-[width] duration-280 lg:flex",
         collapsed ? "w-[76px]" : "w-[248px]",
       )}
     >
@@ -31,10 +32,21 @@ export default function Sidebar({
           collapsed ? "px-3.5" : "px-heading-gap",
         )}
       >
-        <MainNav collapsible collapsed={collapsed} setCollapsed={setCollapsed} />
+        <MainNav
+          collapsible
+          collapsed={collapsed}
+          setCollapsed={setCollapsed}
+        />
       </div>
 
-      <div className="flex-1" />
+      <div
+        className={cn(
+          "mt-auto pb-heading-gap transition-[padding] duration-280",
+          collapsed ? "px-3.5" : "px-heading-gap",
+        )}
+      >
+        <AboutButton collapsed={collapsed} />
+      </div>
     </aside>
   );
 }
