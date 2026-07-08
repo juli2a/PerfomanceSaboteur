@@ -14,7 +14,7 @@ export default function InventorySearch() {
       placeholder="Search products or SKU…"
       value={query}
       onChange={(event) => setQuery(event.target.value)}
-      containerClassName="flex-1 lg:max-w-90"
+      containerClassName="flex-1 @min-[1024px]:max-w-90"
     />
   );
 }

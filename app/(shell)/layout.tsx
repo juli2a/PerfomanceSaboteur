@@ -34,7 +34,7 @@ export default async function ShellLayout({
           isLayoutShiftOn={isLayoutShiftOn}
           initialCollapsed={initialCollapsed}
         />
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="@container flex-1 overflow-auto">{children}</main>
         <CaseDetailPanel caseTipContent={caseTipContent} />
       </div>
       <PerformancePanel />

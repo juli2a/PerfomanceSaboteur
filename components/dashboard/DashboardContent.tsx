@@ -40,7 +40,7 @@ export function DashboardContent() {
       </Suspense>
 
       <Suspense fallback={<AnalyticsPairSkeleton />}>
-        <div className="flex flex-col gap-4 lg:flex-row">
+        <div className="flex flex-col gap-4 @min-[1024px]:flex-row">
           <CategoryAnalytics />
           <TopCustomers />
         </div>

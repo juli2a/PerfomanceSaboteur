@@ -17,7 +17,7 @@
     color: var(--color-foreground);
   }
 
-  @media (width >= 64rem) {
+  @container (width >= 64rem) {
     .heading-1 {
       font-size: 25px;
       letter-spacing: -0.5px;

@@ -40,10 +40,10 @@ export function MicroCardsGridClient({ products }: Props) {
 
   return (
     <Card variant="global">
-      <div className="mb-heading-gap flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="flex items-center justify-between sm:contents">
+      <div className="mb-heading-gap flex flex-col gap-3 @min-[640px]:flex-row @min-[640px]:items-center">
+        <div className="flex items-center justify-between @min-[640px]:contents">
           <h2 className="heading-2">Analytics Grid</h2>
-          <span className="tabular-nums text-xs text-text-3 sm:ml-auto">
+          <span className="tabular-nums text-xs text-text-3 @min-[640px]:ml-auto">
             <span className="font-semibold text-foreground">{activeCount}</span>
             <span> / {products.length}</span>
           </span>
@@ -64,7 +64,7 @@ export function MicroCardsGridClient({ products }: Props) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-3 @min-[640px]:grid-cols-2 @min-[1024px]:grid-cols-4 @min-[1280px]:grid-cols-5">
         {isBrokenMemoizationOn
           ? // Case 8 bad path: `card` is spread into a brand-new object on
             // every render of this component — MicroCardUnoptimized's
