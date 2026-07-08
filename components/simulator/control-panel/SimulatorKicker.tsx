@@ -17,8 +17,8 @@ export default function SimulatorKicker({ size = "sm" }: Props) {
       </span>
       <span
         className={cn(
-          "leading-[1.3] text-brand-muted",
-          size === "sm" ? "max-w-30 text-[10px]" : "text-[12.5px]",
+          "leading-[1.3] text-brand-muted text-[13px]",
+          size === "sm" && "max-w-40",
         )}
       >
         Turn on an anti-pattern and see what goes wrong

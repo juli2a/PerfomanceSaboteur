@@ -1,6 +1,6 @@
 "use client";
 
-import { InfoIcon, X } from "lucide-react";
+import { FileText, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -67,13 +67,13 @@ function ToggleRow({
           aria-label={`${label} info`}
           aria-expanded={isInfoOpen}
           className={cn(
-            "grid size-5.5 shrink-0 place-items-center rounded-full border p-0 transition-colors",
+            "grid size-5.5 shrink-0 place-items-center rounded-xs border p-0 transition-colors",
             isInfoOpen
-              ? "border-brand-accent bg-brand-accent-dim text-brand-accent"
+              ? "border-brand-accent bg-brand-accent text-brand-bg"
               : "border-border text-brand-muted",
           )}
         >
-          <InfoIcon className="size-3.25" />
+          <FileText className="size-3.25" />
         </button>
         <Switch
           color="brand"

@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { formatNumber } from "@/lib/utils/format";
 import { getRatingPresentation } from "@/lib/utils/gauge";
+import { VITAL_DOCS_URL } from "@/lib/simulator-thresholds";
 import { useSimControlStore } from "@/store/simulator-control";
 import { useSimPerformanceStore } from "@/store/simulator-performance";
 import OverallRatingBadge from "@/components/simulator/performance-panel/OverallRatingBadge";
@@ -16,6 +17,7 @@ interface MetricPreview {
   label: string;
   display: string;
   rating: VitalRating | null;
+  href?: string;
 }
 
 function RatingDot({ rating }: { rating: VitalRating | null }) {
@@ -33,12 +35,23 @@ function RatingDot({ rating }: { rating: VitalRating | null }) {
 
 // "Chart-free" metric for the expanded grid — a coloured number, no gauge
 // ring (no room for SVG rings at this width).
-function VitalReadout({ label, display, rating }: MetricPreview) {
+function VitalReadout({ label, display, rating, href }: MetricPreview) {
   return (
     <div className="flex flex-1 items-baseline justify-center gap-1.5">
-      <span className="text-[12px] font-semibold tracking-wide text-brand-muted">
-        {label}
-      </span>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[12px] font-semibold tracking-wide text-brand-muted hover:text-brand-text"
+        >
+          {label}
+        </a>
+      ) : (
+        <span className="text-[12px] font-semibold tracking-wide text-brand-muted">
+          {label}
+        </span>
+      )}
       <span
         className={cn(
           "text-sm font-bold tabular-nums",
@@ -128,21 +141,25 @@ export default function PerformancePanelMobile({
     label: "LCP",
     display: vitals.lcp ? `${(vitals.lcp.value / 1000).toFixed(1)}s` : "—",
     rating: vitals.lcp?.rating ?? null,
+    href: VITAL_DOCS_URL.lcp,
   };
   const cls: MetricPreview = {
     label: "CLS",
     display: vitals.cls ? vitals.cls.value.toFixed(2) : "—",
     rating: vitals.cls?.rating ?? null,
+    href: VITAL_DOCS_URL.cls,
   };
   const inp: MetricPreview = {
     label: "INP",
     display: vitals.inp ? `${Math.round(vitals.inp.value)}ms` : "—",
     rating: vitals.inp?.rating ?? null,
+    href: VITAL_DOCS_URL.inp,
   };
   const ttfb: MetricPreview = {
     label: "TTFB",
     display: vitals.ttfb ? `${(vitals.ttfb.value / 1000).toFixed(1)}s` : "—",
     rating: vitals.ttfb?.rating ?? null,
+    href: VITAL_DOCS_URL.ttfb,
   };
 
   return (

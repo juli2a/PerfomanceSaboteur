@@ -77,7 +77,7 @@ export default function ControlPanelTogglers() {
                     checked={toggles[item.key]}
                     onCheckedChange={(checked) => toggleCase(item.key, checked)}
                   />
-                  <span className="whitespace-nowrap text-[12.5px] font-medium text-text-2">
+                  <span className="whitespace-nowrap text-[15px] font-medium text-text-2">
                     {item.label}
                   </span>
                   <GuideButton caseKey={item.key} label={item.label} />
