@@ -104,7 +104,7 @@ export default function BulkActions() {
             <ChevronDown className="size-3.5 transition-transform group-data-popup-open:rotate-180" />
           </PopoverTrigger>
           <PopoverContent align="end" className="w-66 rounded bg-raise p-4">
-            <p className="mb-2.5 text-[12.5px] font-semibold text-text-2">Change Status:</p>
+            <p className="mb-2.5 text-[13px] font-semibold text-text-2">Change Status:</p>
             <Select value={status} onValueChange={(value) => setStatus(value as LogisticStatus)}>
               <SelectTrigger className="h-11 bg-surface-2 text-[13px] font-medium text-foreground">
                 <SelectValue>
@@ -130,7 +130,7 @@ export default function BulkActions() {
               Ok
             </Button>
             {!hasSelection && (
-              <p className="mt-2.25 text-center text-[11.5px] text-text-3">
+              <p className="mt-2.25 text-center text-[12px] text-text-3">
                 Select products first
               </p>
             )}
@@ -154,7 +154,7 @@ export default function BulkActions() {
             </Badge>
           </div>
 
-          <div className="mb-6 max-h-60 overflow-y-auto rounded-md border border-border bg-surface-2 p-1.5">
+          <div className="mb-6 max-h-60 overflow-y-auto rounded-xs border border-border bg-surface-2 p-1.5">
             {selectedProducts.map((product) => (
               <div
                 key={product.id}
@@ -166,7 +166,7 @@ export default function BulkActions() {
                 <Badge tone={getStatusTone(product.logisticStatus)} size="sm" dot>
                   {product.logisticStatus}
                 </Badge>
-                <span className="shrink-0 font-mono text-[11.5px] text-text-3">
+                <span className="shrink-0 font-mono text-[12px] text-text-3">
                   {product.sku}
                 </span>
               </div>
@@ -182,7 +182,7 @@ export default function BulkActions() {
             </Button>
           </div>
           {noopChange && (
-            <p className="mt-2.5 text-center text-[11.5px] text-text-3">
+            <p className="mt-2.5 text-center text-[12px] text-text-3">
               Selected products already have this status.
             </p>
           )}

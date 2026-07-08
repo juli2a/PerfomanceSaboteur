@@ -4,6 +4,7 @@ import type { AmplifiedProduct } from "@/types/inventory";
 import { Badge } from "@/components/ui/badge";
 import { getStatusTone } from "@/lib/utils/inventory";
 import { formatCurrency } from "@/lib/utils/format";
+import { cn } from "@/lib/utils/cn";
 import { useInventoryStatusStore } from "@/store/inventory-status";
 import StatusChangeSheet from "@/components/inventory/StatusChangeSheet";
 
@@ -33,16 +34,15 @@ export default function ProductCard({ product }: ProductCardProps) {
           <p className="truncate text-sm font-medium text-foreground">{product.title}</p>
           <p className="mt-1 font-mono text-xs text-text-3">{product.sku}</p>
           <div className="mt-1.5 flex items-center gap-1.75">
-            <span className="rounded-xs border border-border bg-surface-2 px-2 py-0.5 text-[11.5px] font-semibold text-text-2">
+            <span className="rounded-xs border border-border bg-surface-2 px-2 py-0.5 text-[12px] font-semibold text-text-2">
               {product.category}
             </span>
             <span className="text-xs text-text-2">
               <span
-                className={
-                  product.stock === 0
-                    ? "font-semibold text-alert tabular-nums"
-                    : "font-semibold text-foreground tabular-nums"
-                }
+                className={cn(
+                  "font-semibold tabular-nums",
+                  product.stock === 0 ? "text-alert" : "text-foreground",
+                )}
               >
                 {product.stock}
               </span>{" "}

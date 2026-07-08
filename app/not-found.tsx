@@ -40,7 +40,7 @@ export default function NotFound() {
           <h1 className="mb-2.5 text-[22px] font-semibold tracking-[-0.2px] text-foreground">
             Page not found
           </h1>
-          <p className="mb-8 text-[14.5px] leading-[1.6] text-text-2">
+          <p className="mb-8 text-[15px] leading-[1.6] text-text-2">
             The screen you&apos;re looking for doesn&apos;t exist, was moved,
             or the link is broken.
           </p>

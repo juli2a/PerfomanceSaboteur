@@ -67,7 +67,7 @@ export default function StatusChangeDrawer({ product, currentStatus }: StatusCha
           </DrawerClose>
         </DrawerHeader>
         <DrawerBody className="flex flex-col px-3.5 pt-3 pb-5.5">
-          <div className="mb-4.5 flex items-center gap-3.25 rounded-md border border-border bg-surface-2 p-3.25">
+          <div className="mb-4.5 flex items-center gap-3.25 rounded-xs border border-border bg-surface-2 p-3.25">
             <Image
               src={product.thumbnail}
               alt={product.title}
@@ -77,8 +77,8 @@ export default function StatusChangeDrawer({ product, currentStatus }: StatusCha
               className="size-12.5 shrink-0 rounded bg-white object-cover"
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[14.5px] font-semibold text-foreground">{product.title}</p>
-              <p className="mt-0.75 truncate font-mono text-[11.5px] text-text-3">{product.sku}</p>
+              <p className="truncate text-[15px] font-semibold text-foreground">{product.title}</p>
+              <p className="mt-0.75 truncate font-mono text-[12px] text-text-3">{product.sku}</p>
               <p className="mt-1.25 text-xs text-text-2">
                 {product.category} ·{" "}
                 <span
@@ -94,7 +94,7 @@ export default function StatusChangeDrawer({ product, currentStatus }: StatusCha
             </span>
           </div>
 
-          <p className="mb-2.75 text-[12.5px] font-semibold text-text-2">Select a new status</p>
+          <p className="mb-2.75 text-[13px] font-semibold text-text-2">Select a new status</p>
           <div className="flex flex-col gap-2.25">
             {LOGISTIC_STATUSES.map((s) => {
               const isCurrent = s === currentStatus;
@@ -106,7 +106,7 @@ export default function StatusChangeDrawer({ product, currentStatus }: StatusCha
                   disabled={isCurrent}
                   onClick={() => setPick(s)}
                   className={cn(
-                    "flex w-full items-center gap-2.75 rounded-md border px-3.75 py-3.25 text-left text-sm font-semibold transition-colors",
+                    "flex w-full items-center gap-2.75 rounded-xs border px-3.75 py-3.25 text-left text-sm font-semibold transition-colors",
                     getStatusRowClass(s),
                     isPicked ? "border-current" : "border-transparent",
                     isCurrent && "opacity-40",

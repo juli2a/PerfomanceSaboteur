@@ -1,5 +1,7 @@
+import { cn } from "@/lib/utils/cn";
+
 function Shimmer({ className }: { className: string }) {
-  return <div className={`animate-pulse rounded-xl bg-raise ${className}`} />;
+  return <div className={cn("animate-pulse rounded-xl bg-raise", className)} />;
 }
 
 export function KpiSkeleton() {

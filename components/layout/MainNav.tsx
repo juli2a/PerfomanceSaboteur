@@ -84,7 +84,7 @@ export default function MainNav({
           )}
         >
           {!collapsed && (
-            <span className="text-[10.5px] font-semibold tracking-[1px] text-text-3">
+            <span className="text-[11px] font-semibold tracking-[1px] text-text-3">
               WORKSPACE
             </span>
           )}

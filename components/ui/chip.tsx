@@ -18,7 +18,7 @@ function Chip({
     <span
       data-slot="chip"
       className={cn(
-        "inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface py-1.5 pr-2 pl-3.25 text-[12.5px] font-medium text-foreground",
+        "inline-flex items-center gap-2 rounded-xl border border-border-strong bg-surface py-1.5 pr-2 pl-3.25 text-[13px] font-medium text-foreground",
         className,
       )}
       {...props}

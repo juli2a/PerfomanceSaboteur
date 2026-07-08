@@ -37,7 +37,7 @@
   .sim-card {
     display: flex;
     align-items: center;
-    border-radius: 14px;
+    border-radius: var(--radius-lg);
     border: 1px solid rgba(244, 167, 60, 0.42);
     padding: calc(var(--spacing) * 2.75) calc(var(--spacing) * 3.75);
     background: linear-gradient(155deg, rgb(40, 32, 20), rgb(22, 18, 11));

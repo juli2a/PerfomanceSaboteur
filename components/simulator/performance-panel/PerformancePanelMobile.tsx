@@ -36,6 +36,8 @@ function RatingDot({ rating }: { rating: VitalRating | null }) {
 // "Chart-free" metric for the expanded grid — a coloured number, no gauge
 // ring (no room for SVG rings at this width).
 function VitalReadout({ label, display, rating, href }: MetricPreview) {
+  const labelClass = "text-[12px] font-semibold tracking-wide text-brand-muted";
+
   return (
     <div className="flex flex-1 items-baseline justify-center gap-1.5">
       {href ? (
@@ -43,14 +45,12 @@ function VitalReadout({ label, display, rating, href }: MetricPreview) {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[12px] font-semibold tracking-wide text-brand-muted hover:text-brand-text"
+          className={cn(labelClass, "hover:text-brand-text")}
         >
           {label}
         </a>
       ) : (
-        <span className="text-[12px] font-semibold tracking-wide text-brand-muted">
-          {label}
-        </span>
+        <span className={labelClass}>{label}</span>
       )}
       <span
         className={cn(
@@ -66,7 +66,7 @@ function VitalReadout({ label, display, rating, href }: MetricPreview) {
 
 function StatTile({ label, display, rating }: MetricPreview) {
   return (
-    <div className="flex flex-1 items-center justify-between gap-2 rounded-md border border-brand-border bg-brand-bg-2 px-2.75 py-1">
+    <div className="flex flex-1 items-center justify-between gap-2 rounded-xs border border-brand-border bg-brand-bg-2 px-2.75 py-1">
       <span className="whitespace-nowrap text-[12px] text-brand-muted">
         {label}
       </span>
@@ -186,7 +186,7 @@ export default function PerformancePanelMobile({
           }
           className="flex h-12.5 w-full items-center justify-between px-4 disabled:cursor-default"
         >
-          <span className="flex items-center gap-1.75 text-[12.5px] font-semibold text-brand-text">
+          <span className="flex items-center gap-1.75 text-[13px] font-semibold text-brand-text">
             <span className="heading-brand-kicker">SIMULATOR</span>
             Web Vitals
           </span>
