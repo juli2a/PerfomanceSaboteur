@@ -11,8 +11,11 @@ export const useSimPerformanceStore = create<SimPerformanceState>()((set) => ({
     set((state) => ({ vitals: { ...state.vitals, [key]: reading } })),
   domNodes: null,
   setDomNodes: (count) => set({ domNodes: count }),
-  rerenderedNodes: null,
-  setRerenderedNodes: (count) => set({ rerenderedNodes: count }),
+  rerenderedNodes: {},
+  setRerenderedNodes: (key, count) =>
+    set((state) => ({
+      rerenderedNodes: { ...state.rerenderedNodes, [key]: count },
+    })),
   blockingTime: 0,
   setBlockingTime: (ms) => set({ blockingTime: ms }),
   interactionLatency: 0,

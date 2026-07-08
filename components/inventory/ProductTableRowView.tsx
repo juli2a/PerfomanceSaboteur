@@ -33,7 +33,7 @@ export default function ProductTableRowView({
   onToggleSelected,
 }: ProductTableRowViewProps) {
   return (
-    <FlashOnUpdate>
+    <FlashOnUpdate caseKey="contextOverhead">
       <div
         role="row"
         className={cn(

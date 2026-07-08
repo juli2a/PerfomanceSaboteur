@@ -2,7 +2,7 @@ import { cache } from "react";
 import { apiFetch } from "@/lib/server/fetcher";
 import {
   deriveLtv,
-  deriveSparkline,
+  deriveRawHistory,
   deriveKpiTrend,
   deriveScatterIndex,
   deriveScatterFloat,
@@ -190,7 +190,7 @@ export const getProducts = cache(async (): Promise<AnalyticCardData[]> => {
       rating: p.rating,
     },
     marginality: Math.round(p.discountPercentage),
-    sparklineData: deriveSparkline(p.id, p.price),
+    rawHistory: deriveRawHistory(p.id, p.price),
   }));
 });
 

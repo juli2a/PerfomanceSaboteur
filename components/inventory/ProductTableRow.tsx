@@ -37,7 +37,7 @@ function ProductTableRow({ product, gridTemplateColumns }: ProductTableRowProps)
       isSelected={isSelected}
       logisticStatus={logisticStatus}
       onToggleSelected={() => {
-        startTracking();
+        startTracking("contextOverhead");
         toggleRow({
           id: product.id,
           title: product.title,

@@ -22,11 +22,28 @@ export function deriveTrend(data: number[]): boolean {
   return false
 }
 
-// 7-point sparkline based on product id and price
-export function deriveSparkline(productId: number, basePrice: number): number[] {
-  return Array.from({ length: 7 }, (_, i) =>
-    Math.round(basePrice * (0.85 + 0.03 * ((productId * 17 + i * 13) % 11))),
-  );
+// A year of daily "raw" readings for a product's value history — the input
+// the client-side sparkline pipeline (lib/utils/sparkline-processing.ts)
+// cleans, smooths and downsamples before display. Every 14th day gets a
+// deterministic one-off spike (a promo-day sales bump, a tracking glitch —
+// the kind of single-point outlier real daily metrics actually have), so
+// the pipeline's outlier-removal step has something real to remove.
+//
+// The underlying wave runs exactly one cycle across the full `days` window
+// (not a short multi-cycle-per-year wave) — the sparkline pipeline
+// downsamples to just 7 points, and a higher-frequency wave aliases against
+// that bucket size into a spurious zigzag instead of a readable trend.
+export function deriveRawHistory(
+  productId: number,
+  basePrice: number,
+  days = 365,
+): number[] {
+  const cycle = (2 * Math.PI) / days;
+  return Array.from({ length: days }, (_, i) => {
+    const base = basePrice * (0.85 + 0.1 * Math.sin(productId * 12.9898 + i * cycle));
+    const spike = i % 14 === 0 ? basePrice * 0.6 : 0;
+    return Math.round(base + spike);
+  });
 }
 
 // Avatar gradient hue (0-359) for a customer's initials badge

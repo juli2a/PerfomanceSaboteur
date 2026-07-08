@@ -63,12 +63,15 @@ export default function PerformancePanel() {
 
   const alerts = shownAlertKeys.map((key) => {
     const { title, body } = getSimulatorCase(key).alert;
-    // Case 7's alert.body is a static prefix — the live settle-window count
-    // (see hooks/useRerenderNodesReporter.ts) is appended here at render
-    // time rather than baked into the case definition.
+    // Case 7's and Case 8's alert.body are static prefixes — the live
+    // settle-window count (see hooks/useRerenderNodesReporter.ts) is
+    // appended here at render time rather than baked into the case
+    // definition. rerenderedNodes is keyed by case so one case's stale count
+    // never leaks into the other's alert body.
     const displayBody =
-      key === "contextOverhead" && rerenderedNodes !== null
-        ? `${body}: ${rerenderedNodes}`
+      (key === "contextOverhead" || key === "brokenMemoization") &&
+      rerenderedNodes[key] != null
+        ? `${body}: ${rerenderedNodes[key]}`
         : body;
     return (
       <SimulatorAlert
