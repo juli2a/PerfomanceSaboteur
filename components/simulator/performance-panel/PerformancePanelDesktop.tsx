@@ -3,6 +3,7 @@ import {
   INP_POOR,
   LCP_POOR,
   TTFB_POOR,
+  VITAL_DOCS_URL,
 } from "@/lib/simulator-thresholds";
 import { formatNumber } from "@/lib/utils/format";
 import MetricGauge from "@/components/simulator/performance-panel/MetricGauge";
@@ -47,6 +48,7 @@ export default function PerformancePanelDesktop({
               value={vitals.lcp?.value ?? 0}
               poorThreshold={LCP_POOR}
               rating={vitals.lcp?.rating ?? null}
+              href={VITAL_DOCS_URL.lcp}
             />
             <MetricGauge
               label="CLS"
@@ -54,6 +56,7 @@ export default function PerformancePanelDesktop({
               value={vitals.cls?.value ?? 0}
               poorThreshold={CLS_POOR}
               rating={vitals.cls?.rating ?? null}
+              href={VITAL_DOCS_URL.cls}
             />
             <MetricGauge
               label="INP ms"
@@ -61,6 +64,7 @@ export default function PerformancePanelDesktop({
               value={vitals.inp?.value ?? 0}
               poorThreshold={INP_POOR}
               rating={vitals.inp?.rating ?? null}
+              href={VITAL_DOCS_URL.inp}
             />
             <MetricGauge
               label="TTFB"
@@ -70,6 +74,7 @@ export default function PerformancePanelDesktop({
               value={vitals.ttfb?.value ?? 0}
               poorThreshold={TTFB_POOR}
               rating={vitals.ttfb?.rating ?? null}
+              href={VITAL_DOCS_URL.ttfb}
             />
           </div>
           <span className="mx-2.5 w-px self-stretch bg-border" />

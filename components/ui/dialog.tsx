@@ -122,7 +122,7 @@ function DialogHeader({
       >
         <span
           className={cn(
-            "grid size-10.5 shrink-0 place-items-center rounded-md",
+            "grid size-10.5 shrink-0 place-items-center rounded-xs",
             dialogIconToneClass[iconTone]
           )}
         >
@@ -176,7 +176,7 @@ function DialogTitle({ className, ...props }: DialogPrimitive.Title.Props) {
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn(
-        "font-heading text-[17.5px] leading-none font-semibold tracking-tight",
+        "font-heading text-[18px] leading-none font-semibold tracking-tight",
         className
       )}
       {...props}

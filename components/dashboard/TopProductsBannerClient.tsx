@@ -26,7 +26,7 @@ export default function TopProductsBannerClient({
 }: Props) {
   return (
     <div className="relative overflow-hidden rounded-xl">
-      <h2 className="heading-2 absolute top-4.25 left-4.25 z-10 text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.6)] sm:top-5.5 sm:left-5.5">
+      <h2 className="heading-2 absolute top-4.25 left-4.25 z-10 text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.6)] @min-[640px]:top-5.5 @min-[640px]:left-5.5">
         Top Products
       </h2>
 
@@ -44,7 +44,7 @@ export default function TopProductsBannerClient({
                     aria-hidden="true"
                     width={48}
                     height={48}
-                    className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-md brightness-50 md:block"
+                    className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-md brightness-50 @min-[768px]:block"
                   />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -64,7 +64,7 @@ export default function TopProductsBannerClient({
                     fill
                     sizes="100vw"
                     style={{ objectFit: "cover" }}
-                    className="hidden scale-110 blur-md brightness-50 md:block"
+                    className="hidden scale-110 blur-md brightness-50 @min-[768px]:block"
                     loading={i === 0 ? "eager" : undefined}
                     fetchPriority={i === 0 ? "high" : undefined}
                   />

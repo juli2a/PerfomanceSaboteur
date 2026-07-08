@@ -55,7 +55,8 @@ export default function EdgeScroller({
 
   // One click jumps all the way to the edge, not just one step — there's
   // nothing else to reveal in between.
-  const scrollToStart = () => scrollRef.current?.scrollTo({ left: 0, behavior: "smooth" });
+  const scrollToStart = () =>
+    scrollRef.current?.scrollTo({ left: 0, behavior: "smooth" });
   const scrollToEnd = () => {
     const el = scrollRef.current;
     if (!el) return;
@@ -78,7 +79,10 @@ export default function EdgeScroller({
       )}
       <div
         ref={scrollRef}
-        className={cn("scrollbar-hidden flex min-w-0 flex-1 items-center overflow-x-auto", className)}
+        className={cn(
+          "scrollbar-hidden flex min-w-0 flex-1 items-center overflow-x-auto overflow-y-hidden",
+          className,
+        )}
       >
         {children}
       </div>

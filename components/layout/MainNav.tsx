@@ -12,6 +12,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils/cn";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useSimControlStore } from "@/store/simulator-control";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
@@ -46,6 +48,17 @@ export default function MainNav({
   const pathname = usePathname();
   const collapsed = collapsible && collapsedProp;
 
+  // Nudge to collapse: only makes sense once the sidebar is actually the
+  // thing worth collapsing — both it and the guide panel (CaseDetailPanel)
+  // open, on a shell too narrow for that (screen width is a simpler proxy
+  // for `main` getting squeezed than measuring `main` itself).
+  const isGuideOpen = useSimControlStore(
+    (state) => state.activeGuideKey !== null,
+  );
+  const isShellCramped = useMediaQuery("(max-width: 1299.98px)");
+  const showCollapsePulse =
+    collapsible && !collapsed && isGuideOpen && isShellCramped;
+
   return (
     <nav className="flex flex-col gap-1.5">
       {onClose && (
@@ -71,7 +84,7 @@ export default function MainNav({
           )}
         >
           {!collapsed && (
-            <span className="text-[10.5px] font-semibold tracking-[1px] text-text-3">
+            <span className="text-[11px] font-semibold tracking-[1px] text-text-3">
               WORKSPACE
             </span>
           )}
@@ -82,6 +95,7 @@ export default function MainNav({
               onClick={() => setCollapsed(!collapsed)}
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              className={cn(showCollapsePulse && "sidebar-collapse-cta-pulse")}
             >
               {collapsed ? (
                 <ChevronRight size={16} />

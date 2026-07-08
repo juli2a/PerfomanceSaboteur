@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { formatNumber } from "@/lib/utils/format";
 import { getRatingPresentation } from "@/lib/utils/gauge";
+import { VITAL_DOCS_URL } from "@/lib/simulator-thresholds";
 import { useSimControlStore } from "@/store/simulator-control";
 import { useSimPerformanceStore } from "@/store/simulator-performance";
 import OverallRatingBadge from "@/components/simulator/performance-panel/OverallRatingBadge";
@@ -16,6 +17,7 @@ interface MetricPreview {
   label: string;
   display: string;
   rating: VitalRating | null;
+  href?: string;
 }
 
 function RatingDot({ rating }: { rating: VitalRating | null }) {
@@ -33,12 +35,23 @@ function RatingDot({ rating }: { rating: VitalRating | null }) {
 
 // "Chart-free" metric for the expanded grid — a coloured number, no gauge
 // ring (no room for SVG rings at this width).
-function VitalReadout({ label, display, rating }: MetricPreview) {
+function VitalReadout({ label, display, rating, href }: MetricPreview) {
+  const labelClass = "text-[12px] font-semibold tracking-wide text-brand-muted";
+
   return (
     <div className="flex flex-1 items-baseline justify-center gap-1.5">
-      <span className="text-[12px] font-semibold tracking-wide text-brand-muted">
-        {label}
-      </span>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(labelClass, "hover:text-brand-text")}
+        >
+          {label}
+        </a>
+      ) : (
+        <span className={labelClass}>{label}</span>
+      )}
       <span
         className={cn(
           "text-sm font-bold tabular-nums",
@@ -53,7 +66,7 @@ function VitalReadout({ label, display, rating }: MetricPreview) {
 
 function StatTile({ label, display, rating }: MetricPreview) {
   return (
-    <div className="flex flex-1 items-center justify-between gap-2 rounded-md border border-brand-border bg-brand-bg-2 px-2.75 py-1">
+    <div className="flex flex-1 items-center justify-between gap-2 rounded-xs border border-brand-border bg-brand-bg-2 px-2.75 py-1">
       <span className="whitespace-nowrap text-[12px] text-brand-muted">
         {label}
       </span>
@@ -128,21 +141,25 @@ export default function PerformancePanelMobile({
     label: "LCP",
     display: vitals.lcp ? `${(vitals.lcp.value / 1000).toFixed(1)}s` : "—",
     rating: vitals.lcp?.rating ?? null,
+    href: VITAL_DOCS_URL.lcp,
   };
   const cls: MetricPreview = {
     label: "CLS",
     display: vitals.cls ? vitals.cls.value.toFixed(2) : "—",
     rating: vitals.cls?.rating ?? null,
+    href: VITAL_DOCS_URL.cls,
   };
   const inp: MetricPreview = {
     label: "INP",
     display: vitals.inp ? `${Math.round(vitals.inp.value)}ms` : "—",
     rating: vitals.inp?.rating ?? null,
+    href: VITAL_DOCS_URL.inp,
   };
   const ttfb: MetricPreview = {
     label: "TTFB",
     display: vitals.ttfb ? `${(vitals.ttfb.value / 1000).toFixed(1)}s` : "—",
     rating: vitals.ttfb?.rating ?? null,
+    href: VITAL_DOCS_URL.ttfb,
   };
 
   return (
@@ -169,7 +186,7 @@ export default function PerformancePanelMobile({
           }
           className="flex h-12.5 w-full items-center justify-between px-4 disabled:cursor-default"
         >
-          <span className="flex items-center gap-1.75 text-[12.5px] font-semibold text-brand-text">
+          <span className="flex items-center gap-1.75 text-[13px] font-semibold text-brand-text">
             <span className="heading-brand-kicker">SIMULATOR</span>
             Web Vitals
           </span>

@@ -12,6 +12,7 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 import type { AmplifiedProduct } from "@/types/inventory";
+import { cn } from "@/lib/utils/cn";
 import { MediaContext } from "@/context/MediaContext";
 import { useInventoryFiltersStore } from "@/store/inventory-filters";
 import { useInventorySearchStore } from "@/store/inventory-search";
@@ -175,7 +176,7 @@ export default function ProductTable({ products }: ProductTableProps) {
         const product = row.original;
         if (isMobile) {
           return (
-            <div key={product.id} style={{ paddingBottom: 8 }}>
+            <div key={product.id} className="pb-2">
               <ProductCard product={product} />
             </div>
           );
@@ -200,11 +201,10 @@ export default function ProductTable({ products }: ProductTableProps) {
     <div className="flex flex-1 flex-col overflow-hidden rounded-xl border-t">
       <div
         ref={scrollRef}
-        className={
-          isMobile
-            ? "flex-1 overflow-auto p-3"
-            : "card-surface-bg flex-1 overflow-auto"
-        }
+        className={cn(
+          "flex-1 overflow-auto",
+          isMobile ? "p-3" : "card-surface-bg",
+        )}
       >
         {!isMobile && (
           <div
@@ -228,7 +228,8 @@ export default function ProductTable({ products }: ProductTableProps) {
         ) : (
           <div
             role="rowgroup"
-            style={{ height: virtualizer.getTotalSize(), position: "relative" }}
+            className="relative"
+            style={{ height: virtualizer.getTotalSize() }}
           >
             {virtualizer.getVirtualItems().map((virtualItem) => {
               const product = rows[virtualItem.index].original;
@@ -237,14 +238,8 @@ export default function ProductTable({ products }: ProductTableProps) {
                   key={virtualItem.key}
                   data-index={virtualItem.index}
                   ref={virtualizer.measureElement}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    transform: `translateY(${virtualItem.start}px)`,
-                    paddingBottom: isMobile ? 8 : 0,
-                  }}
+                  className={cn("absolute top-0 left-0 w-full", isMobile && "pb-2")}
+                  style={{ transform: `translateY(${virtualItem.start}px)` }}
                 >
                   {isMobile ? (
                     <ProductCard product={product} />

@@ -88,7 +88,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          "group flex h-11 items-center gap-2.25 rounded border px-3.75 text-[13.5px] font-medium whitespace-nowrap transition-colors",
+          "group flex h-11 items-center gap-2.25 rounded border px-3.75 text-[14px] font-medium whitespace-nowrap transition-colors",
           hasSelection
             ? "border-primary bg-accent-dim text-foreground"
             : "border-border bg-surface text-text-2",
@@ -98,7 +98,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
         Filter by Category
         <span
           className={cn(
-            "grid size-4.5 place-items-center rounded-full bg-primary text-[11.5px] font-bold text-primary-foreground",
+            "grid size-4.5 place-items-center rounded-full bg-primary text-[12px] font-bold text-primary-foreground",
             !hasSelection && "invisible",
           )}
         >

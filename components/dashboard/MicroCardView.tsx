@@ -83,7 +83,7 @@ export default function MicroCardView({
             </div>
             <Sparkline
               data={sparklineData}
-              className="w-[92px] h-[30px] lg:w-[50px] lg:h-[17px] 3xl:w-[92px] 3xl:h-[30px]"
+              className="w-[92px] h-[30px] @min-[1024px]:w-[50px] @min-[1024px]:h-[17px] @min-[1360px]:w-[92px] @min-[1360px]:h-[30px]"
             />
           </div>
         </PopoverTrigger>

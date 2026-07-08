@@ -34,7 +34,7 @@ export async function DashboardContentUnoptimized() {
       <TopProductsBanner />
       <KpiGridView kpi={kpi} />
       <SalesChartClient data={salesChart} />
-      <div className="flex flex-col gap-4 lg:flex-row">
+      <div className="flex flex-col gap-4 @min-[1024px]:flex-row">
         <CategoryAnalyticsView categories={categories} />
         <TopCustomersView customers={users} />
       </div>

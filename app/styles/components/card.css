@@ -29,7 +29,7 @@
     padding: 15px;
   }
 
-  @media (width >= 40rem) {
+  @container (width >= 40rem) {
     .card-global {
       padding: 22px;
     }

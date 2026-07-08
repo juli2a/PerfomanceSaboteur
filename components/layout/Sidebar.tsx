@@ -18,6 +18,7 @@ export default function Sidebar({
     isLayoutShiftOn,
     initialCollapsed,
   );
+  const horizontalPaddingClass = collapsed ? "px-3.5" : "px-heading-gap";
 
   return (
     <aside
@@ -29,7 +30,7 @@ export default function Sidebar({
       <div
         className={cn(
           "pt-heading-gap transition-[padding] duration-280",
-          collapsed ? "px-3.5" : "px-heading-gap",
+          horizontalPaddingClass,
         )}
       >
         <MainNav
@@ -42,7 +43,7 @@ export default function Sidebar({
       <div
         className={cn(
           "mt-auto pb-heading-gap transition-[padding] duration-280",
-          collapsed ? "px-3.5" : "px-heading-gap",
+          horizontalPaddingClass,
         )}
       >
         <AboutButton collapsed={collapsed} />

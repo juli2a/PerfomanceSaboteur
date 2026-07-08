@@ -45,12 +45,12 @@ export function KpiGridView({ kpi }: Props) {
   return (
     <section className="relative">
       <h2 className="sr-only">KPI Overview</h2>
-      <div className="grid grid-cols-2 gap-3 xl:grid-cols-4 xl:gap-4">
+      <div className="grid grid-cols-1 gap-3 @min-[340px]:grid-cols-2 @min-[1280px]:grid-cols-4 @min-[1280px]:gap-4">
         {cards.map((card) => (
           <KpiCard key={card.label} {...card} />
         ))}
       </div>
-      <p className="absolute -bottom-4 lg:-bottom-4.5 right-4 text-[11px] text-text-3">
+      <p className="absolute -bottom-4 @min-[1024px]:-bottom-4.5 right-4 text-[11px] text-text-3">
         * vs previous 15 days
       </p>
     </section>

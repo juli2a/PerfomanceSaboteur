@@ -8,6 +8,9 @@ interface MetricGaugeProps {
   poorThreshold: number;
   rating: VitalRating | null;
   size?: number;
+  // Link to the metric's official web.dev explainer. Optional — only the
+  // four Core Web Vitals (LCP/CLS/INP/TTFB) have one.
+  href?: string;
 }
 
 const STROKE_WIDTH = 4;
@@ -23,6 +26,7 @@ export default function MetricGauge({
   poorThreshold,
   rating,
   size = 46,
+  href,
 }: MetricGaugeProps) {
   const radius = (size - STROKE_WIDTH) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -65,7 +69,18 @@ export default function MetricGauge({
           {display}
         </span>
       </div>
-      <span className="text-[13px] text-text-2">{label}</span>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[13px] text-text-2 hover:text-foreground"
+        >
+          {label}
+        </a>
+      ) : (
+        <span className="text-[13px] text-text-2">{label}</span>
+      )}
     </div>
   );
 }

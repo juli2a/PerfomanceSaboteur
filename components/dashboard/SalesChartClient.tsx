@@ -31,14 +31,14 @@ export function SalesChartClient({ data: salesChart }: Props) {
 
   return (
     <Card variant="global">
-      <div className="mb-heading-gap flex items-center justify-between">
+      <div className="mb-heading-gap flex flex-wrap items-center gap-2">
         <div>
           <h2 className="heading-2">Revenue</h2>
           <p className="text-xs text-text-2">
             {formatCurrency(total)} this period
           </p>
         </div>
-        <div className="flex gap-1 rounded-lg border border-border-strong p-0.5">
+        <div className="ml-auto flex gap-1 rounded-lg border border-border-strong p-0.5">
           {(["day", "week", "month"] as Period[]).map((p) => (
             <Button
               key={p}

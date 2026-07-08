@@ -22,3 +22,13 @@ export const TTFB_POOR = TTFBThresholds[1];
 // threshold, the order of magnitude our Case 3 freeze produces.
 export const BLOCKING_TIME_GOOD = 100;
 export const BLOCKING_TIME_POOR = 500;
+
+// Official web.dev explainer for each Core Web Vital — linked from the
+// metric labels in the Performance Panel so a reader can go straight to
+// Google's own definition instead of trusting our gauge at face value.
+export const VITAL_DOCS_URL = {
+  lcp: "https://web.dev/articles/lcp",
+  cls: "https://web.dev/articles/cls",
+  inp: "https://web.dev/articles/inp",
+  ttfb: "https://web.dev/articles/ttfb",
+} as const;

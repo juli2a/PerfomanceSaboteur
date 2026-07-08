@@ -14,7 +14,7 @@ interface Props {
 // component; only how the data reaches it differs.
 export function TopCustomersView({ customers }: Props) {
   return (
-    <Card variant="global" className="lg:flex-1">
+    <Card variant="global" className="@min-[1024px]:flex-1">
       <h2 className="heading-2 mb-heading-gap">Top Customers</h2>
       <ul>
         {customers.map((c, i) => {
@@ -28,12 +28,12 @@ export function TopCustomersView({ customers }: Props) {
             <li
               key={c.id}
               className={cn(
-                "flex items-center gap-3 py-2.5 lg:gap-3.5 lg:py-3",
+                "flex items-center gap-3 py-2.5 @min-[1024px]:gap-3.5 @min-[1024px]:py-3",
                 i < customers.length - 1 && "border-b border-border",
               )}
             >
               <span
-                className="flex size-8.5 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white lg:size-9.5 lg:text-[13px]"
+                className="flex size-8.5 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white @min-[1024px]:size-9.5 @min-[1024px]:text-[13px]"
                 style={{
                   background: `linear-gradient(135deg, hsl(${hue} 60% 55%), hsl(${hue + 30} 60% 45%))`,
                 }}
@@ -44,7 +44,7 @@ export function TopCustomersView({ customers }: Props) {
                 <p className="truncate text-sm font-medium text-foreground">
                   {c.name}
                 </p>
-                <p className="truncate text-[11px] text-text-3 sm:text-xs">
+                <p className="truncate text-[11px] text-text-3 @min-[640px]:text-xs">
                   {c.company}
                 </p>
               </div>

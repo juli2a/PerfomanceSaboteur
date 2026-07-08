@@ -12,7 +12,7 @@ interface Props {
 // component; only how the data reaches it differs.
 export function CategoryAnalyticsView({ categories }: Props) {
   return (
-    <Card variant="global" className="lg:flex-[0_0_38%]">
+    <Card variant="global" className="@min-[1024px]:flex-[0_0_38%]">
       <h2 className="heading-2 mb-heading-gap">Categories</h2>
       <ul className="flex flex-col gap-3.75">
         {categories.map((cat) => (
@@ -21,8 +21,8 @@ export function CategoryAnalyticsView({ categories }: Props) {
               <span className="text-[13px] font-medium text-foreground">
                 {cat.name}
               </span>
-              <span className="text-xs text-text-2 lg:text-[13px]">
-                <span className="hidden lg:inline">
+              <span className="text-xs text-text-2 @min-[1024px]:text-[13px]">
+                <span className="hidden @min-[1024px]:inline">
                   {formatCurrency(cat.stockValue)} ·{" "}
                 </span>
                 {cat.share}%
