@@ -1,6 +1,6 @@
 @layer components {
-  /* 404 page — faint radial glow behind the centered error content */
-  .not-found-glow {
+  /* Error/404 pages — faint radial glow behind the centered content */
+  .error-page-glow {
     background-image: radial-gradient(
       120% 150% at 50% -10%,
       color-mix(in srgb, var(--color-primary) 5%, transparent),
@@ -8,8 +8,8 @@
     );
   }
 
-  /* 404 number — gradient text clip, foreground fading to muted */
-  .not-found-number {
+  /* Error/404 status number — gradient text clip, foreground fading to muted */
+  .error-number {
     background-image: linear-gradient(
       160deg,
       var(--color-foreground),

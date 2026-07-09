@@ -1,6 +1,9 @@
 import { DUMMYJSON_API } from "@/lib/config";
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export async function apiFetch<T>(
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
   const url = `${DUMMYJSON_API}${path}`;
   const res = await fetch(url, init);
   if (!res.ok) {
