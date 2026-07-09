@@ -106,8 +106,8 @@ export interface SimPerformanceState {
   interactionLatency: number;
   setInteractionLatency: (ms: number) => void;
   // Current rendered height (px) of the mobile Performance Panel — it's
-  // always expanded while the simulator controls sheet is open, so
-  // MobileControlSheet reads this to reserve the same amount of bottom
+  // always expanded while the simulator controls drawer is open, so
+  // MobileControlDrawer reads this to reserve the same amount of bottom
   // padding in its own scroll area, keeping its last rows from ending up
   // hidden behind the panel.
   mobilePanelHeight: number;

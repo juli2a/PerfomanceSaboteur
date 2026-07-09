@@ -11,7 +11,8 @@ export default async function ShellLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const caseTipContent = getCaseTipContent();
+  const desktopCaseTipContent = getCaseTipContent("desktop");
+  const mobileCaseTipContent = getCaseTipContent("mobile");
 
   // Case 2 (Layout Shift): on means the sidebar collapse state has no
   // cookie at all (localStorage-only), so the server can't know it — pretend
@@ -25,7 +26,7 @@ export default async function ShellLayout({
   return (
     <div className="flex h-full flex-col">
       <Header
-        caseTipContent={caseTipContent}
+        caseTipContent={mobileCaseTipContent}
         isLayoutShiftOn={isLayoutShiftOn}
         initialCollapsed={initialCollapsed}
       />
@@ -35,7 +36,7 @@ export default async function ShellLayout({
           initialCollapsed={initialCollapsed}
         />
         <main className="@container flex-1 overflow-auto">{children}</main>
-        <CaseDetailPanel caseTipContent={caseTipContent} />
+        <CaseDetailPanel caseTipContent={desktopCaseTipContent} />
       </div>
       <PerformancePanel />
     </div>

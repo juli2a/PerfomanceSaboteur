@@ -19,6 +19,7 @@ import { useInventorySearchStore } from "@/store/inventory-search";
 import { useInventorySelectionStore } from "@/store/inventory-selection";
 import { useSimulatorCase } from "@/hooks/useSimulatorCase";
 import ProductCard from "@/components/inventory/ProductCard";
+import ProductCardUnoptimized from "@/components/inventory/ProductCardUnoptimized";
 import ProductTableRow from "@/components/inventory/ProductTableRow";
 import ProductTableRowUnoptimized from "@/components/inventory/ProductTableRowUnoptimized";
 import SelectAllCheckbox from "@/components/inventory/SelectAllCheckbox";
@@ -175,13 +176,19 @@ export default function ProductTable({ products }: ProductTableProps) {
       {rows.slice(0, flatRowLimit).map((row) => {
         const product = row.original;
         if (isMobile) {
+          // Case 7's mobile bad/good branch point — mirrors the desktop
+          // branch right below (ProductTableRowUnoptimized vs
+          // ProductTableRow).
+          const ProductCardComponent = isContextOverheadOn
+            ? ProductCardUnoptimized
+            : ProductCard;
           return (
             <div key={product.id} className="pb-2">
-              <ProductCard product={product} />
+              <ProductCardComponent product={product} />
             </div>
           );
         }
-        // Case 7's single bad/good branch point — everything else about
+        // Case 7's desktop bad/good branch point — everything else about
         // the two row components is identical.
         const Row = isContextOverheadOn
           ? ProductTableRowUnoptimized
@@ -238,7 +245,10 @@ export default function ProductTable({ products }: ProductTableProps) {
                   key={virtualItem.key}
                   data-index={virtualItem.index}
                   ref={virtualizer.measureElement}
-                  className={cn("absolute top-0 left-0 w-full", isMobile && "pb-2")}
+                  className={cn(
+                    "absolute top-0 left-0 w-full",
+                    isMobile && "pb-2",
+                  )}
                   style={{ transform: `translateY(${virtualItem.start}px)` }}
                 >
                   {isMobile ? (

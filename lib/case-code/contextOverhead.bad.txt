@@ -16,7 +16,7 @@ return (
   </TableSelectionContext.Provider>
 );
 
-// components/inventory/ProductTableRowUnoptimized.tsx
+// components/inventory/ProductTableRow.tsx
 const { selected, toggleRow } = useContext(TableSelectionContext);
 const isSelected = selected.has(product.id);
 

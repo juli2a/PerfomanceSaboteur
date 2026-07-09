@@ -1,6 +1,7 @@
 import Toolbar from "@/components/inventory/Toolbar";
 import ProductTable from "@/components/inventory/ProductTable";
 import { TableSelectionProvider } from "@/context/TableSelectionContext";
+import { RowStatusProvider } from "@/context/RowStatusContext";
 import {
   getAmplifiedProducts,
   getInventoryCategories,
@@ -28,13 +29,19 @@ export default async function InventoryPage() {
           panel opens. */}
       <div className="min-h-0 flex-1 overflow-x-auto">
         <div className="flex h-full lg:min-w-190 flex-col">
-          {/* Case 7 (Context Overhead): shared by Toolbar's Bulk Actions/Select
-              All and ProductTable's rows, so whichever selection source is
-              active (Zustand or this isolated Context) stays consistent across
-              both, not just within the table. */}
+          {/* Case 7 (Context Overhead): two isolated Contexts, one per demoed
+              interaction — TableSelectionProvider for desktop's checkbox
+              selection (shared by Toolbar's Bulk Actions/Select All and
+              ProductTable's rows, so whichever selection source is active
+              stays consistent across both), RowStatusProvider for mobile's
+              single-product status change (read by ProductTable's cards).
+              Neither Zustand store either one shadows is touched by this
+              case. */}
           <TableSelectionProvider>
-            <Toolbar categories={categories} />
-            <ProductTable products={products} />
+            <RowStatusProvider>
+              <Toolbar categories={categories} />
+              <ProductTable products={products} />
+            </RowStatusProvider>
           </TableSelectionProvider>
         </div>
       </div>

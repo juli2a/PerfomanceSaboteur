@@ -13,7 +13,7 @@ export default function MobileDrawer({ open, onClose }: Props) {
   // The mobile Performance Panel floats fixed at the bottom of the viewport
   // (above this drawer, z-60 vs z-41) — stopping the drawer's own bottom
   // edge at the panel's current height (collapsed or expanded, via the same
-  // store MobileControlSheet reads for its bottomOffset) keeps AboutButton
+  // store MobileControlDrawer reads for its bottomOffset) keeps AboutButton
   // reachable instead of hidden behind it.
   const mobilePanelHeight = useSimPerformanceStore(
     (state) => state.mobilePanelHeight,
