@@ -24,21 +24,23 @@ export default async function ShellLayout({
     : cookieStore.get("sidebarCollapsed")?.value === "on";
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex min-h-dvh flex-col lg:h-full">
       <Header
         caseTipContent={mobileCaseTipContent}
         isLayoutShiftOn={isLayoutShiftOn}
         initialCollapsed={initialCollapsed}
       />
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 lg:overflow-hidden">
         <Sidebar
           isLayoutShiftOn={isLayoutShiftOn}
           initialCollapsed={initialCollapsed}
         />
-        <main className="@container flex-1 overflow-auto">{children}</main>
+        <main className="@container flex-1 pb-[var(--mobile-panel-h,0px)] lg:overflow-auto lg:pb-0">
+          {children}
+        </main>
         <CaseDetailPanel caseTipContent={desktopCaseTipContent} />
       </div>
-      <PerformancePanel />
+      <PerformancePanel isLayoutShiftOn={isLayoutShiftOn} />
     </div>
   );
 }

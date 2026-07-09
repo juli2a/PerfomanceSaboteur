@@ -27,7 +27,7 @@ export default function RootLayout({
       lang="en"
       className={`${manrope.variable} ${chakraPetch.variable} dark h-full`}
     >
-      <body className="h-full overflow-hidden">
+      <body className="h-full overflow-auto lg:overflow-hidden">
         <SimulatorEffects />
         <MediaProvider>{children}</MediaProvider>
       </body>
