@@ -20,19 +20,25 @@ import {
 import { getStatusDotClass, getStatusRowClass } from "@/lib/utils/inventory";
 import { formatCurrency } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
-import { useInventoryStatusStore } from "@/store/inventory-status";
 import { updateLogisticStatus } from "@/lib/server/inventory-actions";
 
 interface StatusChangeDrawerProps {
   product: AmplifiedProduct;
   currentStatus: LogisticStatus;
+  onChangeStatus: (ids: number[], status: LogisticStatus) => void;
 }
 
-// Mobile per-product status-change sheet, triggered from ProductCard's
+// Mobile per-product status-change drawer, triggered from ProductCard's
 // "Change" button. Same PATCH + optimistic-overlay pattern as Bulk
-// Actions, just scoped to a single product.
-export default function StatusChangeDrawer({ product, currentStatus }: StatusChangeDrawerProps) {
-  const setStatuses = useInventoryStatusStore((state) => state.setStatuses);
+// Actions, just scoped to a single product. Where the optimistic status
+// gets applied locally is injected via onChangeStatus (Case 7's mobile
+// bad/good split — see ProductCard vs ProductCardUnoptimized — lives
+// entirely in that callback, not here).
+export default function StatusChangeDrawer({
+  product,
+  currentStatus,
+  onChangeStatus,
+}: StatusChangeDrawerProps) {
   const panelHeight = useSimPerformanceStore((state) => state.mobilePanelHeight);
 
   const [open, setOpen] = useState(false);
@@ -48,7 +54,7 @@ export default function StatusChangeDrawer({ product, currentStatus }: StatusCha
     if (!pick) return;
     setPending(true);
     await updateLogisticStatus([product.id], pick);
-    setStatuses([product.id], pick);
+    onChangeStatus([product.id], pick);
     setPending(false);
     handleOpenChange(false);
   };

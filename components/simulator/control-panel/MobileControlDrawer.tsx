@@ -101,7 +101,7 @@ export default function MobileControlDrawer({
   const resetAllToggles = useResetAllToggles();
   const allOff = Object.values(toggles).every((value) => !value);
   // The mobile Performance Panel is always forced open (and thus at its
-  // tallest) while this sheet is open, and sits on top of this sheet's own
+  // tallest) while this drawer is open, and sits on top of this drawer's own
   // bottom edge — reserving the same height as bottom padding keeps the
   // last toggle rows reachable by scrolling instead of stuck behind it.
   const mobilePanelHeight = useSimPerformanceStore(

@@ -22,11 +22,17 @@ export interface ToggleItem {
   label: string;
   key: CaseKey;
   tip: CaseTip;
+  // Override shown on mobile instead of `tip` — only set for a case whose
+  // bad/good code (and the story behind why state is shared at all) genuinely
+  // differs by platform, not just its trigger (see contextOverhead / Case 7,
+  // docs/case7.md "Мобільна версія"). Absent for every other case, which
+  // renders the same `tip` on both surfaces.
+  mobileTip?: CaseTip;
   alert: CaseAlert;
 }
 
 // Shared case definitions for the simulator control panel — consumed by both
-// the desktop ControlPanelTogglers and the mobile MobileControlSheet.
+// the desktop ControlPanelTogglers and the mobile MobileControlDrawer.
 // `key` matches `CaseKey` exactly so both can read/write `useSimControlStore`
 // without a separate name-mapping table.
 // `tip`/`alert` are filled in by the content-maker skill
@@ -130,11 +136,11 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         key: "hydrationMismatch",
         tip: {
           problem:
-            "The dashboard's \"Updated\" time is computed with new Date().toLocaleTimeString() directly in render — the server renders it in UTC while the browser renders it in your local timezone, so the two reads never agree.",
+            'The dashboard\'s "Updated" time is computed with new Date().toLocaleTimeString() directly in render — the server renders it in UTC while the browser renders it in your local timezone, so the two reads never agree.',
           reproduction:
             "Switch this toggle on — the page reloads so the server renders the timestamp fresh.",
           effect:
-            "The \"Updated\" time first shows the server's UTC reading, then immediately snaps to your local time once React notices the mismatch — the browser console throws a hydration-failed error, and the Performance Panel raises a Hydration Mismatch alert.",
+            'The "Updated" time first shows the server\'s UTC reading, then immediately snaps to your local time once React notices the mismatch — the browser console throws a hydration-failed error, and the Performance Panel raises a Hydration Mismatch alert.',
           badCode:
             "Calls new Date().toLocaleTimeString() straight in the render body, so the server computes one clock reading and the client immediately computes a different one in its place.",
           goodCode:
@@ -152,17 +158,30 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         key: "contextOverhead",
         tip: {
           problem:
-            "Row selection lives in one shared React Context instead of a per-row store selector, so every row component subscribes to the exact same value — not just the slice it actually needs.",
-          reproduction:
-            "Click a checkbox in the Inventory Control table.",
+            "Selected rows in the Inventory table need to live in a global store instead of local state inside each row, so the Bulk Actions bar in the toolbar above the table can act on whatever's selected. If they are stored in a React Context instead of a per-row store selector, every row component then subscribes to that same Context, so any update to it re-renders every row, not just the one whose selection changed.",
+          reproduction: "Click a checkbox in the Inventory Control table.",
           effect:
-            "Every visible row's Flash on Update outline fires at once, not just the one you clicked, and the Performance Panel raises a Context Re-render Storm alert naming how many rows re-rendered. Blocking Time and Interaction Latency both spike too, since re-rendering every visible row for one click is real main-thread work.",
+            "Every visible row's Flash on Update outline fires at once, not just the one you clicked, and the Performance Panel raises a Context Re-render Storm alert naming how many rows re-rendered. Blocking Time and Interaction Latency both tick up too, since re-rendering every visible row for one click is real main-thread work.",
           badCode:
             "Every row reads the same Context value; toggling one checkbox builds a brand-new context object, which forces every row consuming it to re-render, not just the one whose checkbox changed.",
           goodCode:
-            "Each row subscribes to a Zustand selector scoped to just its own id, so only the row whose selection actually changed gets notified and re-renders.",
+            "Each row subscribes to a Zustand selector scoped to just its own id, so only the row whose selection actually changed gets notified and re-renders — Bulk Actions and Select All read the very same store, just via their own selectors.",
           summary:
-            "Shared Context re-renders every consumer on any change, no matter how small — for state many components read but each only care about their own slice of (a row, an id, a field), use a store with per-item selectors instead.",
+            "Shared Context re-renders every consumer on any change, no matter how small. Many components can genuinely need to read the same state, but each one usually only cares about its own slice of it: a row, an id, a field. For that, use a store with per-item selectors instead.",
+        },
+        mobileTip: {
+          problem:
+            "The product card list in Inventory has a Change status feature. But because this demo's backend (DummyJSON) doesn't actually save status changes to a database, the app has to keep that change in its own client-side memory instead. If they are stored in a React Context instead of a per-row store selector, every card component then subscribes to that same Context, so any update to it re-renders every card, not just the one whose status changed.",
+          reproduction:
+            'Tap "Change" on a product card in Inventory Control and confirm a new status.',
+          effect:
+            "Every visible card's Flash on Update outline fires at once, not just the one you changed, and the Performance Panel raises a Context Re-render Storm alert naming how many cards re-rendered. Blocking Time and Interaction Latency both tick up too, since re-rendering every visible row for one click is real main-thread work.",
+          badCode:
+            "Every card reads the same Context value; changing one product's status builds a brand-new context object, which forces every card consuming it to re-render, not just the one whose status changed.",
+          goodCode:
+            "Each card subscribes to a Zustand selector scoped to just its own product id, so only the card whose status actually changed gets notified and re-renders.",
+          summary:
+            "Shared Context re-renders every consumer on any change, no matter how small. Many components can genuinely need to read the same state, but each one usually only cares about its own slice of it: a row, an id, a field. For that, use a store with per-item selectors instead.",
         },
         alert: {
           title: "Context Re-render Storm",
@@ -203,7 +222,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           problem:
             "A component wrapped in React.memo still re-renders every time if the props it receives are rebuilt from scratch on every render — the memo check runs, fails, and gains nothing.",
           reproduction:
-            "Drag the \"Min GM%\" slider back and forth above the KPI micro-cards.",
+            'Drag the "Min GM%" slider back and forth above the KPI micro-cards.',
           effect:
             "All 100 cards flash on every tick, and INP and Blocking Time can both go up — each tick re-renders the whole grid and reruns every card's sparkline calculation, which is even more noticeable on mobile or a slower machine. The Performance Panel raises a Memo Overhead alert while you drag, naming how many cards re-rendered.",
           badCode:

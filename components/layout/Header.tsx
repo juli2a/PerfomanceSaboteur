@@ -4,7 +4,7 @@ import { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import ControlPanel from "@/components/simulator/control-panel/ControlPanel";
-import MobileControlSheet from "@/components/simulator/control-panel/MobileControlSheet";
+import MobileControlDrawer from "@/components/simulator/control-panel/MobileControlDrawer";
 import MobileDrawer from "@/components/layout/MobileDrawer";
 import Logo from "@/components/layout/Logo";
 import { Button } from "@/components/ui/button";
@@ -123,7 +123,7 @@ export default function Header({
       </header>
 
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-      <MobileControlSheet
+      <MobileControlDrawer
         open={controlsOpen}
         onOpenChange={setControlsOpen}
         caseTipContent={caseTipContent}

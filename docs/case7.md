@@ -61,3 +61,27 @@ const { selectedIds } = useContext(TableContext);
 - Guide-текст цього тумблера (`tip.reproduction`/`tip.effect`) має чесно пояснити, що на час демонстрації таблиця тимчасово показує фіксовані 200 рядків без віртуалізації — щоб контраст було видно.
 
 **Rerendered Nodes:** рахується через `FlashOnUpdate` (вже обгортає кожен рядок) — лічильник скидається перед дією `toggleRow`, кожен ре-рендер (не initial mount) інкрементує його в `useEffect`, підсумок публікується після ~100мс settle-затримки. Показується в Performance Panel як умовний alert-рядок (той самий патерн, що в Case 4 — `raceConditionAlert`), не як постійне число.
+
+---
+
+## Мобільна версія
+
+Мобільний layout Inventory Control не має чекбоксів і масового вибору (навмисне рішення — bulk-дії погано пасують до touch-інтерфейсу), тож на мобільному демонструвати саме "виділення рядків" нема на чому. Замість реконструювання чекбоксів кейс 7 на мобільному перевикористовує вже наявну одиничну дію — зміну статусу одного товару через `StatusChangeDrawer` (кнопка "Change" на картці товару) — і як спільний стан бере `logisticStatus`, а не `selected`.
+
+**Узгоджене рішення (мобільна частина):**
+- Новий, ізольований Context (`RowStatusContext`, `context/RowStatusContext.tsx`) дзеркалить API `useInventoryStatusStore` 1:1 (`statuses` / `setStatuses`) — так само ізольований від Zustand-стору, як `TableSelectionContext` ізольований від `useInventorySelectionStore`: власний стан, скидання при кожному перемиканні тумблера (той самий патерн "adjust state during render", без `useEffect`).
+- `ProductCard` (мобільна картка товару) розділена на спільну розмітку (`ProductCardView`) та пару good/bad (`ProductCard` — Zustand-селектор, `ProductCardUnoptimized` — Context), за тим самим шаблоном, що й `ProductTableRow`/`ProductTableRowUnoptimized`.
+- `StatusChangeDrawer` лишається єдиним UI/PATCH-потоком для обох шляхів — джерело запису статусу тепер передається як проп (`onChangeStatus`), а не жорстко викликає стор.
+- Коли `contextOverhead = ON` на мобільному — зміна статусу одного товару пише в `RowStatusContext` замість `useInventoryStatusStore`, і всі змонтовані картки (усі видимі, бо кейс 7 вже примушує плаский немодифікований список без віртуалізації) ре-рендеряться/спалахують — той самий баг, що на десктопі, але тригериться реальною одиничною мобільною дією, а не відтвореним чекбоксом.
+- `useInventoryStatusStore` лишається єдиним джерелом істини для бейджа статусу на десктопі (обидва шляхи `ProductTableRow`/`ProductTableRowUnoptimized` й надалі читають саме його) — цей стор кейсом 7 не займається жодним чином.
+
+---
+
+## Guide-текст: чому desktop і mobile описані окремо
+
+Desktop і mobile мають різну, чесну причину, чому стан взагалі спільний — і гайд (`lib/simulator-cases.ts`, `tip`/`mobileTip`) це прямо промовляє, а не мовчить про роль стору:
+
+- **Desktop (`tip`):** стан справді мусить бути спільним — чекбокс у рядку і Bulk Actions-панель у Toolbar одночасно читають/пишуть той самий вибір. Це реальна продуктова причина, чому команда взагалі потягнеться за Context/Zustand, а не за локальним `useState` в рядку.
+- **Mobile (`mobileTip`):** спільний стан тут з'явився **не** через продуктову потребу ділитися між кількома поверхнями UI (кожна картка дбає лише про свій власний статус) — а через фейковий бекенд (DummyJSON не зберігає PATCH, потрібен клієнтський оверлей). Текст гайду прямо каже, що це той самий баг на вужчому тригері, без вигаданого твердження про мобільну crosscomponent-потребу.
+
+Технічно розділення реалізоване так: `ToggleItem.mobileTip?: CaseTip` — опційний override, заповнений лише для `contextOverhead`. `lib/server/case-info.tsx`'s `getCaseTipContent(device)` вибирає `mobileTip`/`tip` і відповідний код-приклад (`lib/case-code/contextOverhead.mobile.{bad,good}.txt` замість спільних `contextOverhead.{bad,good}.txt`) один раз на сервері; `app/(shell)/layout.tsx` викликає це двічі й роздає кожен набір своєму, і так уже платформо-специфічному споживачу (`CaseDetailPanel` — desktop-only, `MobileControlDrawer` — mobile-only) — без клієнтської перевірки `isMobile` всередині самого `CaseTipContent`.

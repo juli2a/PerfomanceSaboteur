@@ -37,8 +37,8 @@ function TipSection({ title, body, action }: TipSectionProps) {
 
 // Renders a case's tip (problem / reproduction / effect / anti-pattern /
 // best practice / summary) — shared between the desktop right-hand guide
-// panel (CaseDetailPanel) and the mobile Sheet's info panel
-// (MobileControlSheet) so both surfaces show identical content.
+// panel (CaseDetailPanel) and the mobile Drawer's info panel
+// (MobileControlDrawer) so both surfaces show identical content.
 export default function CaseTipContent({
   caseKey,
   tip,

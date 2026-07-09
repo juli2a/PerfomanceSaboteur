@@ -111,7 +111,7 @@ export default function PerformancePanelMobile({
   const open = expanded || controlsOpen;
 
   // Measures the panel's own height into the store — the alert lane below
-  // floats its fixed bottom offset just above it, and MobileControlSheet
+  // floats its fixed bottom offset just above it, and MobileControlDrawer
   // reserves the same amount of bottom padding in its own scroll area, so
   // there's a single source of truth for "how tall is the panel right now"
   // instead of two separate measurements. A ResizeObserver (not a

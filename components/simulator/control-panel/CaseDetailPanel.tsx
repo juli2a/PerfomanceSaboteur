@@ -40,9 +40,9 @@ export default function CaseDetailPanel({
   const caseInfo = displayKey ? getSimulatorCase(displayKey) : null;
 
   // This surface doesn't exist on mobile at all — there, a guide's content
-  // shows inline inside MobileControlSheet's own row instead. Without this
+  // shows inline inside MobileControlDrawer's own row instead. Without this
   // guard, opening a guide on mobile would also try to slide this 510px
-  // panel open underneath the sheet.
+  // panel open underneath the drawer.
   if (isMobile !== false) return null;
 
   return (
