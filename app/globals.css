@@ -13,7 +13,7 @@
 @import "./styles/components/simulator.css";
 @import "./styles/components/dashboard.css";
 @import "./styles/components/inventory.css";
-@import "./styles/components/not-found.css";
+@import "./styles/components/error.css";
 
 @layer base {
   * {

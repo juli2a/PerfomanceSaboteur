@@ -53,6 +53,25 @@ export default function EdgeScroller({
     };
   }, []);
 
+  // Lets the mouse wheel drive horizontal scrolling on desktop. Attached as a
+  // native listener (not React's onWheel) with { passive: false } — React
+  // registers wheel handlers passively at the root, so preventDefault() in a
+  // JSX onWheel prop is silently ignored and the page keeps scrolling too.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (el.scrollWidth <= el.clientWidth) return;
+      if (e.deltaY === 0) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+
+    el.addEventListener("wheel", handleWheel, { passive: false });
+    return () => el.removeEventListener("wheel", handleWheel);
+  }, []);
+
   // One click jumps all the way to the edge, not just one step — there's
   // nothing else to reveal in between.
   const scrollToStart = () =>
@@ -81,6 +100,7 @@ export default function EdgeScroller({
         ref={scrollRef}
         className={cn(
           "scrollbar-hidden flex min-w-0 flex-1 items-center overflow-x-auto overflow-y-hidden",
+          hasOverflow && "cursor-ew-resize",
           className,
         )}
       >

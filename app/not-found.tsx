@@ -29,12 +29,12 @@ export default function NotFound() {
         </Link>
       </header>
 
-      <main className="not-found-glow relative flex flex-1 items-center justify-center px-6 py-10">
+      <main className="error-page-glow relative flex flex-1 items-center justify-center px-6 py-10">
         <div className="max-w-[480px] text-center">
           <p className="mb-heading-gap text-[13px] font-medium tracking-[2px] text-primary">
             ERROR · 404
           </p>
-          <p className="not-found-number mb-heading-gap font-brand text-[64px] leading-none font-bold sm:text-[96px]">
+          <p className="error-number mb-heading-gap font-brand text-[64px] leading-none font-bold sm:text-[96px]">
             404
           </p>
           <h1 className="mb-2.5 text-[22px] font-semibold tracking-[-0.2px] text-foreground">

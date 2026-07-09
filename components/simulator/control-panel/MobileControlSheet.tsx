@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, X } from "lucide-react";
+import { FileText, Power, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ import { SIMULATOR_CASES } from "@/lib/simulator-cases";
 import { useSimControlStore } from "@/store/simulator-control";
 import { useSimPerformanceStore } from "@/store/simulator-performance";
 import { useToggleCase } from "@/hooks/useToggleCase";
+import { useResetAllToggles } from "@/hooks/useResetAllToggles";
 import type { CaseKey } from "@/types/simulator";
 import SimulatorKicker from "@/components/simulator/control-panel/SimulatorKicker";
 
@@ -97,6 +98,8 @@ export default function MobileControlDrawer({
 }: Props) {
   const toggles = useSimControlStore((state) => state.toggles);
   const toggleCase = useToggleCase();
+  const resetAllToggles = useResetAllToggles();
+  const allOff = Object.values(toggles).every((value) => !value);
   // The mobile Performance Panel is always forced open (and thus at its
   // tallest) while this sheet is open, and sits on top of this sheet's own
   // bottom edge — reserving the same height as bottom padding keeps the
@@ -110,13 +113,25 @@ export default function MobileControlDrawer({
       <DrawerContent bottomOffset={mobilePanelHeight}>
         <DrawerHeader>
           <SimulatorKicker size="lg" />
-          <DrawerClose
-            render={
-              <Button variant="outline" size="icon-sm" aria-label="Close" />
-            }
-          >
-            <X size={18} />
-          </DrawerClose>
+          <div className="flex shrink-0 items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={allOff}
+              onClick={resetAllToggles}
+              aria-label="Turn all simulator toggles off"
+            >
+              <Power size={13} />
+              All off
+            </Button>
+            <DrawerClose
+              render={
+                <Button variant="outline" size="icon-sm" aria-label="Close" />
+              }
+            >
+              <X size={18} />
+            </DrawerClose>
+          </div>
         </DrawerHeader>
         <DrawerBody className="flex flex-col gap-4.5 px-4.5 py-3.5">
           {SIMULATOR_CASES.map((zone) => (
