@@ -107,6 +107,17 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           summary:
             "Any UI preference that changes layout — a collapsed sidebar, a dismissed banner, a saved column width — needs to be readable server-side (a cookie, not just localStorage), or it will shift into place after every load.",
         },
+        // TODO(content-maker): mobile half — PanelAnchorStable/Unstable in
+        // components/simulator/performance-panel/PanelAnchor.tsx (100dvh vs
+        // 100vh panel anchoring), see docs/case2-v2.md "Мобільна версія".
+        mobileTip: {
+          problem: "",
+          reproduction: "",
+          effect: "",
+          badCode: "",
+          goodCode: "",
+          summary: "",
+        },
         alert: {
           title: "Layout Shift",
           body: "Sidebar width corrected after the page had already rendered.",

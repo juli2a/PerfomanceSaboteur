@@ -15,7 +15,13 @@ export default async function InventoryPage() {
   ]);
 
   return (
-    <div className="flex h-full flex-col px-4 py-4.5 @min-[1024px]:p-7.5">
+    // Mobile: self-contained height (viewport minus the 60px mobile header,
+    // see Header.tsx's h-[60px]) instead of inheriting h-full from `main` —
+    // `main` no longer has a definite height on mobile (the shell now lets
+    // the real document scroll, see app/(shell)/layout.tsx), so a % height
+    // here would resolve to auto and collapse ProductTable's virtualized
+    // scroll container. Desktop keeps the original h-full chain unchanged.
+    <div className="flex h-[calc(100dvh-60px)] flex-col px-4 py-4.5 lg:h-full @min-[1024px]:p-7.5">
       <div className="pb-5">
         <h1 className="heading-1">Inventory Control</h1>
         <p className="mt-heading-subtitle-gap hidden text-sm text-text-2 @min-[1024px]:block">

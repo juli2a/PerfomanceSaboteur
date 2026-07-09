@@ -26,7 +26,11 @@ import type { CaseKey } from "@/types/simulator";
 // useDomNodesReporter/useBlockingTimeReporter/useInteractionLatencyReporter
 // hooks, all called from SimulatorEffects in the root layout) — this
 // component only reads the store, it doesn't measure anything itself.
-export default function PerformancePanel() {
+interface Props {
+  isLayoutShiftOn: boolean;
+}
+
+export default function PerformancePanel({ isLayoutShiftOn }: Props) {
   const isMobile = useContext(MediaContext);
   const caseAlerts = useSimControlStore((state) => state.caseAlerts);
   const dismissAlert = useSimControlStore((state) => state.dismissAlert);
@@ -97,7 +101,7 @@ export default function PerformancePanel() {
   if (isMobile === undefined) return null;
 
   return isMobile ? (
-    <PerformancePanelMobile {...metrics} />
+    <PerformancePanelMobile {...metrics} isLayoutShiftOn={isLayoutShiftOn} />
   ) : (
     <PerformancePanelDesktop {...metrics} />
   );
