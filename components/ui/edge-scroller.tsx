@@ -100,6 +100,7 @@ export default function EdgeScroller({
         ref={scrollRef}
         className={cn(
           "scrollbar-hidden flex min-w-0 flex-1 items-center overflow-x-auto overflow-y-hidden",
+          hasOverflow && "cursor-ew-resize",
           className,
         )}
       >

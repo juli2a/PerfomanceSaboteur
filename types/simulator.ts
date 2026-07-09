@@ -33,6 +33,10 @@ export interface VitalReading {
 export interface SimControlState {
   toggles: Record<CaseKey, boolean>;
   setToggle: (key: CaseKey, value: boolean) => void;
+  // Flips every toggle to off in one shot — used by the control panel's
+  // "All off" button. See hooks/useResetAllToggles.ts for the SSR-cookie
+  // reload handling that wraps this.
+  resetToggles: () => void;
   // Which case's guide is open — the right slide-out panel on desktop, a
   // row's inline info on the mobile control sheet — null when none is.
   // Shared between both surfaces so opening one closes whichever was open on
