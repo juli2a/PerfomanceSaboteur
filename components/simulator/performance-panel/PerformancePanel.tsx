@@ -28,10 +28,19 @@ import type { CaseKey } from "@/types/simulator";
 // component only reads the store, it doesn't measure anything itself.
 interface Props {
   isLayoutShiftOn: boolean;
+  initialExpanded: boolean;
+  initialIsMobile: boolean | undefined;
 }
 
-export default function PerformancePanel({ isLayoutShiftOn }: Props) {
-  const isMobile = useContext(MediaContext);
+export default function PerformancePanel({
+  isLayoutShiftOn,
+  initialExpanded,
+  initialIsMobile,
+}: Props) {
+  // Falls back to the cookie-seeded server guess until MediaContext's own
+  // matchMedia resolves — see context/MediaContext.tsx for why, and
+  // docs/case2-v2.md for what this unblocks (SSR for this component).
+  const isMobile = useContext(MediaContext) ?? initialIsMobile;
   const caseAlerts = useSimControlStore((state) => state.caseAlerts);
   const dismissAlert = useSimControlStore((state) => state.dismissAlert);
   const shownAlertKeys = (Object.keys(caseAlerts) as CaseKey[]).filter(
@@ -101,7 +110,11 @@ export default function PerformancePanel({ isLayoutShiftOn }: Props) {
   if (isMobile === undefined) return null;
 
   return isMobile ? (
-    <PerformancePanelMobile {...metrics} isLayoutShiftOn={isLayoutShiftOn} />
+    <PerformancePanelMobile
+      {...metrics}
+      isLayoutShiftOn={isLayoutShiftOn}
+      initialExpanded={initialExpanded}
+    />
   ) : (
     <PerformancePanelDesktop {...metrics} />
   );

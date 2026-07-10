@@ -1,19 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
 import { formatNumber } from "@/lib/utils/format";
 import { getRatingPresentation } from "@/lib/utils/gauge";
 import { VITAL_DOCS_URL } from "@/lib/simulator-thresholds";
+import { usePanelExpanded } from "@/hooks/usePanelExpanded";
 import { useSimControlStore } from "@/store/simulator-control";
 import { useSimPerformanceStore } from "@/store/simulator-performance";
 import OverallRatingBadge from "@/components/simulator/performance-panel/OverallRatingBadge";
-import {
-  PanelAnchorStable,
-  PanelAnchorUnstable,
-} from "@/components/simulator/performance-panel/PanelAnchor";
 import type { PerformancePanelMetrics } from "@/components/simulator/performance-panel/panel-metrics";
 import type { VitalRating } from "@/types/simulator";
 
@@ -101,7 +98,11 @@ export default function PerformancePanelMobile({
   interactionLatencyRating,
   overallRating,
   isLayoutShiftOn,
-}: PerformancePanelMetrics & { isLayoutShiftOn: boolean }) {
+  initialExpanded,
+}: PerformancePanelMetrics & {
+  isLayoutShiftOn: boolean;
+  initialExpanded: boolean;
+}) {
   const controlsOpen = useSimControlStore((state) => state.controlsOpen);
   const panelHeight = useSimPerformanceStore(
     (state) => state.mobilePanelHeight,
@@ -110,9 +111,14 @@ export default function PerformancePanelMobile({
     (state) => state.setMobilePanelHeight,
   );
 
+  // Case 2 (Layout Shift) mobile branch point — see PanelAnchor.tsx.
+  const { expanded, setExpanded } = usePanelExpanded(
+    isLayoutShiftOn,
+    initialExpanded,
+  );
+
   // Forced open while the simulator controls sheet is open, so a reader can
   // never lose sight of the metrics they're about to toggle.
-  const [expanded, setExpanded] = useState(false);
   const open = expanded || controlsOpen;
 
   // Measures the panel's own height into the store — the alert lane below
@@ -176,9 +182,6 @@ export default function PerformancePanelMobile({
     href: VITAL_DOCS_URL.ttfb,
   };
 
-  // Case 2 (Layout Shift) mobile branch point — see PanelAnchor.tsx.
-  const PanelAnchor = isLayoutShiftOn ? PanelAnchorUnstable : PanelAnchorStable;
-
   return (
     <div>
       {alerts.length > 0 && (
@@ -189,77 +192,79 @@ export default function PerformancePanelMobile({
           {alerts}
         </div>
       )}
-      <PanelAnchor>
-        <div ref={panelRef} className="sim-panel-mobile">
-          <button
-            type="button"
-            onClick={() => setExpanded((value) => !value)}
-            disabled={controlsOpen}
-            aria-expanded={open}
-            aria-label={
-              open ? "Collapse Performance Panel" : "Expand Performance Panel"
-            }
-            className="flex h-12.5 w-full items-center justify-between px-4 disabled:cursor-default"
-          >
-            <span className="flex items-center gap-1.75 text-[13px] font-semibold text-brand-text">
-              <span className="heading-brand-kicker">SIMULATOR</span>
-              Web Vitals
-            </span>
-            <span className="flex items-center gap-3">
-              {open ? (
-                <OverallRatingBadge rating={overallRating} />
-              ) : (
-                <>
-                  <span className="flex items-center gap-1.5 text-xs text-brand-muted">
-                    <RatingDot rating={lcp.rating} />
-                    {lcp.label} {lcp.display}
-                  </span>
-                  <span className="flex items-center gap-1.5 text-xs text-brand-muted">
-                    <RatingDot rating={inp.rating} />
-                    {inp.label} {inp.display}
-                  </span>
-                </>
-              )}
-              {!controlsOpen && (
-                <ChevronDown
-                  size={14}
-                  className={cn(
-                    "text-brand-muted transition-transform",
-                    open && "rotate-180",
-                  )}
-                />
-              )}
-            </span>
-          </button>
-          <div className="sim-panel-mobile-content" data-open={open || undefined} data-instant={controlsOpen || undefined}>
-            <div className="sim-panel-mobile-content-row flex flex-col gap-2.75 px-4">
-              <div className="flex gap-2">
-                <VitalReadout {...lcp} />
-                <VitalReadout {...cls} />
-                <VitalReadout {...inp} />
-                <VitalReadout {...ttfb} />
-              </div>
-              <div className="flex flex-wrap gap-2 border-t border-brand-border pt-2.75 pb-3.5">
-                <StatTile
-                  label="DOM nodes"
-                  display={domNodes === null ? "—" : formatNumber(domNodes)}
-                  rating={null}
-                />
-                <StatTile
-                  label="Blocking Time"
-                  display={`${blockingTime}ms`}
-                  rating={blockingTimeRating}
-                />
-                <StatTile
-                  label="Interaction Latency"
-                  display={`${interactionLatency}ms`}
-                  rating={interactionLatencyRating}
-                />
-              </div>
+      <div
+        ref={panelRef}
+        className="sim-panel-mobile fixed inset-x-0 bottom-0 z-60"
+      >
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          disabled={controlsOpen}
+          aria-expanded={open}
+          aria-label={
+            open ? "Collapse Performance Panel" : "Expand Performance Panel"
+          }
+          className="flex h-12.5 w-full items-center justify-between px-4 disabled:cursor-default"
+        >
+          <span className="flex items-center gap-1.75 text-[13px] font-semibold text-brand-text">
+            <span className="heading-brand-kicker">SIMULATOR</span>
+            Web Vitals
+          </span>
+          <span className="flex items-center gap-3">
+            {open ? (
+              <OverallRatingBadge rating={overallRating} />
+            ) : (
+              <>
+                <span className="flex items-center gap-1.5 text-xs text-brand-muted">
+                  <RatingDot rating={lcp.rating} />
+                  {lcp.label} {lcp.display}
+                </span>
+                <span className="flex items-center gap-1.5 text-xs text-brand-muted">
+                  <RatingDot rating={inp.rating} />
+                  {inp.label} {inp.display}
+                </span>
+              </>
+            )}
+            {!controlsOpen && (
+              <ChevronDown
+                size={14}
+                className={cn(
+                  "text-brand-muted transition-transform",
+                  open && "rotate-180",
+                )}
+              />
+            )}
+          </span>
+        </button>
+        <div className="sim-panel-mobile-content" data-open={open || undefined} data-instant={controlsOpen || undefined}>
+          <div className="sim-panel-mobile-content-row flex flex-col gap-2.75 px-4">
+            <div className="flex gap-2">
+              <VitalReadout {...lcp} />
+              <VitalReadout {...cls} />
+              <VitalReadout {...inp} />
+              <VitalReadout {...ttfb} />
+            </div>
+            <div className="flex flex-wrap gap-2 border-t border-brand-border pt-2.75 pb-3.5">
+              <StatTile
+                label="DOM nodes"
+                display={domNodes === null ? "—" : formatNumber(domNodes)}
+                rating={null}
+              />
+              <StatTile
+                label="Blocking Time"
+                display={`${blockingTime}ms`}
+                rating={blockingTimeRating}
+              />
+              <StatTile
+                label="Interaction Latency"
+                display={`${interactionLatency}ms`}
+                rating={interactionLatencyRating}
+              />
             </div>
           </div>
         </div>
-      </PanelAnchor>
+      </div>
     </div>
   );
 }
+
