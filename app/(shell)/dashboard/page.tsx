@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import LiveIndicator from "@/components/dashboard/LiveIndicator";
 import UpdatedAt from "@/components/dashboard/UpdatedAt";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { DashboardContentUnoptimized } from "@/components/dashboard/DashboardContentUnoptimized";
@@ -19,13 +18,10 @@ export default async function DashboardPage() {
             Merchant analytics overview · last 30 days
           </p>
         </div>
-        <div className="hidden items-center gap-3.5 @min-[1024px]:flex">
-          <span className="whitespace-nowrap text-[13px] text-text-2">
-            Updated{" "}
-            <UpdatedAt isHydrationMismatchOn={isHydrationMismatchOn} />
-          </span>
-          <LiveIndicator />
-        </div>
+        <span className="whitespace-nowrap text-[13px] text-text-2">
+          Updated{" "}
+          <UpdatedAt isHydrationMismatchOn={isHydrationMismatchOn} />
+        </span>
       </div>
 
       {isWaterfallOn ? <DashboardContentUnoptimized /> : <DashboardContent />}
