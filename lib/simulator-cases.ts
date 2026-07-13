@@ -107,21 +107,21 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           summary:
             "Any UI preference that changes layout — a collapsed sidebar, a dismissed banner, a saved column width — needs to be readable server-side (a cookie, not just localStorage), or it will shift into place after every load.",
         },
-        // TODO(content-maker): mobile half — PanelAnchorStable/Unstable in
-        // components/simulator/performance-panel/PanelAnchor.tsx (100dvh vs
-        // 100vh panel anchoring), see docs/case2-v2.md "Мобільна версія".
         mobileTip: {
-          problem: "",
-          reproduction: "",
-          effect: "",
-          badCode: "",
-          goodCode: "",
-          summary: "",
+          problem:
+            "The bottom Performance Panel's expanded/collapsed state is saved to localStorage only, so the server has no way to know it and always renders the panel collapsed — the client corrects it right after the page loads.",
+          reproduction:
+            "Expand the Performance Panel by tapping it, then turn this toggle on — the page reloads so the server can re-render with the change.",
+          effect:
+            "The panel briefly renders collapsed, then snaps open to its real height a moment after the page finishes loading — CLS ticks up in the Performance Panel even though the shift itself looks smooth.",
+          badCode:
+            "Persists the expanded flag with zustand's persist middleware — localStorage only, so the very first server-rendered HTML always shows the panel collapsed, whatever the user last picked.",
+          goodCode:
+            "Mirrors the same flag into a cookie the server can read, so the panel renders at its real height from the first paint — nothing to correct after the client mounts.",
+          summary:
+            "Any UI preference that changes layout — a collapsed sidebar, an expanded panel, a dismissed banner — needs to be readable server-side (a cookie, not just localStorage), or it will shift into place after every load.",
         },
-        alert: {
-          title: "Layout Shift",
-          body: "Sidebar width corrected after the page had already rendered.",
-        },
+        alert: { title: "", body: "" },
       },
       {
         label: "Unoptimized Images", //case 1

@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { CopyIcon, CheckIcon } from "lucide-react"
+import * as React from "react";
+import { CopyIcon, CheckIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils/cn"
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils/cn";
 
 interface CopyButtonProps {
-  value: string
-  label: string
-  className?: string
+  value: string;
+  label: string;
+  className?: string;
 }
 
 function CopyButton({ value, label, className }: CopyButtonProps) {
-  const [isCopied, setIsCopied] = React.useState(false)
+  const [isCopied, setIsCopied] = React.useState(false);
 
   React.useEffect(() => {
-    if (!isCopied) return
-    const timeoutId = setTimeout(() => setIsCopied(false), 1500)
-    return () => clearTimeout(timeoutId)
-  }, [isCopied])
+    if (!isCopied) return;
+    const timeoutId = setTimeout(() => setIsCopied(false), 1500);
+    return () => clearTimeout(timeoutId);
+  }, [isCopied]);
 
   function handleCopy() {
-    navigator.clipboard.writeText(value)
-    setIsCopied(true)
+    navigator.clipboard.writeText(value);
+    setIsCopied(true);
   }
 
   return (
@@ -44,7 +44,7 @@ function CopyButton({ value, label, className }: CopyButtonProps) {
         {isCopied ? <CheckIcon className="text-pos" /> : <CopyIcon />}
       </Button>
     </span>
-  )
+  );
 }
 
-export { CopyButton }
+export { CopyButton };

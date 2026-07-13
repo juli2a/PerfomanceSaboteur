@@ -2,7 +2,7 @@
   /* Page title (h1) — e.g. "Dashboard", "Inventory Control" */
   .heading-1 {
     font-family: var(--font-heading);
-    font-size: 21px;
+    font-size: 24px;
     font-weight: 600;
     line-height: var(--leading-tight);
     letter-spacing: -0.4px;
@@ -12,19 +12,19 @@
   /* Section title (h2) — e.g. "Top Customers", "Categories", "Revenue" */
   .heading-2 {
     font-family: var(--font-heading);
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 600;
     color: var(--color-foreground);
   }
 
   @container (width >= 64rem) {
     .heading-1 {
-      font-size: 25px;
+      font-size: 30px;
       letter-spacing: -0.5px;
     }
 
     .heading-2 {
-      font-size: 15px;
+      font-size: 22px;
     }
   }
 
@@ -49,7 +49,7 @@
   /* Brand group label — legend for a group of toggles, e.g. "Network" */
   .heading-brand-group {
     font-family: var(--font-brand);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.8px;
     text-transform: uppercase;
@@ -67,7 +67,7 @@
   /* Simulator alert title — eyebrow label inside a warning card, e.g. "Race Condition Alert" */
   .heading-brand-alert {
     font-family: var(--font-brand);
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;

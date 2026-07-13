@@ -65,7 +65,7 @@ export default function MetricGauge({
             strokeLinecap="round"
           />
         </svg>
-        <span className="absolute text-[13px] font-semibold text-foreground">
+        <span className="absolute text-sm font-semibold text-foreground">
           {display}
         </span>
       </div>

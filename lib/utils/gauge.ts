@@ -19,8 +19,12 @@ export function getGaugePercent(value: number, poorThreshold: number): number {
 
 // Worst rating among whatever metrics have reported so far; null only when
 // none have (e.g. before first paint, or before any interaction for INP).
-export function getOverallRating(ratings: (VitalRating | null)[]): VitalRating | null {
-  const known = ratings.filter((rating): rating is VitalRating => rating !== null);
+export function getOverallRating(
+  ratings: (VitalRating | null)[],
+): VitalRating | null {
+  const known = ratings.filter(
+    (rating): rating is VitalRating => rating !== null,
+  );
   if (known.length === 0) return null;
   if (known.includes("poor")) return "poor";
   if (known.includes("degraded")) return "degraded";
@@ -32,7 +36,11 @@ export function getOverallRating(ratings: (VitalRating | null)[]): VitalRating |
 // e.g. Interaction Latency reuses INP's own official thresholds since it's a
 // per-sample version of the same thing; Blocking Time has no official
 // equivalent, so PerformancePanel picks its own.
-export function getValueRating(value: number, good: number, poor: number): VitalRating {
+export function getValueRating(
+  value: number,
+  good: number,
+  poor: number,
+): VitalRating {
   if (value <= good) return "good";
   if (value <= poor) return "degraded";
   return "poor";
@@ -48,9 +56,24 @@ interface RatingPresentation {
 }
 
 const RATING_PRESENTATION: Record<VitalRating, RatingPresentation> = {
-  good: { tone: "positive", label: "Good", color: "var(--color-pos)", textClass: "text-pos" },
-  degraded: { tone: "amber", label: "Degraded", color: "var(--color-amber)", textClass: "text-amber" },
-  poor: { tone: "alert", label: "Poor", color: "var(--color-alert)", textClass: "text-alert" },
+  good: {
+    tone: "positive",
+    label: "Good",
+    color: "var(--color-pos)",
+    textClass: "text-pos",
+  },
+  degraded: {
+    tone: "amber",
+    label: "Degraded",
+    color: "var(--color-amber)",
+    textClass: "text-amber",
+  },
+  poor: {
+    tone: "alert",
+    label: "Poor",
+    color: "var(--color-alert)",
+    textClass: "text-alert",
+  },
 };
 
 export function getRatingPresentation(rating: VitalRating): RatingPresentation {

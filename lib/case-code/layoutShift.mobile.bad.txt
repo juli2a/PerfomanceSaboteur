@@ -1,0 +1,13 @@
+// store/panel-expanded-unstable.ts
+export const usePanelExpandedStoreUnstable = create<PanelExpandedState>()(
+  persist(
+    (set) => ({
+      expanded: false,
+      setExpanded: (expanded) => set({ expanded }),
+    }),
+    { name: "panel-expanded-unstable" },
+  ),
+);
+
+// Server has no idea what the user picked last time — it always renders
+// expanded=false, and localStorage's real value only lands after mount.

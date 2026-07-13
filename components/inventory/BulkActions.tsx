@@ -14,7 +14,11 @@ import { cn } from "@/lib/utils/cn";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Chip } from "@/components/ui/chip";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectTrigger,
@@ -35,7 +39,12 @@ import {
 function StatusDotLabel({ status }: { status: LogisticStatus }) {
   return (
     <span className="flex items-center gap-2.25">
-      <span className={cn("size-1.75 shrink-0 rounded-full", getStatusDotClass(status))} />
+      <span
+        className={cn(
+          "size-1.75 shrink-0 rounded-full",
+          getStatusDotClass(status),
+        )}
+      />
       {status}
     </span>
   );
@@ -99,13 +108,21 @@ export default function BulkActions() {
           </Chip>
         )}
         <Popover open={panelOpen} onOpenChange={setPanelOpen}>
-          <PopoverTrigger disabled={!hasSelection} className={cn(buttonVariants(), "group")}>
+          <PopoverTrigger
+            disabled={!hasSelection}
+            className={cn(buttonVariants(), "group")}
+          >
             Bulk Actions
             <ChevronDown className="size-3.5 transition-transform group-data-popup-open:rotate-180" />
           </PopoverTrigger>
           <PopoverContent align="end" className="w-66 rounded bg-raise p-4">
-            <p className="mb-2.5 text-[13px] font-semibold text-text-2">Change Status:</p>
-            <Select value={status} onValueChange={(value) => setStatus(value as LogisticStatus)}>
+            <p className="mb-2.5 text-[13px] font-semibold text-text-2">
+              Change Status:
+            </p>
+            <Select
+              value={status}
+              onValueChange={(value) => setStatus(value as LogisticStatus)}
+            >
               <SelectTrigger className="h-11 bg-surface-2 text-[13px] font-medium text-foreground">
                 <SelectValue>
                   {(value: LogisticStatus) => <StatusDotLabel status={value} />}
@@ -145,7 +162,8 @@ export default function BulkActions() {
           </DialogHeader>
 
           <DialogDescription>
-            Are you sure you want to set the following status for these products?
+            Are you sure you want to set the following status for these
+            products?
           </DialogDescription>
 
           <div className="my-3.5 flex justify-center">
@@ -163,7 +181,11 @@ export default function BulkActions() {
                 <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-foreground">
                   {product.title}
                 </span>
-                <Badge tone={getStatusTone(product.logisticStatus)} size="sm" dot>
+                <Badge
+                  tone={getStatusTone(product.logisticStatus)}
+                  size="sm"
+                  dot
+                >
                   {product.logisticStatus}
                 </Badge>
                 <span className="shrink-0 font-mono text-[12px] text-text-3">
@@ -174,10 +196,18 @@ export default function BulkActions() {
           </div>
 
           <div className="flex justify-end gap-3">
-            <Button variant="outline" className="px-6.5" onClick={() => setConfirmOpen(false)}>
+            <Button
+              variant="outline"
+              className="px-6.5"
+              onClick={() => setConfirmOpen(false)}
+            >
               Cancel
             </Button>
-            <Button className="px-7.5" disabled={pending || noopChange} onClick={handleConfirm}>
+            <Button
+              className="px-7.5"
+              disabled={pending || noopChange}
+              onClick={handleConfirm}
+            >
               Ok
             </Button>
           </div>

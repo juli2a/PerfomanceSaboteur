@@ -50,7 +50,7 @@ export function KpiGridView({ kpi }: Props) {
           <KpiCard key={card.label} {...card} />
         ))}
       </div>
-      <p className="absolute -bottom-4 @min-[1024px]:-bottom-4.5 right-4 text-[11px] text-text-3">
+      <p className="absolute -bottom-4 @min-[1024px]:-bottom-5 right-4 text-sm text-text-3">
         * vs previous 15 days
       </p>
     </section>

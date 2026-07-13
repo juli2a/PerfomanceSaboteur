@@ -71,7 +71,7 @@ export default function BannerCarousel({ slides }: BannerCarouselProps) {
 
       <Button
         variant="outline"
-        size="icon-sm"
+        size="icon"
         onClick={scrollPrev}
         aria-label="Previous slide"
         className="absolute top-1/2 left-3 z-10 -translate-y-1/2"
@@ -80,7 +80,7 @@ export default function BannerCarousel({ slides }: BannerCarouselProps) {
       </Button>
       <Button
         variant="outline"
-        size="icon-sm"
+        size="icon"
         onClick={scrollNext}
         aria-label="Next slide"
         className="absolute top-1/2 right-3 z-10 -translate-y-1/2"
@@ -97,7 +97,9 @@ export default function BannerCarousel({ slides }: BannerCarouselProps) {
             aria-label={`Go to slide ${i + 1}`}
             className={cn(
               "size-1.5 rounded-full transition-colors",
-              i === selectedIndex ? "bg-white" : "bg-white/40 hover:bg-white/60",
+              i === selectedIndex
+                ? "bg-white"
+                : "bg-white/40 hover:bg-white/60",
             )}
           />
         ))}

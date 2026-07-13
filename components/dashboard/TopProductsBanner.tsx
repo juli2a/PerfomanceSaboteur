@@ -1,6 +1,8 @@
 import { cookies } from "next/headers";
 import { getBannerProducts } from "@/lib/server/dashboard";
-import TopProductsBannerClient, { type BannerSlide } from "./TopProductsBannerClient";
+import TopProductsBannerClient, {
+  type BannerSlide,
+} from "./TopProductsBannerClient";
 
 export default async function TopProductsBanner() {
   const cookieStore = await cookies();
@@ -21,5 +23,7 @@ export default async function TopProductsBanner() {
     marginality: p.marginality,
   }));
 
-  return <TopProductsBannerClient slides={slides} isUnoptimized={isUnoptimized} />;
+  return (
+    <TopProductsBannerClient slides={slides} isUnoptimized={isUnoptimized} />
+  );
 }

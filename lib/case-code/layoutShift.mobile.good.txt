@@ -1,0 +1,19 @@
+// app/(shell)/layout.tsx (Server Component)
+const cookieStore = await cookies();
+const initialExpanded = cookieStore.get("panelExpanded")?.value === "on";
+// ...passed down as a prop to <PerformancePanel>
+
+// store/panel-expanded.ts — plain state, no side effects
+export const usePanelExpandedStore = create<PanelExpandedState>()((set) => ({
+  expanded: false,
+  setExpanded: (expanded) => set({ expanded }),
+}));
+
+// hooks/usePanelExpanded.ts — the cookie write lives here, not in the store
+const setExpanded = (expanded: boolean) => {
+  usePanelExpandedStore.getState().setExpanded(expanded);
+  document.cookie = `panelExpanded=${expanded ? "on" : "off"}; path=/; max-age=31536000`;
+};
+
+// The server reads the same cookie the client writes, so the very first
+// render already agrees — nothing to correct after mount.

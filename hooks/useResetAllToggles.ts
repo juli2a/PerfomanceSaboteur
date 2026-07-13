@@ -1,6 +1,9 @@
 "use client";
 
-import { SSR_COOKIE_CASES, useSimControlStore } from "@/store/simulator-control";
+import {
+  SSR_COOKIE_CASES,
+  useSimControlStore,
+} from "@/store/simulator-control";
 
 // Backs the control panel's "All off" button. Doesn't just loop
 // useToggleCase(key, false) over every active case — that would call

@@ -126,9 +126,9 @@ export const getAmplifiedProducts = cache(
 // aggregates stockValue/share/productCount and truncates to the top 8 by
 // value, neither of which a filter dropdown needs.
 export const getInventoryCategories = cache(async (): Promise<string[]> => {
-  const { products } = await apiFetch<{ products: Pick<DummyProduct, "category">[] }>(
-    `/products?limit=${BASE_PRODUCT_COUNT}&select=category`,
-  );
+  const { products } = await apiFetch<{
+    products: Pick<DummyProduct, "category">[];
+  }>(`/products?limit=${BASE_PRODUCT_COUNT}&select=category`);
 
   return [...new Set(products.map((product) => product.category))].sort();
 });

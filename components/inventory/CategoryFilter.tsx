@@ -35,9 +35,15 @@ interface CategoryFilterProps {
 // Both branches render the same CategoryFilterList — see that file for why.
 export default function CategoryFilter({ categories }: CategoryFilterProps) {
   const isMobile = useContext(MediaContext);
-  const panelHeight = useSimPerformanceStore((state) => state.mobilePanelHeight);
-  const selectedCategories = useInventoryFiltersStore((state) => state.categories);
-  const clearCategories = useInventoryFiltersStore((state) => state.clearCategories);
+  const panelHeight = useSimPerformanceStore(
+    (state) => state.mobilePanelHeight,
+  );
+  const selectedCategories = useInventoryFiltersStore(
+    (state) => state.categories,
+  );
+  const clearCategories = useInventoryFiltersStore(
+    (state) => state.clearCategories,
+  );
   const hasSelection = selectedCategories.size > 0;
 
   if (isMobile === undefined) return null;
@@ -72,7 +78,7 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
           <DrawerFooter className="grid grid-cols-2 items-center gap-2.5">
             <div className="flex justify-center">
               {hasSelection && (
-                <Button variant="ghost" onClick={clearCategories}>
+                <Button variant="ghost" size="sm" onClick={clearCategories}>
                   Clear all
                 </Button>
               )}
@@ -88,13 +94,18 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          "group flex h-11 items-center gap-2.25 rounded border px-3.75 text-[14px] font-medium whitespace-nowrap transition-colors",
+          "group flex h-11 items-center gap-2.25 rounded border px-3.75 text-sm font-medium whitespace-nowrap transition-colors",
           hasSelection
             ? "border-primary bg-accent-dim text-foreground"
             : "border-border bg-surface text-text-2",
         )}
       >
-        <Filter className={cn("size-3.75", hasSelection ? "text-primary" : "text-text-3")} />
+        <Filter
+          className={cn(
+            "size-3.75",
+            hasSelection ? "text-primary" : "text-text-3",
+          )}
+        />
         Filter by Category
         <span
           className={cn(
@@ -106,14 +117,17 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
         </span>
         <ChevronDown className="size-3.5 text-text-3 transition-transform group-data-popup-open:rotate-180" />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="max-h-90 w-55 overflow-y-auto rounded bg-raise p-1.5">
+      <DropdownMenuContent
+        align="start"
+        className="max-h-90 w-55 overflow-y-auto rounded bg-raise p-1.5"
+      >
         <CategoryFilterList categories={categories} />
         {hasSelection && (
           <>
             <DropdownMenuSeparator />
             <Button
               variant="ghost"
-              size="xs"
+              size="sm"
               onClick={clearCategories}
               className="w-full"
             >

@@ -37,9 +37,7 @@ function runBadPath(execute: () => void): () => void {
 // either way.
 export function useInventorySearch() {
   const query = useInventorySearchStore((state) => state.query);
-  const setMatchedIds = useInventorySearchStore(
-    (state) => state.setMatchedIds,
-  );
+  const setMatchedIds = useInventorySearchStore((state) => state.setMatchedIds);
   const setIsSearching = useInventorySearchStore(
     (state) => state.setIsSearching,
   );

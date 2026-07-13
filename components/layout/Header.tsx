@@ -75,7 +75,7 @@ export default function Header({
             the X close button) ── */}
         <Button
           variant="outline"
-          size="icon-sm"
+          size="icon"
           onClick={() => setDrawerOpen((open) => !open)}
           aria-label={drawerOpen ? "Close menu" : "Open menu"}
           aria-expanded={drawerOpen}

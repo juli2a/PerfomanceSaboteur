@@ -16,9 +16,16 @@ interface CategoryFilterListProps {
 // Plain Checkbox + label rows (not DropdownMenuCheckboxItem) since the Sheet
 // has no Menu context to host menu items in. `isMobile` only adjusts row
 // height/font size per design — the markup and behavior stay identical.
-export default function CategoryFilterList({ categories, isMobile = false }: CategoryFilterListProps) {
-  const selectedCategories = useInventoryFiltersStore((state) => state.categories);
-  const toggleCategory = useInventoryFiltersStore((state) => state.toggleCategory);
+export default function CategoryFilterList({
+  categories,
+  isMobile = false,
+}: CategoryFilterListProps) {
+  const selectedCategories = useInventoryFiltersStore(
+    (state) => state.categories,
+  );
+  const toggleCategory = useInventoryFiltersStore(
+    (state) => state.toggleCategory,
+  );
 
   return (
     <div className="flex flex-col gap-1">
@@ -31,8 +38,10 @@ export default function CategoryFilterList({ categories, isMobile = false }: Cat
             htmlFor={inputId}
             className={cn(
               "flex items-center gap-2.75 rounded px-2.75",
-              isMobile ? "h-11.5 text-sm" : "py-2.25 text-[13px]",
-              isSelected ? "bg-accent-dim font-semibold text-foreground" : "font-medium text-text-2 hover:bg-white/5",
+              isMobile ? "h-11.5" : "py-2.25 text-sm",
+              isSelected
+                ? "bg-accent-dim font-semibold text-foreground"
+                : "font-medium text-text-2 hover:bg-white/5",
             )}
           >
             <Checkbox

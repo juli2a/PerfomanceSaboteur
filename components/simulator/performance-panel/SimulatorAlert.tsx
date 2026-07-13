@@ -22,10 +22,13 @@ export default function SimulatorAlert({
   return (
     <div role="alert" className={cn("sim-alert", className)}>
       <div className="flex gap-2.5">
-        <TriangleAlert size={15} className="mt-0.25 shrink-0 text-brand-alert" />
+        <TriangleAlert
+          size={15}
+          className="mt-0.25 shrink-0 text-brand-alert"
+        />
         <div className="min-w-0">
           <p className="heading-brand-alert">{title}</p>
-          <p className="mt-0.75 text-[13px] leading-snug text-brand-alert-muted">
+          <p className="mt-0.75 text-sm font-extralight tracking-wider leading-snug text-brand-alert-muted">
             {body}
           </p>
         </div>

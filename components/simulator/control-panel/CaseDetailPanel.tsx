@@ -76,7 +76,7 @@ export default function CaseDetailPanel({
           </div>
           <Button
             variant="outline"
-            size="icon-sm"
+            size="icon"
             onClick={() => setActiveGuide(null)}
             aria-label="Close guide"
             title="Close"

@@ -18,11 +18,9 @@ export function CategoryAnalyticsView({ categories }: Props) {
         {categories.map((cat) => (
           <li key={cat.slug} className="flex flex-col gap-1.75">
             <div className="flex items-center justify-between">
-              <span className="text-[13px] font-medium text-foreground">
-                {cat.name}
-              </span>
-              <span className="text-xs text-text-2 @min-[1024px]:text-[13px]">
-                <span className="hidden @min-[1024px]:inline">
+              <span className="font-medium text-foreground">{cat.name}</span>
+              <span className="text-text-2 @min-[1024px]:text-lg">
+                <span className="hidden @min-[1024px]:inline text-base">
                   {formatCurrency(cat.stockValue)} ·{" "}
                 </span>
                 {cat.share}%

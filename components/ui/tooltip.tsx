@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
-import { cva, type VariantProps } from "class-variance-authority"
-import { InfoIcon } from "lucide-react"
+import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip";
+import { cva, type VariantProps } from "class-variance-authority";
+import { InfoIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils/cn"
+import { cn } from "@/lib/utils/cn";
 
 function Tooltip({ ...props }: TooltipPrimitive.Root.Props) {
-  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />
+  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
 }
 
 function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
+  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
 }
 
 const tooltipInfoTriggerVariants = cva(
@@ -19,15 +19,17 @@ const tooltipInfoTriggerVariants = cva(
   {
     variants: {
       color: {
-        product: "text-text-3 hover:text-foreground focus-visible:text-foreground",
-        brand: "text-brand-muted hover:text-brand-accent focus-visible:text-brand-accent",
+        product:
+          "text-text-3 hover:text-foreground focus-visible:text-foreground",
+        brand:
+          "text-brand-muted hover:text-brand-accent focus-visible:text-brand-accent",
       },
     },
     defaultVariants: {
       color: "product",
     },
   },
-)
+);
 
 function TooltipInfoTrigger({
   color,
@@ -36,7 +38,7 @@ function TooltipInfoTrigger({
   ...props
 }: TooltipPrimitive.Trigger.Props &
   VariantProps<typeof tooltipInfoTriggerVariants> & {
-    label: string
+    label: string;
   }) {
   return (
     <TooltipTrigger
@@ -46,7 +48,7 @@ function TooltipInfoTrigger({
     >
       <InfoIcon size={13} />
     </TooltipTrigger>
-  )
+  );
 }
 
 const tooltipContentVariants = cva(
@@ -62,7 +64,7 @@ const tooltipContentVariants = cva(
       color: "product",
     },
   },
-)
+);
 
 function TooltipContent({
   align = "center",
@@ -94,7 +96,7 @@ function TooltipContent({
         />
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>
-  )
+  );
 }
 
-export { Tooltip, TooltipTrigger, TooltipInfoTrigger, TooltipContent }
+export { Tooltip, TooltipTrigger, TooltipInfoTrigger, TooltipContent };

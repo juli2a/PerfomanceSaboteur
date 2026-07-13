@@ -12,7 +12,7 @@ const SIZES = {
   sm: {
     badgeSize: "size-7.5",
     icon: 21,
-    text: "text-[16px]",
+    text: "min-[360px]:text-lg",
     gap: "gap-2.25",
     radius: "rounded-sm",
   },

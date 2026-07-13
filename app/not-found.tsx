@@ -41,8 +41,8 @@ export default function NotFound() {
             Page not found
           </h1>
           <p className="mb-8 text-[15px] leading-[1.6] text-text-2">
-            The screen you&apos;re looking for doesn&apos;t exist, was moved,
-            or the link is broken.
+            The screen you&apos;re looking for doesn&apos;t exist, was moved, or
+            the link is broken.
           </p>
           <div className="flex items-center justify-center gap-3">
             <Button nativeButton={false} render={<Link href="/dashboard" />}>

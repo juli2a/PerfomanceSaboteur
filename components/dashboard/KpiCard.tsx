@@ -17,12 +17,12 @@ export default function KpiCard({ label, value, deltaPercent, spark }: Props) {
   return (
     <Card variant="global" size="kpi">
       <div className="flex items-center justify-between gap-2">
-        <p className="min-w-0 truncate text-xs font-medium text-text-2 @min-[640px]:text-[13px]">
+        <p className="min-w-0 truncate text-xs font-medium text-text-2 @min-[640px]:text-lg">
           {label}
         </p>
         <span
           className={cn(
-            "hidden shrink-0 rounded-sm px-2.25 py-0.75 text-[13px] font-semibold @min-[640px]:inline",
+            "hidden shrink-0 rounded-sm px-2.25 py-0.75 font-semibold @min-[640px]:inline",
             isPositive ? "bg-pos-dim text-pos" : "bg-alert/12 text-alert",
           )}
         >
@@ -36,10 +36,19 @@ export default function KpiCard({ label, value, deltaPercent, spark }: Props) {
 
       <div className="flex items-center gap-4">
         {/* narrow container only: badge moves down to sit next to the sparkline */}
-        <span className={cn("shrink-0 text-xs font-semibold @min-[640px]:hidden", isPositive ? "text-pos" : "text-alert")}>
+        <span
+          className={cn(
+            "shrink-0 text-sm font-semibold @min-[640px]:hidden",
+            isPositive ? "text-pos" : "text-alert",
+          )}
+        >
           {deltaText}
         </span>
-        <Sparkline isGood={isPositive} data={spark} className="h-5.5 min-w-0 flex-1 @min-[640px]:h-8.5" />
+        <Sparkline
+          isGood={isPositive}
+          data={spark}
+          className="h-5.5 min-w-0 flex-1 @min-[640px]:h-8.5"
+        />
       </div>
     </Card>
   );

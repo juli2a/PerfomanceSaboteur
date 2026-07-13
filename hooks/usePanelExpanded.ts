@@ -41,7 +41,10 @@ function useUnstableExpanded() {
 // Shared by PerformancePanelMobile. The toggle only picks which value above
 // drives the display — everything else (subscribing, writing) is identical
 // either way.
-export function usePanelExpanded(isUnstable: boolean, initialExpanded: boolean) {
+export function usePanelExpanded(
+  isUnstable: boolean,
+  initialExpanded: boolean,
+) {
   const stable = useStableExpanded(initialExpanded);
   const unstable = useUnstableExpanded();
 

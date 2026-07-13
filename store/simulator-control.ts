@@ -86,8 +86,7 @@ export const useSimControlStore = create<SimControlState>()(
       // only the localStorage-backed keys come from the stored blob.
       merge: (persistedState, currentState) => {
         const persisted = persistedState as
-          | Partial<SimControlState>
-          | undefined;
+          Partial<SimControlState> | undefined;
         return {
           ...currentState,
           ...persisted,

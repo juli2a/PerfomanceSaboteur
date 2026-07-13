@@ -16,7 +16,7 @@ interface MetricStatProps {
 export default function MetricStat({ label, value, rating }: MetricStatProps) {
   return (
     <div>
-      <p className="text-[13px] text-text-3 whitespace-nowrap">{label}</p>
+      <p className="text-sm text-text-3 whitespace-nowrap">{label}</p>
       <p
         className={cn(
           "text-[15px] font-semibold tabular-nums",

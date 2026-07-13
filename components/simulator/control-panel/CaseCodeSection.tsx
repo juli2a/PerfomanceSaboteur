@@ -30,7 +30,9 @@ export default function CaseCodeSection({
     <div
       className={cn(
         "rounded-lg border px-3.75 py-3.5",
-        isAnti ? "border-border bg-white/[2.2%]" : "border-[rgba(244,167,60,0.34)] bg-[rgba(244,167,60,0.06)]",
+        isAnti
+          ? "border-border bg-white/[2.2%]"
+          : "border-[rgba(244,167,60,0.34)] bg-[rgba(244,167,60,0.06)]",
       )}
     >
       <div className="mb-2.25 flex items-center justify-between gap-2.5">
