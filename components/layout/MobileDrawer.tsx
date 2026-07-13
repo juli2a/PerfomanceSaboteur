@@ -38,7 +38,11 @@ export default function MobileDrawer({ open, onClose }: Props) {
           transform: open ? "translateX(0)" : "translateX(-100%)",
         }}
       >
-        <MainNav onNavigate={onClose} onClose={onClose} linkClassName="text-[15px]" />
+        <MainNav
+          onNavigate={onClose}
+          onClose={onClose}
+          linkClassName="text-[15px]"
+        />
 
         <div className="mt-auto">
           <AboutButton />

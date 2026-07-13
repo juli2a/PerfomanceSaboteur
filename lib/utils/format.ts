@@ -1,7 +1,9 @@
 // Display formatting helpers
 
 export function formatCurrency(value: number, currency = "USD"): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(value);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(
+    value,
+  );
 }
 
 export function formatPercent(value: number): string {

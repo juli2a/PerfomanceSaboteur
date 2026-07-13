@@ -9,7 +9,10 @@ interface OverallRatingBadgeProps {
 
 // Worst-of-LCP/CLS/INP pill — shared by the desktop panel's header and the
 // mobile panel's expanded header, so both surfaces present it identically.
-export default function OverallRatingBadge({ rating, className }: OverallRatingBadgeProps) {
+export default function OverallRatingBadge({
+  rating,
+  className,
+}: OverallRatingBadgeProps) {
   if (!rating) return null;
   const { tone, label } = getRatingPresentation(rating);
 

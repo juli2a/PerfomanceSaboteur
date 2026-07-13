@@ -38,7 +38,10 @@ function useUnstableCollapsed() {
 // Shared by Header/Sidebar/MainNav. The toggle only picks which value above
 // drives the display — everything else (subscribing, writing) is identical
 // either way.
-export function useSidebarCollapsed(isUnstable: boolean, initialCollapsed: boolean) {
+export function useSidebarCollapsed(
+  isUnstable: boolean,
+  initialCollapsed: boolean,
+) {
   const stable = useStableCollapsed(initialCollapsed);
   const unstable = useUnstableCollapsed();
 

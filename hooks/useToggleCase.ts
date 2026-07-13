@@ -1,6 +1,9 @@
 "use client";
 
-import { SSR_COOKIE_CASES, useSimControlStore } from "@/store/simulator-control";
+import {
+  SSR_COOKIE_CASES,
+  useSimControlStore,
+} from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";
 
 // Every toggle click (desktop switch, mobile switch, guide's "Try it" button)

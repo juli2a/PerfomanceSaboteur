@@ -10,8 +10,9 @@ export interface RowStatusContextValue {
   setStatuses: (ids: number[], status: LogisticStatus) => void;
 }
 
-export const RowStatusContext =
-  createContext<RowStatusContextValue | null>(null);
+export const RowStatusContext = createContext<RowStatusContextValue | null>(
+  null,
+);
 
 // Case 7 (Context Overhead) mobile bad-path state — deliberately isolated
 // from useInventoryStatusStore (the good-path store, also read by desktop's
@@ -23,11 +24,7 @@ export const RowStatusContext =
 // behaving differently. Mounted once at the page root (alongside
 // TableSelectionProvider), always present, but only ProductCardUnoptimized
 // actually consumes it.
-export function RowStatusProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function RowStatusProvider({ children }: { children: React.ReactNode }) {
   const [statuses, setStatusesState] = useState<Map<number, LogisticStatus>>(
     new Map(),
   );

@@ -1,6 +1,6 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils/cn"
+import { cn } from "@/lib/utils/cn";
 
 function Card({
   className,
@@ -9,9 +9,9 @@ function Card({
   disabled,
   ...props
 }: React.ComponentProps<"div"> & {
-  variant?: "global" | "default"
-  size?: "default" | "kpi"
-  disabled?: boolean
+  variant?: "global" | "default";
+  size?: "default" | "kpi";
+  disabled?: boolean;
 }) {
   return (
     <section
@@ -20,11 +20,11 @@ function Card({
       className={cn(
         variant === "global" ? "card-surface-bg card-global" : "card-default",
         disabled && "opacity-40",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Card }
+export { Card };

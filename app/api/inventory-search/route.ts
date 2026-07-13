@@ -30,7 +30,9 @@ export async function GET(request: NextRequest) {
   const query = request.nextUrl.searchParams.get("q")?.trim() ?? "";
   if (!query) return NextResponse.json({ ids: [] });
 
-  await new Promise((resolve) => setTimeout(resolve, getArtificialDelay(query)));
+  await new Promise((resolve) =>
+    setTimeout(resolve, getArtificialDelay(query)),
+  );
 
   const { products } = await apiFetch<ProductsResponse>(
     "/products?limit=100&select=id,title,sku",

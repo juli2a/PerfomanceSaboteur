@@ -67,8 +67,7 @@ const popoverContentVariants = cva(
       color: {
         product:
           "bg-popover text-popover-foreground shadow-md ring-1 ring-foreground/10",
-        brand:
-          "border border-brand-border bg-brand-bg-3 text-text-2 shadow-md",
+        brand: "border border-brand-border bg-brand-bg-3 text-text-2 shadow-md",
       },
       size: {
         default: "min-w-56 p-4",

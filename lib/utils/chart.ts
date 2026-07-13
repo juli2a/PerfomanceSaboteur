@@ -28,7 +28,11 @@ function aggregateByHour(orders: CartEntry[], lastDay: Date): ChartPoint[] {
   }));
 }
 
-function aggregateByDay(orders: CartEntry[], lastDay: Date, days: number): ChartPoint[] {
+function aggregateByDay(
+  orders: CartEntry[],
+  lastDay: Date,
+  days: number,
+): ChartPoint[] {
   const slots = Array.from({ length: days }, (_, i) => {
     const d = new Date(lastDay);
     d.setDate(d.getDate() - (days - 1 - i));
@@ -94,7 +98,9 @@ export function buildOrderSegments(
   orders.forEach((o) => {
     const orderDay = new Date(o.timestamp);
     orderDay.setHours(0, 0, 0, 0);
-    const dayIndex = Math.round((orderDay.getTime() - startDay.getTime()) / 86_400_000);
+    const dayIndex = Math.round(
+      (orderDay.getTime() - startDay.getTime()) / 86_400_000,
+    );
     const segment = segments[Math.floor(dayIndex / segmentDays)];
     if (segment) {
       segment.revenue += o.value;
@@ -107,7 +113,10 @@ export function buildOrderSegments(
 
 function sumSegments(segments: OrderSegment[]): OrderSegment {
   return segments.reduce(
-    (acc, s) => ({ revenue: acc.revenue + s.revenue, count: acc.count + s.count }),
+    (acc, s) => ({
+      revenue: acc.revenue + s.revenue,
+      count: acc.count + s.count,
+    }),
     { revenue: 0, count: 0 },
   );
 }

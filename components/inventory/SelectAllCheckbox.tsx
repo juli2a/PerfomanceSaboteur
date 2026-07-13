@@ -3,7 +3,10 @@
 import { useContext } from "react";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { useInventorySelectionStore, type SelectedProduct } from "@/store/inventory-selection";
+import {
+  useInventorySelectionStore,
+  type SelectedProduct,
+} from "@/store/inventory-selection";
 import { TableSelectionContext } from "@/context/TableSelectionContext";
 import { useSimulatorCase } from "@/hooks/useSimulatorCase";
 
@@ -20,10 +23,14 @@ interface SelectAllCheckboxProps {
 // correct regardless of the demo toggle. This component isn't part of what
 // the case demonstrates, only the row re-render count is, so both sources
 // are read unconditionally here rather than only mounting one.
-export default function SelectAllCheckbox({ visibleProducts }: SelectAllCheckboxProps) {
+export default function SelectAllCheckbox({
+  visibleProducts,
+}: SelectAllCheckboxProps) {
   const isContextOverheadOn = useSimulatorCase("contextOverhead");
   const zustandSelected = useInventorySelectionStore((state) => state.selected);
-  const zustandSetSelection = useInventorySelectionStore((state) => state.setSelection);
+  const zustandSetSelection = useInventorySelectionStore(
+    (state) => state.setSelection,
+  );
   const context = useContext(TableSelectionContext)!;
 
   const selected = isContextOverheadOn ? context.selected : zustandSelected;
@@ -32,7 +39,8 @@ export default function SelectAllCheckbox({ visibleProducts }: SelectAllCheckbox
     : zustandSetSelection;
 
   const allVisibleSelected =
-    visibleProducts.length > 0 && visibleProducts.every((product) => selected.has(product.id));
+    visibleProducts.length > 0 &&
+    visibleProducts.every((product) => selected.has(product.id));
 
   return (
     <Checkbox

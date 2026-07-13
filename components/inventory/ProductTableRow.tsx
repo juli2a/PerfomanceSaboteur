@@ -22,8 +22,13 @@ interface ProductTableRowProps {
 // currently-mounted row re-executing — this component should only actually
 // re-render when its own props change or one of its own subscriptions
 // (the selector above) reports a change, not just because its parent did.
-function ProductTableRow({ product, gridTemplateColumns }: ProductTableRowProps) {
-  const isSelected = useInventorySelectionStore((state) => state.selected.has(product.id));
+function ProductTableRow({
+  product,
+  gridTemplateColumns,
+}: ProductTableRowProps) {
+  const isSelected = useInventorySelectionStore((state) =>
+    state.selected.has(product.id),
+  );
   const toggleRow = useInventorySelectionStore((state) => state.toggleRow);
   const startTracking = useRenderCounterStore((state) => state.startTracking);
   const logisticStatus = useInventoryStatusStore(

@@ -36,10 +36,10 @@ export interface AnalyticCardData {
   id: string;
   meta: { title: string; sku: string };
   metrics: {
-    currentValue: number;  // price × stock (inventory value)
+    currentValue: number; // price × stock (inventory value)
     rating: number;
   };
-  marginality: number;     // discountPercentage used as GM% proxy
+  marginality: number; // discountPercentage used as GM% proxy
   // A year of raw daily readings — the client-side sparkline pipeline
   // (lib/utils/sparkline-processing.ts) cleans, smooths and downsamples
   // this to the 7 points the mini sparkline actually displays.
@@ -50,7 +50,7 @@ export interface CategoryData {
   name: string;
   slug: string;
   stockValue: number; // sum(price × stock) for all products in this category
-  share: number;      // % of total inventory value
+  share: number; // % of total inventory value
   productCount: number;
 }
 

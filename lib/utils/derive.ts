@@ -16,10 +16,10 @@ export function deriveLtv(userId: number, userAge: number): number {
 // Falls back to previous segments if the last is flat; all-flat → false.
 export function deriveTrend(data: number[]): boolean {
   for (let i = data.length - 1; i > 0; i--) {
-    if (data[i] > data[i - 1]) return true
-    if (data[i] < data[i - 1]) return false
+    if (data[i] > data[i - 1]) return true;
+    if (data[i] < data[i - 1]) return false;
   }
-  return false
+  return false;
 }
 
 // A year of daily "raw" readings for a product's value history — the input
@@ -40,7 +40,8 @@ export function deriveRawHistory(
 ): number[] {
   const cycle = (2 * Math.PI) / days;
   return Array.from({ length: days }, (_, i) => {
-    const base = basePrice * (0.85 + 0.1 * Math.sin(productId * 12.9898 + i * cycle));
+    const base =
+      basePrice * (0.85 + 0.1 * Math.sin(productId * 12.9898 + i * cycle));
     const spike = i % 14 === 0 ? basePrice * 0.6 : 0;
     return Math.round(base + spike);
   });
@@ -60,7 +61,11 @@ export function deriveScatterFloat(seed: number, i: number): number {
 }
 
 // Deterministic pseudo-random index in [0, max) — see deriveScatterFloat.
-export function deriveScatterIndex(seed: number, i: number, max: number): number {
+export function deriveScatterIndex(
+  seed: number,
+  i: number,
+  max: number,
+): number {
   return Math.floor(deriveScatterFloat(seed, i) * max);
 }
 
@@ -89,10 +94,15 @@ export function deriveKpiTrend(
   const spark = Array.from({ length: 10 }, (_, index) => {
     const progress = index / 9;
     const wobble = 1 + Math.sin(seed + index * 7) * 0.04;
-    return Math.round((startValue + (currentValue - startValue) * progress) * wobble);
+    return Math.round(
+      (startValue + (currentValue - startValue) * progress) * wobble,
+    );
   });
   // The ±4% per-point wobble can outweigh the underlying trend across only
   // 10 points, so the half-window comparison alone isn't guaranteed positive
   // — floor it at growthPercent's own minimum to keep that guarantee.
-  return { deltaPercent: Math.max(2, deriveHalfWindowDeltaPercent(spark)), spark };
+  return {
+    deltaPercent: Math.max(2, deriveHalfWindowDeltaPercent(spark)),
+    spark,
+  };
 }
