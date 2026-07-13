@@ -5,7 +5,11 @@ import { useSimPerformanceStore } from "@/store/simulator-performance";
 import Image from "next/image";
 import { Check, RefreshCw, X } from "lucide-react";
 
-import { LOGISTIC_STATUSES, type AmplifiedProduct, type LogisticStatus } from "@/types/inventory";
+import {
+  LOGISTIC_STATUSES,
+  type AmplifiedProduct,
+  type LogisticStatus,
+} from "@/types/inventory";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -39,7 +43,9 @@ export default function StatusChangeDrawer({
   currentStatus,
   onChangeStatus,
 }: StatusChangeDrawerProps) {
-  const panelHeight = useSimPerformanceStore((state) => state.mobilePanelHeight);
+  const panelHeight = useSimPerformanceStore(
+    (state) => state.mobilePanelHeight,
+  );
 
   const [open, setOpen] = useState(false);
   const [pick, setPick] = useState<LogisticStatus | null>(null);
@@ -61,7 +67,11 @@ export default function StatusChangeDrawer({
 
   return (
     <Drawer open={open} onOpenChange={handleOpenChange}>
-      <DrawerTrigger render={<Button variant="secondary" size="sm" aria-label="Change status" />}>
+      <DrawerTrigger
+        render={
+          <Button variant="secondary" size="sm" aria-label="Change status" />
+        }
+      >
         <RefreshCw className="size-3.75" />
         Change
       </DrawerTrigger>
@@ -83,12 +93,19 @@ export default function StatusChangeDrawer({
               className="size-12.5 shrink-0 rounded bg-white object-cover"
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-[15px] font-semibold text-foreground">{product.title}</p>
-              <p className="mt-0.75 truncate font-mono text-[12px] text-text-3">{product.sku}</p>
-              <p className="mt-1.25 text-xs text-text-2">
+              <p className="truncate text-[15px] font-semibold text-foreground">
+                {product.title}
+              </p>
+              <p className="mt-0.75 truncate font-mono text-sm text-text-3">
+                {product.sku}
+              </p>
+              <p className="mt-1.25 text-sm text-text-2">
                 {product.category} ·{" "}
                 <span
-                  className={cn("font-semibold", product.stock === 0 ? "text-alert" : "text-foreground")}
+                  className={cn(
+                    "font-semibold",
+                    product.stock === 0 ? "text-alert" : "text-foreground",
+                  )}
                 >
                   {product.stock}
                 </span>{" "}
@@ -100,7 +117,9 @@ export default function StatusChangeDrawer({
             </span>
           </div>
 
-          <p className="mb-2.75 text-[13px] font-semibold text-text-2">Select a new status</p>
+          <p className="mb-2.75 text-[13px] font-semibold text-text-2">
+            Select a new status
+          </p>
           <div className="flex flex-col gap-2.25">
             {LOGISTIC_STATUSES.map((s) => {
               const isCurrent = s === currentStatus;
@@ -118,9 +137,18 @@ export default function StatusChangeDrawer({
                     isCurrent && "opacity-40",
                   )}
                 >
-                  <span className={cn("size-2.25 shrink-0 rounded-full", getStatusDotClass(s))} />
+                  <span
+                    className={cn(
+                      "size-2.25 shrink-0 rounded-full",
+                      getStatusDotClass(s),
+                    )}
+                  />
                   <span className="flex-1">{s}</span>
-                  {isCurrent && <span className="text-[11px] font-semibold text-text-3">Current</span>}
+                  {isCurrent && (
+                    <span className="text-xs font-semibold text-text-3">
+                      Current
+                    </span>
+                  )}
                   {isPicked && <Check className="size-4" />}
                 </button>
               );
@@ -128,8 +156,14 @@ export default function StatusChangeDrawer({
           </div>
         </DrawerBody>
         <DrawerFooter className="grid grid-cols-2 gap-2.5">
-          <DrawerClose render={<Button variant="outline" className="w-full" />}>Cancel</DrawerClose>
-          <Button className="w-full" disabled={!pick || pending} onClick={handleChange}>
+          <DrawerClose render={<Button variant="outline" className="w-full" />}>
+            Cancel
+          </DrawerClose>
+          <Button
+            className="w-full"
+            disabled={!pick || pending}
+            onClick={handleChange}
+          >
             Change
           </Button>
         </DrawerFooter>

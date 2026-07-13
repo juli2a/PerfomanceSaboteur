@@ -61,8 +61,8 @@ export default function AboutButton({ collapsed = false }: AboutButtonProps) {
           <AboutSection title="What is this?">
             <p className="leading-[1.6] text-brand-muted">
               A demo B2B analytics dashboard (Dashboard + Inventory Control)
-              that looks like a real working interface — but lets you flip
-              on well-known frontend anti-patterns live and watch them tank
+              that looks like a real working interface — but lets you flip on
+              well-known frontend anti-patterns live and watch them tank
               performance in real time.
             </p>
           </AboutSection>
@@ -70,9 +70,9 @@ export default function AboutButton({ collapsed = false }: AboutButtonProps) {
           <AboutSection title="Why?">
             <p className="leading-[1.6] text-brand-muted">
               To make it visible and measurable what actually happens in
-              production when best practices get skipped — where the
-              LCP/CLS hit comes from, why the UI stutters. Not theory —
-              live numbers and effect.
+              production when best practices get skipped — where the LCP/CLS hit
+              comes from, why the UI stutters. Not theory — live numbers and
+              effect.
             </p>
           </AboutSection>
 
@@ -84,17 +84,15 @@ export default function AboutButton({ collapsed = false }: AboutButtonProps) {
               </li>
               <li>Combine toggles — effects stack.</li>
               <li>
-                Open a case&apos;s guide — a short breakdown of the problem,
-                how to reproduce it, its effect, and a bad/good code
-                comparison.
+                Open a case&apos;s guide — a short breakdown of the problem, how
+                to reproduce it, its effect, and a bad/good code comparison.
               </li>
               <li>
-                Watch the metrics panel (LCP, CLS, INP, etc.) update live at
-                the bottom of the screen.
+                Watch the metrics panel (LCP, CLS, INP, etc.) update live at the
+                bottom of the screen.
               </li>
               <li>
-                See Flash on Update highlight which components just
-                re-rendered.
+                See Flash on Update highlight which components just re-rendered.
               </li>
             </ul>
           </AboutSection>
@@ -114,9 +112,9 @@ export default function AboutButton({ collapsed = false }: AboutButtonProps) {
           <div className="border-t border-brand-border pt-heading-gap">
             <AboutSection title="About author">
               <p className="mb-2.5 leading-[1.6] text-brand-muted">
-                Built by Julia Strelkova, a frontend developer at Invirial —
-                a personal project exploring how common frontend
-                anti-patterns actually show up in the numbers.
+                Built by Julia Strelkova, a frontend developer at Invirial — a
+                personal project exploring how common frontend anti-patterns
+                actually show up in the numbers.
               </p>
               <div className="flex flex-col gap-1.5 text-sm">
                 <a

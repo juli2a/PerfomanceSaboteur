@@ -81,11 +81,11 @@ export default function TopProductsBannerClient({
               )}
               <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
               <div className="absolute bottom-4 left-4 right-4">
-                <p className="truncate text-sm font-semibold text-white">
+                <p className="truncate text-lg font-semibold text-white">
                   {slide.title}
                 </p>
-                <p className="mt-0.5 text-xs text-white/70">{slide.sku}</p>
-                <p className="mt-0.5 text-xs text-white/70">
+                <p className="mt-0.5 text-sm text-white/70">{slide.sku}</p>
+                <p className="mt-0.5 text-sm text-white/70">
                   GM%{" "}
                   <span className="text-lg font-bold text-pos">
                     {slide.marginality}

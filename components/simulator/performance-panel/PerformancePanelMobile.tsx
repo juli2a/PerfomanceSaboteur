@@ -37,7 +37,8 @@ function RatingDot({ rating }: { rating: VitalRating | null }) {
 // "Chart-free" metric for the expanded grid — a coloured number, no gauge
 // ring (no room for SVG rings at this width).
 function VitalReadout({ label, display, rating, href }: MetricPreview) {
-  const labelClass = "text-[12px] font-semibold tracking-wide text-brand-muted";
+  const labelClass =
+    "text-[13px] font-semibold underline tracking-wide text-brand-muted";
 
   return (
     <div className="flex flex-1 items-baseline justify-center gap-1.5">
@@ -55,7 +56,7 @@ function VitalReadout({ label, display, rating, href }: MetricPreview) {
       )}
       <span
         className={cn(
-          "text-sm font-bold tabular-nums",
+          "font-bold tabular-nums",
           rating ? getRatingPresentation(rating).textClass : "text-brand-text",
         )}
       >
@@ -68,12 +69,12 @@ function VitalReadout({ label, display, rating, href }: MetricPreview) {
 function StatTile({ label, display, rating }: MetricPreview) {
   return (
     <div className="flex flex-1 items-center justify-between gap-2 rounded-xs border border-brand-border bg-brand-bg-2 px-2.75 py-1">
-      <span className="whitespace-nowrap text-[12px] text-brand-muted">
+      <span className="whitespace-nowrap text-sm text-brand-muted">
         {label}
       </span>
       <span
         className={cn(
-          "text-[13px] font-semibold tabular-nums",
+          "font-semibold tabular-nums",
           rating ? getRatingPresentation(rating).textClass : "text-brand-text",
         )}
       >
@@ -236,7 +237,11 @@ export default function PerformancePanelMobile({
             )}
           </span>
         </button>
-        <div className="sim-panel-mobile-content" data-open={open || undefined} data-instant={controlsOpen || undefined}>
+        <div
+          className="sim-panel-mobile-content"
+          data-open={open || undefined}
+          data-instant={controlsOpen || undefined}
+        >
           <div className="sim-panel-mobile-content-row flex flex-col gap-2.75 px-4">
             <div className="flex gap-2">
               <VitalReadout {...lcp} />
@@ -267,4 +272,3 @@ export default function PerformancePanelMobile({
     </div>
   );
 }
-

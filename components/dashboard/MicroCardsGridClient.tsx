@@ -43,12 +43,12 @@ export function MicroCardsGridClient({ products }: Props) {
       <div className="mb-heading-gap flex flex-col gap-3 @min-[640px]:flex-row @min-[640px]:items-center">
         <div className="flex items-center justify-between @min-[640px]:contents">
           <h2 className="heading-2">Analytics Grid</h2>
-          <span className="tabular-nums text-xs text-text-3 @min-[640px]:ml-auto">
+          <span className="tabular-nums text-text-3 @min-[640px]:ml-auto">
             <span className="font-semibold text-foreground">{activeCount}</span>
             <span> / {products.length}</span>
           </span>
         </div>
-        <div className="flex items-center justify-end gap-3 text-xs text-text-3">
+        <div className="flex items-center justify-end gap-3 text-text-3">
           <span>Min GM%</span>
           <Slider
             min={0}

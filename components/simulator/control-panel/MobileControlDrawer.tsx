@@ -59,7 +59,7 @@ function ToggleRow({
       )}
     >
       <label className="flex items-center gap-2.75 px-3.5 py-3">
-        <span className="flex-1 truncate text-sm font-semibold text-foreground">
+        <span className="flex-1 truncate font-semibold text-foreground">
           {label}
         </span>
         <button

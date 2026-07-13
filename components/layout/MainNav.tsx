@@ -64,7 +64,7 @@ export default function MainNav({
       {onClose && (
         <Button
           variant="outline"
-          size="icon-sm"
+          size="icon"
           onClick={onClose}
           aria-label="Close menu"
           className="absolute right-heading-gap top-heading-gap"

@@ -54,17 +54,17 @@ export default function MicroCardView({
           }
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="truncate text-xs font-medium text-text-2">
+            <span className="truncate text-sm font-medium text-text-2">
               {title}
             </span>
-            <span className="shrink-0 whitespace-nowrap rounded-xs border border-border bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold text-text-3">
+            <span className="shrink-0 whitespace-nowrap rounded-xs border border-border bg-surface-2 px-1.5 py-0.5 text-sm font-semibold text-text-3">
               GM% {marginality}
             </span>
           </div>
 
           <div className="mt-2.5 flex items-end justify-between gap-2.5">
             <div>
-              <p className="tabular-nums text-base font-semibold tracking-tight text-foreground">
+              <p className="tabular-nums text-lg font-semibold tracking-tight text-foreground">
                 {value}
               </p>
               <div className="mt-1.5 flex items-center gap-1">
@@ -76,7 +76,7 @@ export default function MicroCardView({
                 >
                   ★
                 </span>
-                <span className="tabular-nums text-xs font-semibold text-foreground">
+                <span className="tabular-nums text-sm font-semibold text-foreground">
                   {rating.toFixed(1)}
                 </span>
               </div>
@@ -88,7 +88,7 @@ export default function MicroCardView({
           </div>
         </PopoverTrigger>
         <PopoverContent sideOffset={-40}>
-          <p className="font-medium text-foreground">{title}</p>
+          <p className="font-medium text-foreground text-lg">{title}</p>
           <div className="mt-1 flex items-center gap-1 text-text-3">
             <span>SKU {sku}</span>
             <CopyButton value={sku} label="SKU" />

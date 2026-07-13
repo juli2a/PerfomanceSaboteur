@@ -41,18 +41,16 @@ export function TopCustomersView({ customers }: Props) {
                 {initials}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-foreground">
+                <p className="truncate font-medium text-foreground text-sm min-[360px]:text-base lg:text-lg">
                   {c.name}
                 </p>
-                <p className="truncate text-[11px] text-text-3 @min-[640px]:text-xs">
-                  {c.company}
-                </p>
+                <p className="truncate text-sm text-text-3">{c.company}</p>
               </div>
               <div className="text-right">
-                <p className="tabular-nums text-sm font-semibold text-foreground">
+                <p className="tabular-nums font-semibold text-foreground text-sm md:text-base">
                   {formatCurrency(c.ltv)}
                 </p>
-                <p className="text-xs text-text-3">{c.orders} orders</p>
+                <p className="text-sm text-text-3">{c.orders} orders</p>
               </div>
             </li>
           );

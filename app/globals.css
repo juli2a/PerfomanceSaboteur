@@ -40,6 +40,6 @@
     @apply bg-background text-foreground antialiased;
   }
   html {
-    @apply font-sans;
+    @apply font-sans text-base;
   }
 }

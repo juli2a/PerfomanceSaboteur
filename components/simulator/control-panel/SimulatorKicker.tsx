@@ -21,7 +21,7 @@ export default function SimulatorKicker({ size = "sm" }: Props) {
           size === "sm" && "max-w-40",
         )}
       >
-        Turn on an anti-pattern and see what goes wrong
+        Turn on an anti-pattern and&nbsp;see&nbsp;what&nbsp;goes&nbsp;wrong
       </span>
     </div>
   );

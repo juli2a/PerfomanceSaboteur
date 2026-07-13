@@ -25,7 +25,7 @@ export default function UpdatedAt({ isHydrationMismatchOn }: UpdatedAtProps) {
   const time = isHydrationMismatchOn ? unstable : stable;
 
   return (
-    <span className="inline-block w-22.5 font-semibold tabular-nums text-foreground">
+    <span className="inline-block w-22.5 lg:text-base font-semibold tabular-nums text-foreground">
       {time}
     </span>
   );

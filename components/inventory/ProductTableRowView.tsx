@@ -37,7 +37,7 @@ export default function ProductTableRowView({
       <div
         role="row"
         className={cn(
-          "grid items-center border-b border-border px-4 py-2.5 text-xs",
+          "grid items-center border-b border-border px-4 py-2.5 text-sm",
           isSelected && "bg-accent-dim",
         )}
         style={{ gridTemplateColumns }}
@@ -60,8 +60,12 @@ export default function ProductTableRowView({
           />
         </span>
         <span role="cell" className="min-w-0 pr-3">
-          <p className="truncate font-medium text-foreground">{product.title}</p>
-          <p className="mt-0.75 truncate font-mono text-[11px] text-text-3">{product.sku}</p>
+          <p className="truncate font-medium text-foreground">
+            {product.title}
+          </p>
+          <p className="mt-0.75 truncate font-mono text-[13px] text-text-3">
+            {product.sku}
+          </p>
         </span>
         <span role="cell" className="truncate text-text-2">
           {product.category}
@@ -71,7 +75,10 @@ export default function ProductTableRowView({
         </span>
         <span
           role="cell"
-          className={cn("tabular-nums", product.stock === 0 ? "text-alert" : "text-foreground")}
+          className={cn(
+            "tabular-nums",
+            product.stock === 0 ? "text-alert" : "text-foreground",
+          )}
         >
           {product.stock}
         </span>

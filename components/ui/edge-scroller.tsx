@@ -87,7 +87,7 @@ export default function EdgeScroller({
       {hasOverflow && (
         <Button
           variant="outline"
-          size="icon-sm"
+          size="icon"
           onClick={scrollToStart}
           disabled={!canScrollLeft}
           aria-label={scrollLeftLabel}
@@ -109,7 +109,7 @@ export default function EdgeScroller({
       {hasOverflow && (
         <Button
           variant="outline"
-          size="icon-sm"
+          size="icon"
           onClick={scrollToEnd}
           disabled={!canScrollRight}
           aria-label={scrollRightLabel}

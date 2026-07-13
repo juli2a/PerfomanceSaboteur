@@ -18,9 +18,8 @@ export default async function DashboardPage() {
             Merchant analytics overview · last 30 days
           </p>
         </div>
-        <span className="whitespace-nowrap text-[13px] text-text-2">
-          Updated{" "}
-          <UpdatedAt isHydrationMismatchOn={isHydrationMismatchOn} />
+        <span className="whitespace-nowrap text-sm text-text-2">
+          Updated <UpdatedAt isHydrationMismatchOn={isHydrationMismatchOn} />
         </span>
       </div>
 

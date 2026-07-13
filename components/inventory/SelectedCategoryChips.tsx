@@ -6,9 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Chip } from "@/components/ui/chip";
 
 export default function SelectedCategoryChips() {
-  const selectedCategories = useInventoryFiltersStore((state) => state.categories);
-  const toggleCategory = useInventoryFiltersStore((state) => state.toggleCategory);
-  const clearCategories = useInventoryFiltersStore((state) => state.clearCategories);
+  const selectedCategories = useInventoryFiltersStore(
+    (state) => state.categories,
+  );
+  const toggleCategory = useInventoryFiltersStore(
+    (state) => state.toggleCategory,
+  );
+  const clearCategories = useInventoryFiltersStore(
+    (state) => state.clearCategories,
+  );
 
   if (selectedCategories.size === 0) return null;
 
@@ -19,7 +25,7 @@ export default function SelectedCategoryChips() {
           {formatCategoryLabel(category)}
         </Chip>
       ))}
-      <Button variant="ghost" size="xs" onClick={clearCategories}>
+      <Button variant="ghost" size="sm" onClick={clearCategories}>
         Clear all
       </Button>
     </div>

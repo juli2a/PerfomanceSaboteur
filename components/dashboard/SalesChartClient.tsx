@@ -34,8 +34,11 @@ export function SalesChartClient({ data: salesChart }: Props) {
       <div className="mb-heading-gap flex flex-wrap items-center gap-2">
         <div>
           <h2 className="heading-2">Revenue</h2>
-          <p className="text-xs text-text-2">
-            {formatCurrency(total)} this period
+          <p className="text-sm text-text-2 min-w-52">
+            <span className="font-semibold text-lg text-pos">
+              {formatCurrency(total)}
+            </span>{" "}
+            this period
           </p>
         </div>
         <div className="ml-auto flex gap-1 rounded-lg border border-border-strong p-0.5">
@@ -58,7 +61,7 @@ export function SalesChartClient({ data: salesChart }: Props) {
         <SalesChartCanvas data={data} />
       </div>
 
-      <div className="mt-1 flex justify-between text-[10px] text-text-3">
+      <div className="mt-1 flex justify-between text-sm text-text-3">
         <span>{data[0]?.label}</span>
         <span>{data[Math.floor(data.length / 2)]?.label}</span>
         <span>{data[data.length - 1]?.label}</span>
