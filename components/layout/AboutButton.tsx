@@ -109,6 +109,27 @@ export default function AboutButton({ collapsed = false }: AboutButtonProps) {
             </ol>
           </AboutSection>
 
+          <AboutSection title="A couple of honest notes">
+            <ul className="list-disc space-y-1 pl-heading-gap leading-[1.6] text-brand-muted">
+              <li>
+                Blocking Time and Interaction Latency only update when a new
+                qualifying event happens — a Long Task over 50ms, a slow tap
+                or click. They&apos;re not a live &quot;current state&quot;
+                gauge. Turn a case off, click around with cheap interactions,
+                and the number can keep showing its last bad reading until
+                something else actually crosses that threshold — that&apos;s
+                the metric doing its job, not the case still being broken.
+              </li>
+              <li>
+                Not every effect will look equally dramatic everywhere.
+                Modern hardware and the hosting itself — faster CPUs, CDNs,
+                production build optimizations — can shrink or mask some of
+                these anti-patterns. What looks severe on one device or
+                network may barely register on another.
+              </li>
+            </ul>
+          </AboutSection>
+
           <div className="border-t border-brand-border pt-heading-gap">
             <AboutSection title="About author">
               <p className="mb-2.5 leading-[1.6] text-brand-muted">

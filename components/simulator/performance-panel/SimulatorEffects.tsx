@@ -8,6 +8,7 @@ import { useRerenderNodesReporter } from "@/hooks/useRerenderNodesReporter";
 import { useClearAlertsOnNavigate } from "@/hooks/useClearAlertsOnNavigate";
 import { useSyncSsrCookies } from "@/hooks/useSyncSsrCookies";
 import { useSimControlStore } from "@/store/simulator-control";
+import { ENV } from "@/lib/config";
 
 // Case 6 (docs/case6.md): a text-child hydration mismatch throws
 // synchronously *during* React's initial hydration pass
@@ -20,8 +21,19 @@ import { useSimControlStore } from "@/store/simulator-control";
 // hydrateRoot is ever called), not inside a useEffect like the reporter
 // hooks below, which would simply miss an event that fires during the very
 // first hydration pass.
+// Dev builds throw the full message below. Production builds minify it down
+// to error #418 (throwOnHydrationMismatch's code in the currently installed
+// react-dom — verified against
+// node_modules/next/dist/compiled/react-dom/cjs/react-dom-client.production.js;
+// re-check that file after any React/Next upgrade, since minified codes are
+// assigned at build time and can shift), surfaced as a link to
+// react.dev/errors/418 instead of readable text — process.env.NODE_ENV
+// (inlined at build time, so this is a static branch, not a runtime read)
+// picks the signature that actually matches the bundle running.
 const HYDRATION_MISMATCH_SIGNATURE =
-  "Hydration failed because the server rendered";
+  ENV === "production"
+    ? "react.dev/errors/418"
+    : "Hydration failed because the server rendered";
 
 if (typeof window !== "undefined") {
   window.addEventListener("error", (event) => {

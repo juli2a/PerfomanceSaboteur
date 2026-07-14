@@ -42,35 +42,13 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
     title: "Network",
     items: [
       {
-        label: "Search race condition", //case 4
-        key: "raceCondition",
-        tip: {
-          problem:
-            "Each keystroke fires its own search request, and a slower response for an earlier, shorter query can arrive after a faster response for what you actually typed. This overwrites the table with stale data, so the search box and table are out of sync.",
-          reproduction:
-            'Type a product name into the Inventory search box quickly, e.g. "lipstick".',
-          effect:
-            'The search box shows "lipstick", but the table still shows results for "l" or "li" — the panel raises a race-condition alert until a fresh response corrects it.',
-          badCode:
-            "Fires a fetch on every keystroke with no debounce and no cancellation, so whichever response resolves last wins — not whichever request was sent last.",
-          goodCode:
-            "Debounces the input 300ms and cancels the previous request with an AbortController on every keystroke, so only the response for the final query ever gets applied.",
-          summary:
-            "Debounce and cancel requests triggered by fast-changing input — never trust that responses arrive in the same order they were sent.",
-        },
-        alert: {
-          title: "Race Condition",
-          body: "Stale response overwrote a newer search result.",
-        },
-      },
-      {
         label: "Request waterfall", //case 5
         key: "waterfall",
         tip: {
           problem:
             "The dashboard's four data requests are awaited one after another instead of at the same time, so their delays stack up instead of overlapping.",
           reproduction:
-            "Switch this toggle on — the page reloads so the server can refetch sequentially.",
+            "Go to the Dashboard. Switch this toggle on — the page reloads so the server can refetch sequentially.",
           effect:
             "The dashboard stays blank for several seconds, then the whole layout snaps in at once instead of streaming in section by section — both TTFB and LCP spike in the Performance Panel, since nothing can render until the last request finishes.",
           badCode:
@@ -83,6 +61,28 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         alert: {
           title: "Request Waterfall",
           body: "Requests fired one after another instead of in parallel — TTFB and LCP both spiked.",
+        },
+      },
+      {
+        label: "Search race condition", //case 4
+        key: "raceCondition",
+        tip: {
+          problem:
+            "Each keystroke fires its own search request, and a slower response for an earlier, shorter query can arrive after a faster response for what you actually typed. This overwrites the table with stale data, so the search box and table are out of sync.",
+          reproduction:
+            'Go to the Inventory Control. Switch this toggle on and type a product name into the Inventory search box quickly, e.g. "lipstick".',
+          effect:
+            'The search box shows "lipstick", but the table still shows results for "l" or "li" — the panel raises a race-condition alert until a fresh response corrects it.',
+          badCode:
+            "Fires a fetch on every keystroke with no debounce and no cancellation, so whichever response resolves last wins — not whichever request was sent last.",
+          goodCode:
+            "Debounces the input 300ms and cancels the previous request with an AbortController on every keystroke, so only the response for the final query ever gets applied.",
+          summary:
+            "Debounce and cancel requests triggered by fast-changing input — never trust that responses arrive in the same order they were sent.",
+        },
+        alert: {
+          title: "Race Condition",
+          body: "Stale response overwrote a newer search result.",
         },
       },
     ],
@@ -111,7 +111,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           problem:
             "The bottom Performance Panel's expanded/collapsed state is saved to localStorage only, so the server has no way to know it and always renders the panel collapsed — the client corrects it right after the page loads.",
           reproduction:
-            "Expand the Performance Panel by tapping it, then turn this toggle on — the page reloads so the server can re-render with the change.",
+            "Expand the Performance Panel (on the bottom of the screen) by tapping it, then turn this toggle on — the page reloads so the server can re-render with the change.",
           effect:
             "The panel briefly renders collapsed, then snaps open to its real height a moment after the page finishes loading — CLS ticks up in the Performance Panel even though the shift itself looks smooth.",
           badCode:
@@ -149,7 +149,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           problem:
             'The dashboard\'s "Updated" time is computed with new Date().toLocaleTimeString() directly in render — the server renders it in UTC while the browser renders it in your local timezone, so the two reads never agree.',
           reproduction:
-            "Switch this toggle on — the page reloads so the server renders the timestamp fresh.",
+            "Go to the Dashboard. Switch this toggle on — the page reloads so the server renders the timestamp fresh.",
           effect:
             'The "Updated" time first shows the server\'s UTC reading, then immediately snaps to your local time once React notices the mismatch — the browser console throws a hydration-failed error, and the Performance Panel raises a Hydration Mismatch alert.',
           badCode:
@@ -170,7 +170,8 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         tip: {
           problem:
             "Selected rows in the Inventory table need to live in a global store instead of local state inside each row, so the Bulk Actions bar in the toolbar above the table can act on whatever's selected. If they are stored in a React Context instead of a per-row store selector, every row component then subscribes to that same Context, so any update to it re-renders every row, not just the one whose selection changed.",
-          reproduction: "Click a checkbox in the Inventory Control table.",
+          reproduction:
+            " Go to the Inventory Control. Switch this toggle on, then click a checkbox in the Inventory Control table.",
           effect:
             "Every visible row's Flash on Update outline fires at once, not just the one you clicked, and the Performance Panel raises a Context Re-render Storm alert naming how many rows re-rendered. Blocking Time and Interaction Latency both tick up too, since re-rendering every visible row for one click is real main-thread work.",
           badCode:
@@ -184,7 +185,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           problem:
             "The product card list in Inventory has a Change status feature. But because this demo's backend (DummyJSON) doesn't actually save status changes to a database, the app has to keep that change in its own client-side memory instead. If they are stored in a React Context instead of a per-row store selector, every card component then subscribes to that same Context, so any update to it re-renders every card, not just the one whose status changed.",
           reproduction:
-            'Tap "Change" on a product card in Inventory Control and confirm a new status.',
+            'Go to the Inventory Control. Switch this toggle on and tap "Change" on a product card and confirm a new status.',
           effect:
             "Every visible card's Flash on Update outline fires at once, not just the one you changed, and the Performance Panel raises a Context Re-render Storm alert naming how many cards re-rendered. Blocking Time and Interaction Latency both tick up too, since re-rendering every visible row for one click is real main-thread work.",
           badCode:
@@ -214,7 +215,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           problem:
             "The Inventory table renders every one of its 2000+ rows into real DOM at once instead of only the ~15 that actually fit on screen, so mounting the page costs as much as the whole dataset — and since React can't show the new page until all of that DOM is built, the page transition itself stalls behind it.",
           reproduction:
-            "Switch this toggle on, then go from Dashboard to Inventory Control and keep clicking around (e.g. the hero slider's arrow) while it loads.",
+            "Go to the Dashboard. Switch this toggle on, then click Inventory Control in the menu and keep clicking around (e.g. the hero slider's arrow) while page loads.",
           effect:
             "The old page stays put for several seconds; the first couple of clicks still land, then the app stops responding to anything until Inventory Control finally appears. The Performance Panel shows DOM Elements past 30,000 and INP spiking into the thousands of milliseconds — on mobile or a slower machine, Blocking Time spikes too, since there's less spare CPU for React to squeeze work between frames.",
           badCode:
@@ -233,7 +234,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           problem:
             "A component wrapped in React.memo still re-renders every time if the props it receives are rebuilt from scratch on every render — the memo check runs, fails, and gains nothing.",
           reproduction:
-            'Drag the "Min GM%" slider back and forth above the KPI micro-cards.',
+            'Go to the Analytics Grid on the Dashboard. Switch this toggle on and drag the "Min GM%" slider back and forth.',
           effect:
             "All 100 cards flash on every tick, and INP and Blocking Time can both go up — each tick re-renders the whole grid and reruns every card's sparkline calculation, which is even more noticeable on mobile or a slower machine. The Performance Panel raises a Memo Overhead alert while you drag, naming how many cards re-rendered.",
           badCode:
