@@ -58,23 +58,21 @@ function ToggleRow({
           : "border-border bg-transparent",
       )}
     >
-      <label className="flex items-center gap-2.75 px-3.5 py-3">
-        <span className="flex-1 truncate font-semibold text-foreground">
-          {label}
-        </span>
+      <label className="flex items-center gap-4 px-3.5 py-3">
+        <span className="flex-1 font-semibold text-foreground">{label}</span>
         <button
           type="button"
           onClick={() => setActiveGuide(isInfoOpen ? null : caseKey)}
           aria-label={`${label} info`}
           aria-expanded={isInfoOpen}
           className={cn(
-            "grid size-5.5 shrink-0 place-items-center rounded-xs border p-0 transition-colors",
+            "grid size-7 shrink-0 place-items-center rounded-xs border p-0 transition-colors",
             isInfoOpen
               ? "border-brand-accent bg-brand-accent text-brand-bg"
               : "border-border text-brand-muted",
           )}
         >
-          <FileText className="size-3.25" />
+          <FileText className="size-4" />
         </button>
         <Switch
           color="brand"
