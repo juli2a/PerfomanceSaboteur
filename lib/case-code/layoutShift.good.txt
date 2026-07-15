@@ -9,11 +9,25 @@ export const useSidebarStore = create<SidebarState>()((set) => ({
   setCollapsed: (collapsed) => set({ collapsed }),
 }));
 
-// hooks/useSidebarCollapsed.ts — the cookie write lives here, not in the store
-const setCollapsed = (collapsed: boolean) => {
-  useSidebarStore.getState().setCollapsed(collapsed);
-  document.cookie = `sidebarCollapsed=${collapsed ? "on" : "off"}; path=/; max-age=31536000`;
-};
+// hooks/useSidebarCollapsed.ts
+export function useSidebarCollapsed(initialCollapsed: boolean) {
+  const collapsed = useSyncExternalStore(
+    useSidebarStore.subscribe, // re-renders the component only when the store notifies a change
+    () => useSidebarStore.getState().collapsed, // client value, read when that happens
+    () => initialCollapsed, // server, and the client's first hydration pass
+  );
+
+  useEffect(() => {
+    useSidebarStore.setState({ collapsed: initialCollapsed });
+  }, [initialCollapsed]);
+
+  const setCollapsed = (collapsed: boolean) => {
+    useSidebarStore.getState().setCollapsed(collapsed);
+    document.cookie = `sidebarCollapsed=${collapsed ? "on" : "off"}; path=/; max-age=31536000`;
+  };
+
+  return { collapsed, setCollapsed };
+}
 
 // The server reads the same cookie the client writes, so the very first
 // render already agrees — nothing to correct after mount.

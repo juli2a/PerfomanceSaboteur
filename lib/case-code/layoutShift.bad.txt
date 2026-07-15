@@ -1,11 +1,11 @@
-// store/sidebar-unstable.ts
+// store/sidebar.ts
 export const useSidebarStore = create<SidebarState>()(
   persist(
     (set) => ({
       collapsed: false,
       setCollapsed: (collapsed) => set({ collapsed }),
     }),
-    { name: "sidebar-collapsed-unstable" },
+    { name: "sidebar-collapsed" },
   ),
 );
 
