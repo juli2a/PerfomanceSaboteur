@@ -1,55 +1,66 @@
-# Case 4: Мережевий Race Condition в пошуку
+# Case 4: Network Race Condition in Search
 
-**Категорія:** Network / Управління асинхронним станом
-**Тумблер:** Network → Race Condition
-**Метрика:** Data Freshness
+**Category:** Network / Async state management
+**Toggle:** Network → Search race condition
+**Metric:** Data Freshness
 
-## Короткий опис
-Порушення актуальності даних через неконтрольоване накладання відповідей від мережевих запитів з різним часом виконання.
+## Summary
+Data going stale due to uncontrolled overlap between network responses with different resolution times.
 
 ---
 
-## Гарний код (Тумблер OFF)
+## Good code (Toggle OFF)
 
-**Реалізація:**
+**Implementation:** `hooks/useInventorySearch.ts`
 ```ts
-useEffect(() => {
+function runGoodPath(execute: (signal: AbortSignal) => void): () => void {
   const controller = new AbortController();
-  fetch(`/api/search?q=${query}`, { signal: controller.signal })
-    .then(res => res.json())
-    .then(data => setResults(data));
-  return () => controller.abort();
-}, [query]);
+  const timer = setTimeout(() => execute(controller.signal), DEBOUNCE_MS); // 300ms
+  return () => {
+    clearTimeout(timer);
+    controller.abort();
+  };
+}
 ```
-> Debounce 300мс на введення + `AbortController` скасовує попередній запит.
+A 300ms debounce on input, plus an `AbortController` that cancels any still-in-flight previous request before the next one starts.
 
-**Поведінка інтерфейсу:**
-- Результати пошуку чітко відповідають останньому введеному слову.
-- Мережева панель чиста від застарілих запитів.
-
----
-
-## Поганий код (Тумблер ON)
-
-**Реалізація:**
-- Запит відправляється на кожен введений символ без затримки.
-- Попередні проміси не скасовуються.
-- На стороні API-роуту: штучний **рандомний таймаут** — короткі запити затримуються довше (1500мс), довгі повертаються швидше (200мс).
-
-**Поведінка інтерфейсу:**
-- Користувач вводить "iphone". Запит для "i" виконується довше і повертається останнім, затираючи результати "iphone".
-- В інпуті — "iphone", у таблиці — товари за запитом "i".
-- Панель: `"Race Condition Alert: Помилка актуальності даних (Відображено застарілий запит #3 замість #6)"`.
+**UI behavior:**
+- The table narrows down to results matching the most recently typed word.
+- No stale response ever lands — it's cancelled before it can resolve.
 
 ---
 
-## Аналіз
+## Bad code (Toggle ON)
 
-**Ймовірність успішної демонстрації: 9/10**
-Штучні затримки (1500мс для коротких запитів, 200мс для довгих) роблять race condition 100% відтворюваним і видовищним. `AbortController` у гарному коді надійно вирішує проблему.
+**Implementation:** `hooks/useInventorySearch.ts`
+```ts
+function runBadPath(execute: () => void): () => void {
+  execute();
+  return () => {};
+}
+```
+A request fires on every keystroke, with no debounce and no cancellation — whichever response resolves last "wins," regardless of send order.
 
-**Відповідність UI та кейсу:** ✅ Пошуковий інпут у Toolbar Inventory Control описаний в UI.
+Server-side (`app/api/inventory-search/route.ts`), an artificial delay is applied, inversely proportional to query length:
+```ts
+Math.max(200, 1500 - (query.length - 1) * 260) // ms
+```
+So short queries (typed first) are artificially throttled up to 1500ms, while longer ones speed up toward 200ms.
 
-**API:** ✅ `GET /products/search?q={query}` існує в DummyJSON. Реалізується через власний Next.js Route Handler, який проксює запит і додає штучні затримки залежно від довжини query.
+**UI behavior:**
+- The user quickly types "lipstick". The request for "l" or "li" takes longer and resolves last, overwriting the already-correct "lipstick" results.
+- The input shows "lipstick", but the table shows results for "l"/"li".
+- The panel raises a **"Race Condition"** alert: "Stale response overwrote a newer search result." — and clears it once the response for the actual current query finally arrives.
 
-**Нюанс:** Пошук буде по базових 100 товарах DummyJSON, а не по 2000 amplified. Для демонстрації race condition це не критично, але результати пошуку не матчитимуть таблицю 1-в-1.
+---
+
+## Analysis
+
+**Demonstration success probability: 9/10**
+The artificial delays (up to 1500ms for short queries, down to 200ms for long ones) make the race condition reliably reproducible. The debounce + `AbortController` in the good code reliably fixes it.
+
+**UI/case fit:** ✅ The search input in the Inventory Control Toolbar.
+
+**API:** ✅ Its own Route Handler, `GET /api/inventory-search?q={query}` — it calls DummyJSON itself (`/products?limit=100&select=id,title,sku`) and filters by `q` locally against title/sku, rather than forwarding `q` to DummyJSON's own `/products/search` (which also exists, but additionally matches description/category/brand — unnecessary for this UI). The response is just an array of `ids`, which the client uses to narrow the already-loaded (amplified) table — not a separate result list.
+
+**Nuance:** the search operates over the base 100 DummyJSON products, not the amplified 2000. Not critical for demonstrating the race condition, but search results won't match the table 1:1.

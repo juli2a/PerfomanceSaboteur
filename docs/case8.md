@@ -1,40 +1,40 @@
-# Case 8: Зламана мемоізація (Broken Memoization) & Обчислювальний Оверхед
+# Case 8: Broken Memoization & Computational Overhead
 
-**Категорія:** Computing / State Management
-**Тумблер:** Computing → Broken memoization
-**Метрика:** INP, Blocking Time
+**Category:** Computing / State Management
+**Toggle:** Computing → Broken memoization
+**Metric:** INP, Blocking Time
 
-## Короткий опис
-`React.memo` сам по собі — не проблема. Тут дві незалежні помилки, які легко сплутати в одну:
+## Summary
+`React.memo` on its own isn't the problem. There are two independent mistakes here that are easy to mistake for one:
 
-1. Компонент загорнутий у `memo`, але отримує в пропсах нестабільний референс (новий об'єкт на кожен рендер батька) — порівняння пропсів завжди провалюється, і React усе одно повністю ре-рендерить компонент: оверхед без жодної користі.
-2. Окремо й незалежно — важка функція, що рахує дані для sparkline, викликається **всередині картки**, хоча її єдина реальна залежність (`rawHistory` продукту) не має нічого спільного з тим, чому картка взагалі ре-рендериться (`threshold` слайдера). Навіть ідеально мемоізований `card` не врятував би від цього — обчислення просто розташоване не там, де живе його залежність.
+1. A component is wrapped in `memo`, but receives an unstable reference as a prop (a fresh object on every parent render) — the prop comparison always fails, and React fully re-renders the component anyway: overhead with no benefit at all.
+2. Separately and independently — an expensive function that computes sparkline data is called **inside the card**, even though its only real dependency (the product's `rawHistory`) has nothing to do with why the card re-renders in the first place (the slider's `threshold`). Even a perfectly memoized `card` wouldn't save you from this — the computation simply lives in the wrong place relative to its dependency.
 
-Гарний варіант виправляє обидві: пропси дійсно стабільні (memo реально пропускає ре-рендер) **і** sparkline рахується один раз на весь грід, а не всередині кожної картки.
-
----
-
-## Контент, який бере участь
-
-- **Сторінка:** Dashboard — секція "Analytics Grid" (KPI Micro-cards Grid).
-- **Слайдер "Min GM%"** (0–40): горизонтальний Slider над сіткою карток. Кожен рух змінює `threshold` у батьківському компоненті.
-- **100 мікро-карток KPI** (grid 1–5 колонок залежно від ширини екрана), кожна містить:
-  - Назву товару (обрізану, `truncate`) та бейдж `GM% {marginality}`
-  - Фінансове значення (`currentValue`, відформатоване як валюта) + зірку-рейтинг
-  - Sparkline (7 точок, `recharts`-подібний компонент `Sparkline`)
-- **Клік по картці** відкриває Popover з повною назвою товару, SKU та кнопкою копіювання SKU (замість колишнього ховеру на назву — весь клікабельний тригер тепер сама картка, не тільки текст назви).
-- **Візуальна індикація ре-рендеру:** кожна картка обгорнута у `FlashOnUpdate` (той самий механізм, що й Case 7) — коротко підсвічується червоним кожного разу, коли реально ре-рендерилась.
-- **Візуальний ефект порогу:** картки з `marginality < threshold` → `opacity-40` + сірий бордер; решта — з акцентованим бордером.
+The good variant fixes both: props are genuinely stable (memo actually skips the re-render) **and** the sparkline is computed once for the whole grid, not inside each card.
 
 ---
 
-## Дані (однакові для обох варіантів)
+## Content involved
 
-**Запит:** `GET /products?limit=100` (без `select` — усі поля тягнуться, потрібні вибираються локально).
+- **Page:** Dashboard — "Analytics Grid" section (KPI Micro-cards Grid).
+- **"Min GM%" slider** (0-40): a horizontal Slider above the card grid. Every move changes `threshold` in the parent component.
+- **100 KPI micro-cards** (a grid of 1-5 columns depending on screen width), each containing:
+  - The product title (truncated) and a `GM% {marginality}` badge
+  - A financial value (`currentValue`, formatted as currency) + a star rating
+  - A sparkline (7 points, a `recharts`-based `Sparkline` component)
+- **Clicking a card** opens a Popover with the full product title, SKU, and a copy-SKU button (instead of the earlier hover-on-title — the entire clickable trigger is now the card itself, not just the title text).
+- **Visual re-render indication:** every card is wrapped in `FlashOnUpdate` (the same mechanism as Case 7) — briefly flashes red each time it actually re-renders.
+- **Threshold visual effect:** cards with `marginality < threshold` → `opacity-40` + a gray border; the rest get an accented border.
 
-**Трансформація:** 100 продуктів → 100 карток (1:1), `lib/server/dashboard.ts`'s `getProducts()`.
+---
 
-**Структура картки (`types/analytics.ts`):**
+## Data (identical for both variants)
+
+**Request:** `GET /products?limit=100` (no `select` — all fields are fetched, the needed ones are picked locally).
+
+**Transformation:** 100 products → 100 cards (1:1), `lib/server/dashboard.ts`'s `getProducts()`.
+
+**Card structure (`types/analytics.ts`):**
 ```ts
 interface AnalyticCardData {
   id: string;
@@ -44,24 +44,24 @@ interface AnalyticCardData {
     rating: number;
   };
   marginality: number;   // = Math.round(product.discountPercentage)
-  rawHistory: number[];  // 365 "сирих" щоденних значень за рік
+  rawHistory: number[];  // 365 "raw" daily values for the year
 }
 ```
 
-**Sparkline-пайплайн (клієнтський, `lib/utils/sparkline-processing.ts`):**
-- `rawHistory` (`lib/utils/derive.ts`'s `deriveRawHistory`) — 365 щоденних значень: базове коливання рівно на **1 повний цикл за весь рік** (детермінований синус, фаза залежить від `productId`) + детермінований одноразовий сплеск (+60% від базової ціни) кожні 14 днів, як штучний "викид" для тестування очищення від outlier'ів.
-  - *Було виправлено цієї сесії:* раніше частота коливання була ~1 цикл на 37 днів, що конфліктувало з ~52-денними бакетами даунсемплінгу нижче й давало аліасинг — фінальні 7 точок спарклайна виглядали як різкий зигзаг між двома рівнями замість плавного тренду.
-- `processSparklineHistory(rawHistory)` — `removeOutliersIterative` (ітеративний IQR-трим, до 5 проходів) → `movingAverage(7)` (згладжування) → `downsampleTo(7)` (даунсемплінг до 7 фінальних точок). Це і є та сама "важка функція", про яку йдеться в кейсі.
+**Sparkline pipeline (client-side, `lib/utils/sparkline-processing.ts`):**
+- `rawHistory` (`lib/utils/derive.ts`'s `deriveRawHistory`) — 365 daily values: a base oscillation of exactly **1 full cycle across the whole year** (a deterministic sine, phase depending on `productId`) + a deterministic one-off spike (+60% of the base price) every 14 days, as an artificial "outlier" for testing outlier cleanup.
+  - *Fixed this session:* the oscillation frequency used to be ~1 cycle per 37 days, which conflicted with the ~52-day downsampling buckets below and caused aliasing — the sparkline's final 7 points looked like a sharp zigzag between two levels instead of a smooth trend.
+- `processSparklineHistory(rawHistory)` — `removeOutliersIterative` (an iterative IQR trim, up to 5 passes) → `movingAverage(7)` (smoothing) → `downsampleTo(7)` (downsampling to the final 7 points). This is the same "expensive function" the case is about.
 
 ---
 
-## Гарний код (Тумблер OFF) — `components/dashboard/MicroCard.tsx`
+## Good code (Toggle OFF) — `components/dashboard/MicroCard.tsx`
 
-**Реалізація:**
+**Implementation:**
 ```tsx
 // components/dashboard/MicroCardsGridClient.tsx
-// Рахується один раз для всього гріда — залежить тільки від products,
-// не від threshold, тож не перераховується під час руху слайдера.
+// Computed once for the whole grid — depends only on products,
+// not on threshold, so it never recomputes while the slider moves.
 const sparklines = useMemo(
   () => products.map((p) => processSparklineHistory(p.rawHistory)),
   [products],
@@ -75,7 +75,7 @@ const sparklines = useMemo(
     marginality={p.marginality}
     value={formatCurrency(p.metrics.currentValue)}
     rating={p.metrics.rating}
-    sparklineData={sparklines[i]}   // той самий референс масиву щоразу
+    sparklineData={sparklines[i]}   // the same array reference every time
     lowMargin={p.marginality < threshold}
   />
 ))}
@@ -86,51 +86,51 @@ export default memo(function MicroCard(props: Props) {
 });
 ```
 
-**Чому це працює швидко:**
-- Sparkline-обчислення живе там, де живе його реальна залежність (`products`) — рахується один раз, а не при кожному русі слайдера.
-- Усі пропси картки (окрім `lowMargin`) — примітиви або стабільний масив-референс; `lowMargin` перемикається лише для карток на межі поточного `threshold`.
-- `React.memo` тут реально працює: більшість зі 100 карток пропускають повний ре-рендер на кожен тік слайдера.
+**Why this is fast:**
+- The sparkline computation lives where its real dependency (`products`) lives — computed once, not on every slider move.
+- Every card prop (except `lowMargin`) is a primitive or a stable array reference; `lowMargin` only flips for cards right at the current `threshold` boundary.
+- `React.memo` genuinely pays off here: most of the 100 cards skip a full re-render on every slider tick.
 
 ---
 
-## Поганий код (Тумблер ON) — `components/dashboard/MicroCardUnoptimized.tsx`
+## Bad code (Toggle ON) — `components/dashboard/MicroCardUnoptimized.tsx`
 
-**Реалізація:**
+**Implementation:**
 ```tsx
 // components/dashboard/MicroCardsGridClient.tsx
 {products.map((p) => (
   <MicroCardUnoptimized
     key={p.id}
-    card={{ ...p }}          // новий об'єкт на кожен рендер батька
+    card={{ ...p }}          // a fresh object on every parent render
     threshold={threshold}
   />
 ))}
 
 // components/dashboard/MicroCardUnoptimized.tsx
 const MicroCardUnoptimized = memo(function MicroCardUnoptimized({ card, threshold }: Props) {
-  // Розробник намагався мемоізувати sparkline тут-таки, у картці —
-  // але card новий щоразу, тож цей кеш ніколи не спрацював би.
+  // The developer tried to memoize the sparkline right here, in the card —
+  // but card is fresh every time, so this cache would never hit.
   // const sparklineData = useMemo(() => processSparklineHistory(card.rawHistory), [card]);
   const sparklineData = processSparklineHistory(card.rawHistory);
   return <MicroCardView sparklineData={sparklineData} /* ... */ />;
 });
 ```
 
-**Дві незалежні помилки:**
-1. `card={{ ...p }}` — нова референція об'єкта на кожен рендер `MicroCardsGridClient` (масив `products` не мемоізований на цьому рівні виклику). `React.memo` порівнює `prevProps !== nextProps` → завжди `true` → картка все одно повністю ре-рендериться, попри `memo`.
-2. Sparkline-обчислення (`processSparklineHistory`) викликається **всередині кожної картки**, хоча залежить лише від `card.rawHistory` (тобто від `products`), а не від `threshold`. Навіть якби `card` був стабільним і `React.memo` спрацював — це не мало б значення для першого рендеру кожної картки і не виправило б архітектурну помилку: важке обчислення просто розташоване не на тому рівні.
+**Two independent mistakes:**
+1. `card={{ ...p }}` — a new object reference on every render of `MicroCardsGridClient` (the `products` array isn't memoized at this call site). `React.memo` compares `prevProps !== nextProps` → always `true` → the card fully re-renders anyway, despite `memo`.
+2. The sparkline computation (`processSparklineHistory`) is called **inside every card**, even though it only depends on `card.rawHistory` (i.e. on `products`), not on `threshold`. Even if `card` were stable and `React.memo` worked — that wouldn't matter for each card's first render, and wouldn't fix the architectural mistake: the expensive computation simply sits at the wrong level.
 
-**Чому це гальмує (без штучних симуляцій):**
-- На кожен тік слайдера: усі 100 карток проходять порівняння пропсів у `React.memo` (завжди неуспішне) + усі 100 повністю ре-рендеряться + усі 100 наново виконують clean → smooth → downsample над 365 "сирими" точками.
-- Main thread блокується — INP і Blocking Time зростають, помітніше на мобільних/слабших пристроях.
+**Why this is slow (with no artificial simulation):**
+- On every slider tick: all 100 cards go through a prop comparison in `React.memo` (always failing) + all 100 fully re-render + all 100 redo the clean → smooth → downsample pass over 365 "raw" points.
+- The main thread blocks — INP and Blocking Time both rise, more noticeably on mobile/slower devices.
 
-**Поведінка інтерфейсу:**
-- Усі 100 карток одночасно спалахують (`FlashOnUpdate`) на кожен тік слайдера.
-- При реальному перетягуванні (не одиночному кліку) Performance Panel показує алерт **"Memo Overhead — Rerendered Nodes on Action: N"**.
-  - Лічильник (`store/render-counter.ts`) накопичується через увесь безперервний drag, а не скидається на кожен тік (`startTrackingIfIdle`), тож одиночний клік завжди дає ≤100 і алерта не показує — алерт з'являється лише коли N перевищує 100, тобто коли слайдер справді тягнуть, а не просто клацають по ньому один раз. Це математично гарантовано: за один монотонний рух `threshold` кожна картка може перемкнути своє `lowMargin` щонайбільше один раз, тож good-path сам по собі ніколи не перевищує ~100.
+**UI behavior:**
+- All 100 cards flash at once (`FlashOnUpdate`) on every slider tick.
+- On an actual drag (not a single click), the Performance Panel shows a **"Memo Overhead — Rerendered Nodes on Action: N"** alert.
+  - The counter (`store/render-counter.ts`) accumulates across the entire continuous drag instead of resetting on every tick (`startTrackingIfIdle`), so a single click always yields ≤100 and never shows the alert — the alert only appears once N exceeds 100, i.e. once the slider is genuinely being dragged, not just clicked once. This is mathematically guaranteed: over one monotonic move of `threshold`, each card can flip its `lowMargin` at most once, so the good path alone can never exceed ~100.
 
 ---
 
-## Аналіз
+## Analysis
 
-Контраст вимірюваний і видимий, а не лише в цифрах INP: у гарному варіанті на кожен тік слайдера реально ре-рендериться лише жменька карток (ті, чий `lowMargin` щойно перемкнувся), решта пропускаються `React.memo` завдяки стабільним пропсам, і sparkline ніколи не перераховується під час руху слайдера. У поганому варіанті ре-рендеряться всі 100 карток на кожен тік — плюс 100 марних порівнянь пропсів, плюс sparkline-пайплайн перераховується для всіх 100 замість одного разу. Overhead реальний і вимірюваний, без штучних затримок; на слабких девайсах і мобільному ефект ще виразніший.
+The contrast is measurable and visible, not just in INP numbers: in the good variant, only a handful of cards (the ones whose `lowMargin` just flipped) actually re-render on each slider tick, the rest are skipped by `React.memo` thanks to stable props, and the sparkline is never recomputed while the slider moves. In the bad variant, all 100 cards re-render on every tick — plus 100 wasted prop comparisons, plus the sparkline pipeline recomputing for all 100 instead of once. The overhead is real and measurable, with no artificial delays; on weaker devices and mobile the effect is even more pronounced.

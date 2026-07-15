@@ -1,57 +1,60 @@
-# Case 6: Помилка гідратації (Hydration Mismatch)
+# Case 6: Hydration Mismatch
 
-**Категорія:** Rendering / SSR архітектура
-**Тумблер:** Rendering → Hydration Mismatch
-**Метрика:** Hydration Status
+**Category:** Rendering / SSR architecture
+**Toggle:** Rendering → Hydration mismatch
+**Metric:** Hydration Status
 
-## Короткий опис
-Розходження між HTML, сформованим на сервері, та початковим деревом елементів на клієнті під час гідратації.
+## Summary
+A mismatch between the server-rendered HTML and the initial client element tree during hydration.
 
 ---
 
-## Гарний код (Тумблер OFF)
+## Good code (Toggle OFF)
 
-**Реалізація:**
-```tsx
-const [mounted, setMounted] = useState(false);
-useEffect(() => setMounted(true), []);
-
-return (
-  <div>
-    Час оновлення: {mounted ? new Date().toLocaleTimeString() : 'Синхронізація...'}
-  </div>
-);
+**Implementation:** `hooks/useStableTimestamp.ts`
+```ts
+export function useStableTimestamp(): string {
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
+  return mounted ? new Date().toLocaleTimeString("en-US") : "...";
+}
 ```
-> Відкладений рендеринг клієнтського часу через прапорець монтування.
+> `useSyncExternalStore`'s `getServerSnapshot` returns `false` for both SSR and the client's very first pass — the server and the client's first render always agree (`"..."`); the real value is only swapped in after mount.
 
-**Поведінка інтерфейсу:**
-- Консоль розробника чиста від попереджень.
-- Компонент у шапці стабільно показує час після фази монтування.
+**UI behavior:**
+- The developer console stays clean of warnings.
+- The header's clock shows "..." until mount, then holds a stable, real time.
 
 ---
 
-## Поганий код (Тумблер ON)
+## Bad code (Toggle ON)
 
-**Реалізація:**
+**Implementation:** `components/dashboard/UpdatedAt.tsx`
 ```tsx
-<div>Час оновлення: {new Date().toLocaleTimeString()}</div>
+const unstable =
+  typeof window === "undefined"
+    ? new Date().toLocaleTimeString("en-US", { timeZone: "UTC" })
+    : new Date().toLocaleTimeString("en-US");
 ```
-> Сервер генерує час за часовим поясом сервера, клієнт підставляє локальний час користувача.
+> `new Date().toLocaleTimeString()` called straight in the render body — server and client each compute it independently. The server branch deliberately forces UTC, standing in for what a real deployment gets for free (server in UTC, visitor in their own timezone) — without it, a dev machine running in the same timezone as the "server" might never reproduce the mismatch.
 
-**Поведінка інтерфейсу:**
-- Компонент часу в шапці візуально сіпається або блимає після завантаження.
-- У консолі браузера: `"Warning: Text content did not match. Server: '12:00:01' Client: '15:00:01'"`.
-- Панель: `"Hydration Status: MISMATCH ERROR (⚠️ Console Compromised)"`.
+**UI behavior:**
+- The header's clock first shows the server's (UTC) reading, then instantly jumps to the client's local time.
+- The browser console shows a real React hydration error: `"Hydration failed because the server rendered..."` (dev) or a link to `react.dev/errors/418` (production, minified).
+- The panel raises a **real** **"Hydration Mismatch"** alert: "Hydration failed because the server rendered text didn't match the client. As a result this tree will be regenerated on the client." The alert is caught not by simulation but by a live `window.addEventListener("error", ...)` that watches for this exact React error signature (`components/simulator/performance-panel/SimulatorEffects.tsx`).
 
 ---
 
-## Аналіз
+## Analysis
 
-**Ймовірність успішної демонстрації: 9/10** — класичний і надійний кейс.
-`new Date().toLocaleTimeString()` у тілі компонента під час SSR гарантовано дає розходження: Node.js рендерить з UTC-часом сервера, браузер гідратує з локальним часом користувача. Консольне попередження React буде чітко видно.
+**Demonstration success probability: 9/10** — a classic, reliable case.
+Forcing UTC on the server branch guarantees the mismatch regardless of the developer's machine timezone — without it, the case could silently fail to reproduce locally. The console hydration error will always be visible, in any environment.
 
-**Відповідність UI та кейсу:** ✅ Ідеальна. Header вже містить поле "Час останнього оновлення: [Значення]" — саме цей елемент є носієм помилки гідратації.
+**UI/case fit:** ✅ Perfect. The header has an "Updated [Time]" field — exactly the element that carries the hydration error.
 
-**API:** ✅ API не потрібно.
+**API:** ✅ No API needed.
 
-**Необхідна правка UX тумблера:** Помилка гідратації відтворюється **тільки при завантаженні/перезавантаженні сторінки**, а не на кліку по toggle. Потрібно передбачити: після вмикання toggle ON — автоматичний виклик `router.refresh()` або підказка користувачу перезавантажити сторінку.
+**Toggle mechanism:** `hydrationMismatch` is part of `SSR_COOKIE_CASES` — flipping the toggle writes a cookie and calls `window.location.reload()` (`hooks/useToggleCase.ts`), so the effect reproduces right after the click, with no manual reload needed from the user.

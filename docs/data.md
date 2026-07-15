@@ -1,132 +1,88 @@
 # Data Fetching & Processing
 
-## Загальне
+## Overview
 
-- Джерело даних: **DummyJSON** public API — `https://dummyjson.com`
-- Агрегація та трансформація виконуються на сервері (Next.js Server Components або Server Actions) для реалістичного B2B-середовища.
+- Data source: **DummyJSON** public API — `https://dummyjson.com`
+- Aggregation and transformation happen server-side (Next.js Server Components) for a realistic B2B setting.
 
 ---
 
-## Dashboard — запити та обробка
+## Dashboard — requests and processing
 
-Dashboard має **4 незалежних запити**, які демонструють паралельний vs послідовний фетчинг (Case 5). Кожен запит у Route Handler має штучну затримку, що симулює реалістичний DB-запит у мікросервісній архітектурі.
+The Dashboard has **4 independent requests** (`lib/server/dashboard.ts`) that demonstrate parallel Suspense streaming vs sequential fetching (Case 5, see `docs/case5.md`). Each `get*` function carries its own artificial delay — not a Route Handler, the functions themselves.
 
-| Функція           | Ендпоінт                   | Затримка | UI-секція                           |
-| ----------------- | -------------------------- | -------- | ----------------------------------- |
-| `getProducts()`   | `GET /products?limit=100`  | 800ms    | KPI-картки, категорії, мікро-картки |
-| `getCarts()`      | `GET /carts?limit=100`     | 700ms    | KPI замовлення, графік продажів     |
-| `getUsers()`      | `GET /users?limit=100`     | 600ms    | KPI клієнти, Top Customers          |
-| `getCategories()` | `GET /products/categories` | 400ms    | Категорійна колонка                 |
+| Function            | Endpoint                    | Delay | UI section                              |
+| -------------------- | --------------------------- | ----- | ---------------------------------------- |
+| `getCarts()`         | `GET /carts?limit=N`        | 700ms | KPI cards (revenue/orders/clients/avgCheck) + Sales Chart |
+| `getProducts()`      | `GET /products?limit=100`   | 800ms | Micro-cards Grid (Case 8)                |
+| `getUsers()`         | `GET /users?limit=N`        | 600ms | Top Customers                            |
+| `getCategories()`    | `GET /products/categories`  | 400ms | Category Analytics (its own separate fetch, doesn't reuse `getProducts()`) |
 
-- **Паралельно (`Promise.all`):** ~800ms (час найдовшого запиту)
-- **Послідовно (sequential await):** ~2500ms
+- **Good path (Case 5 OFF):** each section in its own `<Suspense>` boundary, streaming independently — total time ≈ the slowest request.
+- **Bad path (Case 5 ON):** sequential `await`s in one Server Component with no Suspense — ≈2500ms+ total.
 
-### getProducts — KPI / Statistics
+### getCarts — KPI + main sales chart
 
-Обробка на сервері:
+- `getDailySimConfig()` derives a deterministic daily seed → order count (130-150) and user-pool size (90-120).
+- Order dates are distributed across 30 daily "slots" (counting back from yesterday), each day guaranteed ≥1 order; time of day is skewed toward evening hours (peak 16-18h) via `deriveScatterFloat`.
+- **Total revenue** = sum of all carts' `discountedTotal`.
+- **Average check** = Total revenue / Order count.
+- **Active clients** = the daily user-pool size (not a deduplication over carts).
+- The sales chart is built from the same orders as the KPI sparklines (`buildSalesChartData`).
 
-- **Загальний дохід** = сума всіх `total` з кошиків (`carts`)
-- **Кількість замовлень** = загальна кількість записів у `carts`
-- **Активні клієнти** = дедуплікація масиву `userId` з кошиків
-- **Середній чек** = Загальний дохід / Кількість замовлень
+### getCategories — Category Analytics
 
-### getCarts — Головний графік продажів
+**Request:** `GET /products/categories` — a **separate fetch**, `/products?limit=100&select=id,category,price,stock` (doesn't reuse the array from `getProducts()`).
 
-- Базується на агрегації дат з масиву замовлень.
-- Оскільки API повертає статичні дані: сервер динамічно **мапить** замовлення, додаючи поточні дати поточного місяця → формуються точки графіка по Днях / Тижнях.
-
-### getCategories — Швидка аналітика категорій
-
-**Запит:** `GET /products/categories` (окремий, незалежний від getProducts).
-
-- Повертає список назв категорій.
-- Сервер збагачує їх даними про вартість складу з масиву `getProducts()` → `sum(price × stock)` → прогрес-бар.
+- Groups products by category, computes `stockValue = Σ(price × stock)` and its share of the grand total.
+- Returns the top 8 categories by stock value.
 
 ### getUsers — Top Customers
 
-**Запит:** `GET /users?limit=100`.
+**Request:** `GET /users?limit=N` (N — the daily user pool from `getDailySimConfig()`).
 
-- Відображаються перші 5 користувачів.
-- `image` → аватар; ініціали як fallback.
-- Lifetime Value дерувується детерміновано: `Math.round(user.id * 1250 + user.age * 300)`.
+- Returns the **top 5 by LTV**, not the first 5 in API order.
+- Lifetime Value: `Math.round(user.id * 1250 + user.age * 300)` (`deriveLtv`).
 
----
+### getProducts — Micro-cards Grid (Case 8)
 
-## Inventory Control — запити та обробка
-
-### Отримання розширеної бази (2000+ рядків)
-
-**Запит:** `GET /products?limit=100` (або `limit=0`)
-
-### Data Amplification (трансформація на сервері)
-
-Щоб отримати 2000+ записів без навантаження на мережу — сервер бере 100 товарів і реплікує їх у 20 ітераціях:
-
-```ts
-const amplifiedProducts = [];
-for (let i = 0; i < 20; i++) {
-  baseProducts.forEach((item) => {
-    const newId = item.id + i * 100;
-    let status = "In Stock";
-    if (newId % 4 === 0) status = "To Order";
-    else if (newId % 4 === 1) status = "Ordered";
-    else if (newId % 4 === 2) status = "In Transit";
-    else if (newId % 4 === 3) status = "Out of Stock";
-
-    amplifiedProducts.push({
-      ...item,
-      id: newId,
-      title: `${item.title} (Batch ${i + 1})`,
-      sku: `SKU-${item.category.substring(0, 3).toUpperCase()}-${newId}`,
-      logisticStatus: status,
-    });
-  });
-}
-```
-
-- Логістичний статус визначається **детерміновано** через `newId % 4`.
-- SKU генерується з першіх 3 літер категорії + `newId`.
-
-### Bulk Status Update (мутація)
-
-- Реалізується через **Next.js Server Action**.
-- Клієнт відправляє: масив `productIds` + новий статус (наприклад, `In Transit`).
-- Сервер емулює реальний запит: штучна затримка `setTimeout(400ms)`.
-- Після "збереження" — `revalidatePath('/inventory')` або `router.refresh()` для демонстрації інвалідації кешу.
-- DummyJSON не зберігає стан між сесіями → успішний запит імітується.
+Feeds only the Analytics Grid — the data structure and client-side sparkline pipeline are documented in full in `docs/case8.md`, not duplicated here.
 
 ---
 
-## Case 8 — KPI Micro-cards Grid
+## Inventory Control — requests and processing
 
-**Запит:** `GET /products?limit=100&select=title,price,discountPercentage,rating,stock,category,brand`
+### Fetching the amplified base (2000+ rows)
 
-**Трансформація:** 100 продуктів → 100 аналітичних карток (1:1). Регіон призначається детерміновано: `regions[product.id % regions.length]`, де `regions = ['Kyiv', 'Lviv', 'Kharkiv', 'Odesa', 'Dnipro']`.
+**Request:** `GET /products?limit=100` (`lib/server/inventory.ts`, `getAmplifiedProducts`).
 
-**Деривація полів:**
+### Data Amplification (server-side transformation)
 
-- `title` = `${product.category} — ${region}`
-- `currentValue` = `Math.round(product.price * product.stock)`
-- `previousValue` = `Math.round(currentValue * product.rating / 5)` (детерміновано через rating)
-- `trends.percentage` = `Math.round((currentValue - previousValue) / previousValue * 100)`
-- `marginality` = `product.discountPercentage` (реальне поле DummyJSON, діапазон ~0–67%, добре лягає на слайдер 0–50%)
-- `sparklineData` = масив з 7 чисел, генерується детерміновано на основі `product.id` та `product.price`
-
-**Структура картки:**
+The base 100 products are replicated ×20 → 2000+ rows:
 
 ```ts
-interface AnalyticCardData {
-  id: string;
-  meta: {
-    title: string; // "Smartphones — Kyiv"
-    region: string;
-  };
-  metrics: {
-    currentValue: number;
-    previousValue: number;
-    trends: { percentage: number; direction: "up" | "down" };
-  };
-  marginality: number; // = product.discountPercentage
-  sparklineData: number[]; // 7 точок, детерміновані
+for (let batch = 1; batch < 20; batch++) {
+  for (const base of baseProducts) {
+    const amplifiedId = base.id + batch * 100;
+    amplifiedProducts.push({ ...base, id: amplifiedId, title: `${base.title} (Batch ${batch + 1})` });
+  }
 }
 ```
+
+- `logisticStatus` is derived from **`stock` + `shippingInformation`** (a real DummyJSON field, 6 fixed shipping phrases): `stock ≤ 3` → "Out of Stock", `stock ≤ 10` → "To Order", otherwise a status based on shipping speed.
+- `sku` — a real DummyJSON field, carried through unchanged; the same sku repeats across all 20 batches of a product.
+- Only `title` gets a `(Batch N)` suffix for batches 2+.
+- `deriveRealProductId(amplifiedId)` — the inverse function (`((id-1) % 100) + 1`), recovers the real id 1-100 for the Bulk Update below.
+
+### Bulk Status Update (mutation)
+
+- Implemented as a Next.js **Server Action** (`lib/server/inventory-actions.ts`, `"use server"`).
+- For each selected `productId` (mapped back via `deriveRealProductId`), a **real PATCH** is sent to DummyJSON — no artificial delay.
+- DummyJSON doesn't persist the change — the API just echoes the product back.
+- The visible status change in the UI comes from a client-side **optimistic overlay** (`useInventoryStatusStore`), not cache invalidation via `revalidatePath`/`router.refresh()`.
+
+---
+
+## Case 8 — Micro-cards Grid
+
+The full description of the data, field derivation, and client-side sparkline pipeline lives in `docs/case8.md` ("Data (identical for both variants)" and onward). Briefly: `GET /products?limit=100` with no `select` → 100 cards 1:1 (`AnalyticCardData`), the sparkline is computed client-side from 365 "raw" daily values (`deriveRawHistory`), not server-side.

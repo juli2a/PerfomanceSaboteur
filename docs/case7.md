@@ -1,87 +1,93 @@
-# Case 7: Гігантський Context VS Zustand Selector
+# Case 7: Giant Context VS Zustand Selector
 
-**Категорія:** Rendering / State Management
-**Тумблер:** Rendering → Context Overhead
-**Метрика:** Rerendered Nodes, FPS
+**Category:** Rendering / State Management
+**Toggle:** Rendering → Context Overhead
+**Metric:** Rerendered Nodes, FPS
 
-## Короткий опис
-Примусовий ре-рендер сотень немодифікованих компонентів через моноліт-контекст замість підписок на атомарні селектори.
+## Summary
+Forced re-render of hundreds of unmodified components caused by a monolithic Context instead of subscriptions to atomic selectors.
 
 ---
 
-## Гарний код (Тумблер OFF)
+## Good code (Toggle OFF)
 
-**Реалізація:**
+**Implementation:** `components/inventory/ProductTableRow.tsx`
 ```ts
-// Рядок таблиці підписується лише на свій власний стан
-const isSelected = useTableStore(state => state.selectedIds.includes(id));
+const isSelected = useInventorySelectionStore((state) =>
+  state.selected.has(product.id),
+);
 ```
-> Масив виділених ID зберігається у Zustand-сторі.
+> Selection is stored as a `Map<number, SelectedProduct>` in a Zustand store (`store/inventory-selection.ts`); the row subscribes only to whether its own id is present.
 
-**Поведінка інтерфейсу:**
-- Клік на чекбокс — миттєвий відгук.
-- Flash on Update підсвічує **тільки один рядок**.
-- FPS тримається на 60.
+**UI behavior:**
+- Clicking a checkbox — instant response.
+- Flash on Update highlights **only one row**.
+- FPS holds at 60.
 
 ---
 
-## Поганий код (Тумблер ON)
+## Bad code (Toggle ON)
 
-**Реалізація:**
+**Implementation:** `context/TableSelectionContext.tsx` + `components/inventory/ProductTableRowUnoptimized.tsx`
 ```ts
-// Стан таблиці у спільному React Context
-setValue({ ...state, selectedIds: [...state.selectedIds, id] });
+// TableSelectionContext.tsx — every mutation builds a new Map
+const toggleRow = (product) =>
+  setSelected((selected) => {
+    const next = new Map(selected);
+    next.has(product.id) ? next.delete(product.id) : next.set(product.id, product);
+    return next;
+  });
 
-// Усі рядки споживають контекст
-const { selectedIds } = useContext(TableContext);
+// ProductTableRowUnoptimized.tsx — every row reads the same context
+const { selected, toggleRow } = useContext(TableSelectionContext)!;
 ```
-> Новий об'єкт контексту при кожній зміні → усі споживачі ре-рендеряться.
+> The Provider hands out a new value object on every change → every context consumer re-renders, not just the row whose checkbox changed.
 
-**Поведінка інтерфейсу:**
-- Клік на один чекбокс → вся таблиця (200+ рядків) повністю ре-рендериться.
-- Усі рядки одночасно спалахують червоним (Flash on Update).
-- Мікролаг скролу, візуальна нестабільність.
-- Панель: `"Rerendered Nodes on Action: 200+ (⚠️ Context Overhead)"`.
-
----
-
-## Аналіз
-
-**Ймовірність успішної демонстрації: 9/10** — Flash on Update зробить ефект яскраво видимим.
-
-**Відповідність UI та кейсу:** ✅ Чекбокси у таблиці Inventory Control та Flash on Update описані в обох документах.
-
-**API:** ✅ API не потрібно. Стан вибору — суто клієнтський.
-
-**Важлива взаємодія з Case 3:** Якщо Case 3 toggle у стані "гарний" (віртуалізація ON), у DOM є лише ~15–20 рядків. Context ре-рендерить тільки їх — ефект стає непомітним.
-
-**Узгоджене рішення:** автоматичне перемикання, без додаткового датасету і без ручної координації тумблерів користувачем.
-- Коли `contextOverhead = ON` — `ProductTable` рендерить фіксоване вікно перших 200 товарів **без віртуалізації**, незалежно від стану `heavyMounting`. Коли тумблер OFF — поведінка таблиці повертається до звичної (керованої Case 3).
-- `ProductTableRow` при `contextOverhead = ON` підписується на моноліт-контекст замість `useInventorySelectionStore`-селектора — це і є відтворення анти-патерну.
-- Guide-текст цього тумблера (`tip.reproduction`/`tip.effect`) має чесно пояснити, що на час демонстрації таблиця тимчасово показує фіксовані 200 рядків без віртуалізації — щоб контраст було видно.
-
-**Rerendered Nodes:** рахується через `FlashOnUpdate` (вже обгортає кожен рядок) — лічильник скидається перед дією `toggleRow`, кожен ре-рендер (не initial mount) інкрементує його в `useEffect`, підсумок публікується після ~100мс settle-затримки. Показується в Performance Panel як умовний alert-рядок (той самий патерн, що в Case 4 — `raceConditionAlert`), не як постійне число.
+**UI behavior:**
+- Clicking one checkbox → the entire table (200+ rows) fully re-renders.
+- Every row flashes red at once (Flash on Update).
+- Scroll micro-lag, visual instability.
+- The panel raises a **"Context Re-render Storm"** alert: "Rerendered Nodes on Action: {N}" — where N is a live re-render count for this specific click (from the `FlashOnUpdate` counter), not a fixed number.
 
 ---
 
-## Мобільна версія
+## Analysis
 
-Мобільний layout Inventory Control не має чекбоксів і масового вибору (навмисне рішення — bulk-дії погано пасують до touch-інтерфейсу), тож на мобільному демонструвати саме "виділення рядків" нема на чому. Замість реконструювання чекбоксів кейс 7 на мобільному перевикористовує вже наявну одиничну дію — зміну статусу одного товару через `StatusChangeDrawer` (кнопка "Change" на картці товару) — і як спільний стан бере `logisticStatus`, а не `selected`.
+**Demonstration success probability: 9/10** — Flash on Update makes the effect vividly visible.
 
-**Узгоджене рішення (мобільна частина):**
-- Новий, ізольований Context (`RowStatusContext`, `context/RowStatusContext.tsx`) дзеркалить API `useInventoryStatusStore` 1:1 (`statuses` / `setStatuses`) — так само ізольований від Zustand-стору, як `TableSelectionContext` ізольований від `useInventorySelectionStore`: власний стан, скидання при кожному перемиканні тумблера (той самий патерн "adjust state during render", без `useEffect`).
-- `ProductCard` (мобільна картка товару) розділена на спільну розмітку (`ProductCardView`) та пару good/bad (`ProductCard` — Zustand-селектор, `ProductCardUnoptimized` — Context), за тим самим шаблоном, що й `ProductTableRow`/`ProductTableRowUnoptimized`.
-- `StatusChangeDrawer` лишається єдиним UI/PATCH-потоком для обох шляхів — джерело запису статусу тепер передається як проп (`onChangeStatus`), а не жорстко викликає стор.
-- Коли `contextOverhead = ON` на мобільному — зміна статусу одного товару пише в `RowStatusContext` замість `useInventoryStatusStore`, і всі змонтовані картки (усі видимі, бо кейс 7 вже примушує плаский немодифікований список без віртуалізації) ре-рендеряться/спалахують — той самий баг, що на десктопі, але тригериться реальною одиничною мобільною дією, а не відтвореним чекбоксом.
-- `useInventoryStatusStore` лишається єдиним джерелом істини для бейджа статусу на десктопі (обидва шляхи `ProductTableRow`/`ProductTableRowUnoptimized` й надалі читають саме його) — цей стор кейсом 7 не займається жодним чином.
+**UI/case fit:** ✅ The checkboxes in the Inventory Control table and Flash on Update are both covered.
+
+**API:** ✅ No API needed. Selection state is purely client-side.
+
+**Important interaction with Case 3:** If Case 3's toggle is in its "good" state (virtualization ON), only ~15-20 rows exist in the DOM. Context only re-renders those — the effect becomes barely noticeable.
+
+**Agreed solution:** automatic switching, with no extra dataset and no manual toggle coordination required from the user.
+- When `contextOverhead = ON` — `ProductTable` renders a fixed window of the first 200 products **without virtualization**, regardless of `heavyMounting`'s state. When the toggle is OFF, the table's behavior returns to normal (governed by Case 3).
+- With `contextOverhead = ON`, `ProductTableRow` subscribes to the monolithic context instead of the `useInventorySelectionStore` selector — that's the anti-pattern being reproduced.
+- This toggle's guide text (`tip.reproduction`/`tip.effect`) honestly explains that during the demo the table temporarily shows a fixed 200 rows without virtualization, so the contrast is visible.
+
+**Rerendered Nodes:** counted via `FlashOnUpdate` (already wraps every row) — the counter resets before the `toggleRow` action, each re-render (not the initial mount) increments it inside a `useEffect`, and the total is published after a ~100ms settle delay. Shown in the Performance Panel as a conditional alert line (the same pattern as Case 4's `raceConditionAlert`), not as a permanent number.
 
 ---
 
-## Guide-текст: чому desktop і mobile описані окремо
+## Mobile version
 
-Desktop і mobile мають різну, чесну причину, чому стан взагалі спільний — і гайд (`lib/simulator-cases.ts`, `tip`/`mobileTip`) це прямо промовляє, а не мовчить про роль стору:
+Inventory Control's mobile layout has no checkboxes or bulk selection (a deliberate decision — bulk actions fit touch interfaces poorly), so there's nothing to demonstrate "row selection" on for mobile. Instead of reconstructing checkboxes, Case 7 on mobile reuses an already-existing single action — changing one product's status via `StatusChangeDrawer` (the "Change" button on a product card) — and uses `logisticStatus`, not `selected`, as the shared state.
 
-- **Desktop (`tip`):** стан справді мусить бути спільним — чекбокс у рядку і Bulk Actions-панель у Toolbar одночасно читають/пишуть той самий вибір. Це реальна продуктова причина, чому команда взагалі потягнеться за Context/Zustand, а не за локальним `useState` в рядку.
-- **Mobile (`mobileTip`):** спільний стан тут з'явився **не** через продуктову потребу ділитися між кількома поверхнями UI (кожна картка дбає лише про свій власний статус) — а через фейковий бекенд (DummyJSON не зберігає PATCH, потрібен клієнтський оверлей). Текст гайду прямо каже, що це той самий баг на вужчому тригері, без вигаданого твердження про мобільну crosscomponent-потребу.
+**Agreed solution (mobile part):**
+- A new, isolated Context (`RowStatusContext`, `context/RowStatusContext.tsx`) mirrors the `useInventoryStatusStore` API 1:1 (`statuses` / `setStatuses`) — isolated from the Zustand store the same way `TableSelectionContext` is isolated from `useInventorySelectionStore`: its own state, reset on every toggle flip (the same "adjust state during render" pattern, no `useEffect`).
+- `ProductCard` (the mobile product card) is split into shared markup (`ProductCardView`) and a good/bad pair (`ProductCard` — Zustand selector, `ProductCardUnoptimized` — Context), following the same template as `ProductTableRow`/`ProductTableRowUnoptimized`.
+- `StatusChangeDrawer` remains the single UI/PATCH flow for both paths — the write destination is now passed in as a prop (`onChangeStatus`) instead of hardcoding a call to the store.
+- When `contextOverhead = ON` on mobile — changing one product's status writes to `RowStatusContext` instead of `useInventoryStatusStore`, and every mounted card (all of them visible, since Case 7 already forces a flat, unvirtualized list) re-renders/flashes — the same bug as on desktop, but triggered by a real single mobile action instead of a reconstructed checkbox.
+- `useInventoryStatusStore` remains the single source of truth for the status badge on desktop (both `ProductTableRow`/`ProductTableRowUnoptimized` paths keep reading it) — Case 7 doesn't touch that store at all.
 
-Технічно розділення реалізоване так: `ToggleItem.mobileTip?: CaseTip` — опційний override, заповнений лише для `contextOverhead`. `lib/server/case-info.tsx`'s `getCaseTipContent(device)` вибирає `mobileTip`/`tip` і відповідний код-приклад (`lib/case-code/contextOverhead.mobile.{bad,good}.txt` замість спільних `contextOverhead.{bad,good}.txt`) один раз на сервері; `app/(shell)/layout.tsx` викликає це двічі й роздає кожен набір своєму, і так уже платформо-специфічному споживачу (`CaseDetailPanel` — desktop-only, `MobileControlDrawer` — mobile-only) — без клієнтської перевірки `isMobile` всередині самого `CaseTipContent`.
+---
+
+## Guide text: why desktop and mobile are described separately
+
+Desktop and mobile have a different, honest reason for why the state is shared at all — and the guide (`lib/simulator-cases.ts`, `tip`/`mobileTip`) says so directly, rather than staying silent about the store's role:
+
+- **Desktop (`tip`):** the state genuinely needs to be shared — the row's checkbox and the Toolbar's Bulk Actions panel read/write the same selection at the same time. That's the real product reason a team would reach for Context/Zustand at all, instead of local `useState` in the row.
+- **Mobile (`mobileTip`):** shared state here did **not** arise from a product need to share across multiple UI surfaces (each card only cares about its own status) — but from the fake backend (DummyJSON doesn't persist PATCH, so a client-side overlay is needed). The guide text says plainly that this is the same bug on a narrower trigger, without a made-up claim about a mobile cross-component need.
+
+Technically, the split is implemented like this: `ToggleItem.mobileTip?: CaseTip` — an optional override, populated only for `contextOverhead`. `lib/server/case-info.tsx`'s `getCaseTipContent(device)` picks `mobileTip`/`tip` and the matching code example (`lib/case-code/contextOverhead.mobile.{bad,good}.txt` instead of the shared `contextOverhead.{bad,good}.txt`) once, server-side; `app/(shell)/layout.tsx` calls this twice and hands each set to its own, already platform-specific consumer (`CaseDetailPanel` — desktop-only, `MobileControlDrawer` — mobile-only) — with no client-side `isMobile` check inside `CaseTipContent` itself.

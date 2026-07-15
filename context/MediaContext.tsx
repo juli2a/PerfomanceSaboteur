@@ -12,7 +12,7 @@ export function MediaProvider({ children }: { children: React.ReactNode }) {
 
   // Mirrored into a cookie purely so PerformancePanel.tsx can render its
   // real branch during SSR instead of waiting for this to resolve
-  // client-side (Case 2 / CLS mobile — see docs/case2-v2.md). MediaContext
+  // client-side (Case 2 / CLS mobile — see docs/case2.md). MediaContext
   // itself stays undefined-until-resolved for every other consumer
   // (ProductTable, CategoryFilter, ...) — deliberately not changed, since
   // seeding isMobile globally would also change when/how those render.

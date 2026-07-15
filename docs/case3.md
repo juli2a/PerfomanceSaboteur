@@ -1,57 +1,52 @@
-# Case 3: Блокування головного потоку / Heavy Mounting & Parsing
+# Case 3: Main Thread Blocking / Heavy Mounting & Parsing
 
-**Категорія:** Computing / Клієнтська маршрутизація
-**Тумблер:** Computing → Heavy Mounting
-**Метрика:** INP, DOM Elements
+**Category:** Computing / Client-side routing
+**Toggle:** Computing → Heavy Mounting
+**Metric:** INP, DOM Elements
 
-## Короткий опис
-Фриз інтерфейсу та затримка навігації через синхронне монтування тисяч важких DOM-вузлів без пагінації чи віртуалізації.
+## Summary
+A page-transition freeze caused by synchronously mounting all 2000+ Inventory table rows into real DOM at once, instead of windowing just the ~15 visible rows.
 
 ---
 
-## Гарний код (Тумблер OFF)
+## Good code (Toggle OFF)
 
-**Реалізація:**
+**Implementation:** `components/inventory/ProductTable.tsx`
 ```tsx
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
-
-const rowVirtualizer = useWindowVirtualizer({
-  count: products.length,
-  estimateSize: () => 60,
+const virtualizer = useVirtualizer({
+  count: rows.length,
+  getScrollElement: () => scrollRef.current,
+  estimateSize: () => (isMobile ? CARD_HEIGHT_PX : ROW_HEIGHT_PX),
+  overscan: isMobile ? 6 : 10,
 });
 ```
-> Рендерить у DOM лише видимі рядки.
+`@tanstack/react-virtual`'s `useVirtualizer` only mounts the rows near the current scroll position (inside its own `scrollRef` container, not the window), swapping which ones those are as you scroll — the mounted count never grows with the data.
 
-**Поведінка інтерфейсу:**
-- Перехід Dashboard → Inventory Control займає до 80мс.
-- Живий індикатор (пульсуюча цятка) продовжує рухатись без ривків.
-- Панель показує: `"INP: 15ms"`, `"DOM Elements: ~120"`, `"Virtualization: ACTIVE"`.
+**UI behavior:**
+- The Dashboard → Inventory Control transition happens with no delay.
+- DOM Nodes stays low (~15-20 mounted rows), INP stays low.
 
 ---
 
-## Поганий код (Тумблер ON)
+## Bad code (Toggle ON)
 
-**Реалізація:**
+**Implementation:** `components/inventory/ProductTable.tsx`
 ```tsx
-products.map(p => <ProductRow key={p.id} product={p} />)
+rows.map((row) => <ProductTableRow key={row.original.id} product={row.original} ... />)
 ```
-> Кожен рядок містить складну ієрархію shadcn-компонентів. Всередині циклу — важкий синхронний розрахунок або парсинг дат через `new Intl.DateTimeFormat()`.
+Virtualization is disabled entirely — literally every one of the 2000+ rows mounts, each with its own complex shadcn hierarchy.
 
-**Поведінка інтерфейсу:**
-- Після кліку на пункт меню — повний фриз на ~2.5 секунди, старий екран залишається.
-- Пульсуюча цятка "Система моніторингу: Live" зупиняє анімацію.
-- Будь-які кліки ігноруються.
-- Панель видає: `"INP: 2450ms (⚠️ High Navigation Blocking)"`, `"DOM Elements: 16000+"`.
+**UI behavior:**
+- The old page stays put for several seconds; the first couple of clicks still land, then the app stops responding entirely until Inventory Control finally appears.
+- The metrics panel shows DOM Nodes past 30,000 and INP spiking into the thousands of milliseconds; on a slower device, Blocking Time spikes too.
 
 ---
 
-## Аналіз
+## Analysis
 
-**Ймовірність успішної демонстрації: 9/10** — найнадійніший кейс.
-2000 рядків × складна shadcn-ієрархія × `new Intl.DateTimeFormat()` у циклі — гарантований фриз. `@tanstack/react-virtual` гарантує миттєвий рендер.
+**Demonstration success probability: 9/10** — the most reliable case.
+2000+ rows × a complex shadcn hierarchy, with no windowing at all — a guaranteed freeze independent of the network. `@tanstack/react-virtual` (already installed, `^3.14.3`) removes the effect completely.
 
-**Відповідність UI та кейсу:** ✅ Повна. Inventory Control Data Table.
+**UI/case fit:** ✅ Full. Inventory Control Data Table.
 
-**API:** ✅ `GET /products?limit=100` існує. Data Amplification (×20) виконується на сервері.
-
-**Необхідна дія:** Пакет `@tanstack/react-virtual` відсутній у `package.json` — потрібно встановити перед реалізацією.
+**API:** ✅ `GET /products?limit=100` exists; data amplification (×20) happens server-side.
