@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePanelExpandedStore } from "@/store/panel-expanded";
 import { usePanelExpandedStoreUnstable } from "@/store/panel-expanded-unstable";
 
@@ -33,9 +33,26 @@ function useStableExpanded(initialExpanded: boolean) {
 
 // Case 2 toggle ON (bad path): plain zustand+persist read from localStorage
 // — see store/panel-expanded-unstable.ts for why this is exactly the
-// panel's original (buggy) implementation.
-function useUnstableExpanded() {
-  return usePanelExpandedStoreUnstable((state) => state.expanded);
+// panel's original (buggy) implementation. The setTimeout below isn't part
+// of that story — it's a second, unrelated shortcut stacked on top: whoever
+// wrote this noticed the restore animation wasn't playing (the corrected
+// value was landing before the browser ever painted the initialExpanded
+// state, so there was nothing to transition from) and silenced it with a
+// guessed delay instead of tracing why. That guess is generous enough to
+// always outlast the real gap, on any device or deployment — so the
+// mismatch it was never meant to fix ends up reliably visible anyway.
+function useUnstableExpanded(initialExpanded: boolean) {
+  const persisted = usePanelExpandedStoreUnstable((state) => state.expanded);
+  const [displayed, setDisplayed] = useState(initialExpanded);
+
+  useEffect(() => {
+    // Give styles/DOM a moment to settle, otherwise the CSS transition
+    // doesn't play on first render.
+    const timer = setTimeout(() => setDisplayed(persisted), 150);
+    return () => clearTimeout(timer);
+  }, [persisted]);
+
+  return displayed;
 }
 
 // Shared by PerformancePanelMobile. The toggle only picks which value above
@@ -46,7 +63,7 @@ export function usePanelExpanded(
   initialExpanded: boolean,
 ) {
   const stable = useStableExpanded(initialExpanded);
-  const unstable = useUnstableExpanded();
+  const unstable = useUnstableExpanded(initialExpanded);
 
   // Every click writes to *both* stores, no matter which one is currently
   // driving the display, plus the cookie the good store's SSR read depends
