@@ -15,7 +15,7 @@ Engineering only; `tip`/`alert` copy is a separate, later step owned by the
 1. **Plan from the doc.** Source of truth is `docs/case<N>.md` (latest
    revision, e.g. prefer `case2-v2.md` over `case2.md` if both exist) — must
    exist before any code. Compose a plan (plan mode) that resolves: SSR-visible
-   (needs `SSR_COOKIE_CASES` + `useToggleCase`, cookie+reload — LCP/CLS/TTFB
+   (needs `SSR_COOKIE_CASES` + `useToggleCase`, cookie+reload — LCP/CLS
    style) vs client-only (`useSimulatorCase(key)`, no reload — INP/rerender/race
    style, see `store/simulator-control.ts`'s comment); which files hold the
    isolated bad/good code; what the `lib/case-code/<key>.{bad,good}.txt`

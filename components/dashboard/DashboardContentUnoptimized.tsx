@@ -19,7 +19,7 @@ import { MicroCardsGridClient } from "@/components/dashboard/MicroCardsGridClien
 // anywhere: the whole page is fetched the same (wrong) way, not just a
 // subset of it. Awaited directly in DashboardPage (not wrapped in
 // Suspense), so Next.js can't flush a single byte until this whole chain
-// settles — the delay lands squarely on TTFB, regardless of which request
+// settles — the delay lands squarely on LCP, regardless of which request
 // happens to run first.
 export async function DashboardContentUnoptimized() {
   const { kpi, salesChart } = await getCarts(); // ~700ms

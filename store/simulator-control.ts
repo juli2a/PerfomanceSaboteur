@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 import type { CaseKey, SimControlState } from "@/types/simulator";
 
 // Cases whose anti-pattern must be visible in the server-rendered HTML
-// itself (the metric they degrade — LCP, TTFB — is only measured on a real
+// itself (the metric they degrade — LCP — is only measured on a real
 // navigation, never on an in-place client update). Their toggle state lives
 // in a cookie instead of localStorage: Server Components read the cookie
 // directly, and the store below seeds from that same cookie at creation, so

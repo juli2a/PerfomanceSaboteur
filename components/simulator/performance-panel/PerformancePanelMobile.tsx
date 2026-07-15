@@ -38,7 +38,7 @@ function RatingDot({ rating }: { rating: VitalRating | null }) {
 // ring (no room for SVG rings at this width).
 function VitalReadout({ label, display, rating, href }: MetricPreview) {
   const labelClass =
-    "text-[13px] font-semibold underline tracking-wide text-brand-muted";
+    "text-[15px] font-semibold underline tracking-wide text-brand-muted";
 
   return (
     <div className="flex flex-1 items-baseline justify-center gap-1.5">
@@ -176,13 +176,6 @@ export default function PerformancePanelMobile({
     rating: vitals.inp?.rating ?? null,
     href: VITAL_DOCS_URL.inp,
   };
-  const ttfb: MetricPreview = {
-    label: "TTFB",
-    display: vitals.ttfb ? `${(vitals.ttfb.value / 1000).toFixed(1)}s` : "—",
-    rating: vitals.ttfb?.rating ?? null,
-    href: VITAL_DOCS_URL.ttfb,
-  };
-
   return (
     <div>
       {alerts.length > 0 && (
@@ -243,11 +236,10 @@ export default function PerformancePanelMobile({
           data-instant={controlsOpen || undefined}
         >
           <div className="sim-panel-mobile-content-row flex flex-col gap-2.75 px-4">
-            <div className="flex gap-2">
+            <div className="flex gap-2 py-1.5">
               <VitalReadout {...lcp} />
               <VitalReadout {...cls} />
               <VitalReadout {...inp} />
-              <VitalReadout {...ttfb} />
             </div>
             <div className="flex flex-wrap gap-2 border-t border-brand-border pt-2.75 pb-3.5">
               <StatTile

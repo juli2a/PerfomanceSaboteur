@@ -25,7 +25,7 @@ export const useSimPerformanceStore = create<SimPerformanceState>()((set) => {
   );
 
   return {
-    vitals: { lcp: null, cls: null, inp: null, ttfb: null },
+    vitals: { lcp: null, cls: null, inp: null },
     setVital: (key, reading) =>
       set((state) => ({ vitals: { ...state.vitals, [key]: reading } })),
     domNodes: null,

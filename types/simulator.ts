@@ -4,7 +4,7 @@ export type CaseKey =
   | "layoutShift" // Case 2 — CLS
   | "heavyMounting" // Case 3 — INP
   | "raceCondition" // Case 4 — Data freshness
-  | "waterfall" // Case 5 — TTFB
+  | "waterfall" // Case 5 — LCP
   | "hydrationMismatch" // Case 6 — Hydration
   | "contextOverhead" // Case 7 — Rerender nodes / FPS
   | "brokenMemoization"; // Case 8 — INP
@@ -73,7 +73,6 @@ export interface SimPerformanceState {
     lcp: VitalReading | null;
     cls: VitalReading | null;
     inp: VitalReading | null;
-    ttfb: VitalReading | null;
   };
   setVital: (
     key: keyof SimPerformanceState["vitals"],
