@@ -39,7 +39,7 @@ export default function PerformancePanel({
 }: Props) {
   // Falls back to the cookie-seeded server guess until MediaContext's own
   // matchMedia resolves — see context/MediaContext.tsx for why, and
-  // docs/case2-v2.md for what this unblocks (SSR for this component).
+  // docs/case2.md for what this unblocks (SSR for this component).
   const isMobile = useContext(MediaContext) ?? initialIsMobile;
   const caseAlerts = useSimControlStore((state) => state.caseAlerts);
   const dismissAlert = useSimControlStore((state) => state.dismissAlert);

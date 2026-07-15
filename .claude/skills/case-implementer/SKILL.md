@@ -12,8 +12,7 @@ Engineering only; `tip`/`alert` copy is a separate, later step owned by the
 
 ## Flow
 
-1. **Plan from the doc.** Source of truth is `docs/case<N>.md` (latest
-   revision, e.g. prefer `case2-v2.md` over `case2.md` if both exist) — must
+1. **Plan from the doc.** Source of truth is `docs/case<N>.md` — must
    exist before any code. Compose a plan (plan mode) that resolves: SSR-visible
    (needs `SSR_COOKIE_CASES` + `useToggleCase`, cookie+reload — LCP/CLS
    style) vs client-only (`useSimulatorCase(key)`, no reload — INP/rerender/race

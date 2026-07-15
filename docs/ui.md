@@ -4,145 +4,136 @@
 
 ### Header — Desktop
 
-- Фіксована верхня панель.
-- **Ліворуч:** назва системи — **PerfSaboteur**.
-- **По центру:** блок тумблерів (Control Panel), розділених на три зони:
-  - **Network** (Мережа)
-  - **Rendering** (Рендеринг)
-  - **Computing** (Обчислення)
-- **Праворуч:** текстовий блок — "Час останнього оновлення: [Значення]".
+- Fixed top bar.
+- **Left:** the system name — **PerfSaboteur**.
+- **Center:** the toggle block (Control Panel), split into three zones:
+  - **Network**
+  - **Rendering**
+  - **Computing**
+- **Right:** a text block — "Updated [time]".
 
 ### Header & Drawer — Mobile
 
-- Шапка містить:
-  - Кнопку бургер-меню (навігація)
-  - Кнопку "Error Control"
-- Клік на "Error Control" відкриває **Bottom Sheet** (нижня шторка) з набором тумблерів, адаптованим для перемикання великим пальцем.
+- The header holds two separate buttons:
+  - A hamburger button — opens a left slide-out drawer with navigation (Dashboard / Inventory Control).
+  - A **"Controls"** button (with a colored dot indicating an active anti-pattern) — opens the Bottom Sheet with the toggles.
+- The Bottom Sheet is adapted for thumb-driven switching.
 
 ### Sidebar — Desktop
 
-- Ліве вертикальне навігаційне меню.
-- Два лінки:
+- Left vertical navigation menu.
+- Two links:
   - **Dashboard**
   - **Inventory Control**
 
-### Bottom Navigation — Mobile
+### Navigation — Mobile
 
-- Нижня панель навігації.
-- Великі зони кліку для перемикання між двома сторінками.
+- There's no separate bottom navigation bar: the same navigation (`Dashboard`/`Inventory Control`) as the desktop Sidebar opens via a left slide-out drawer, triggered by the hamburger button in the header.
 
 ### Floating Performance Panel
 
-- Віджет у кутку екрана.
-- **Mobile:** компактна плашка з кольоровими точками-індикаторами; розгортається при тапі.
-- **Desktop:** повний віджет.
-- Відображає:
-  - **LCP / CLS / INP** — колові індикатори (gauge), не лінійна шкала; заливка асимптотично наближається до 100%, але ніколи не досягає, тож рух завжди видно навіть при дуже поганих значеннях. Формула заповнення, пороги та колірне кодування — `lib/utils/gauge.ts` (`getGaugePercent`); рендер кільця — `MetricGauge.tsx`.
-  - **DOM Elements** — простий лічильник (без gauge, бо немає офіційного порогу). Потрібен для Case 3 (Heavy Mounting). Перераховується при (1) зміні тумблера Case 3, (2) переході на сторінку Inventory; інші тригери — за потребою.
-  - **Blocking Time** (раніше "CPU") — простий лічильник у ms (через Long Tasks API / `PerformanceObserver` type `"longtask"`), **не** CPU-відсоток.
-  - **Interaction Latency** — простий лічильник у ms (рейтинг на офіційних порогах INP). На відміну від **INP**-кільця вище, тримає лише останній замір, тож піднімається і опускається в реальному часі — деталі джерела даних і причина дублювання з INP див. у коментарях `useInteractionLatencyReporter.ts`.
-- **Desktop:** панель — `position: fixed` у кутку, не перекриває контент сторінки (контент має зарезервований відступ під неї).
-- **Mobile:** док форсовано розгорнутий і не згортається, поки відкрита панель керування симулятором (`dockOpen = vitalsExpanded || controlsOpen`).
+- A widget in the corner of the screen.
+- **Mobile:** a compact bar with colored indicator dots; expands on tap.
+- **Desktop:** the full widget.
+- Shows:
+  - **LCP / CLS / INP** — circular gauges, not a linear scale; the fill asymptotically approaches 100% but never reaches it, so movement is always visible even at very poor values. Fill formula, thresholds, and color coding — `lib/utils/gauge.ts` (`getGaugePercent`); ring rendering — `MetricGauge.tsx`.
+  - **DOM Elements** — a plain counter (no gauge, since there's no official threshold). Needed for Case 3 (Heavy Mounting). Recomputed on (1) Case 3's toggle changing, (2) navigating to the Inventory page; other triggers as needed.
+  - **Blocking Time** (formerly "CPU") — a plain counter in ms (via the Long Tasks API / `PerformanceObserver` type `"longtask"`), **not** a CPU percentage.
+  - **Interaction Latency** — a plain counter in ms (rated against the official INP thresholds). Unlike the **INP** ring above, it holds only the latest sample, so it rises and falls in real time — see the comments in `useInteractionLatencyReporter.ts` for the data source details and why it duplicates INP.
+- **Desktop:** the panel is `position: fixed` in a corner, doesn't overlap page content (content reserves padding for it).
+- **Mobile:** the dock is forced open and won't collapse while the simulator controls panel is open (`dockOpen = vitalsExpanded || controlsOpen`).
 
 ### Simulator Alerts
 
-- Case-специфічні попередження (Case 4 `raceConditionAlert`, Case 7 `"Rerendered Nodes on Action"`, і далі тим самим патерном) — окремі картки, що **перекривають контент** і стекаються над Performance Panel (desktop) / над доком (mobile).
-- Закриваються **тільки** (1) явним кліком користувача на dismiss, або (2) коли базова умова кейсу перестає виконуватись (наприклад, `isStale` стає `false`).
-- **Per-instance dismiss:** кожне спрацювання тригера кейсу має власний instance-ідентифікатор. Закритий вручну алерт не з'являється повторно для того самого instance, але **з'являється знову**, щойно тригер спрацьовує заново (новий instance) — навіть якщо попередній був закритий руками.
+- Case-specific warnings — separate cards that **overlay content** and stack above the Performance Panel (desktop) / above the dock (mobile). Real titles: **"Race Condition"** (Case 4), **"Hydration Mismatch"** (Case 6), **"Context Re-render Storm"** (Case 7), **"Memo Overhead"** (Case 8). Case 5 (Waterfall) deliberately has no alert — demonstrated through LCP alone.
+- Close **only** via (1) an explicit user dismiss click, or (2) the case's underlying condition resolving on its own (e.g. `isStale` flipping back to `false`).
+- **Per-instance dismiss:** each firing of a case's trigger has its own instance id. A manually dismissed alert doesn't reappear for that same instance, but **does reappear** the moment the trigger fires again (a new instance) — even if the earlier one was dismissed by hand.
 
 ---
 
-## Page 1: Dashboard (Аналітика)
-
-### Live-індикатор — Desktop
-
-- Зелений маркер у кутку сторінки.
-- CSS-анімація розширення (пульсація).
-- Візуальний індикатор заморожування головного потоку (зупиняється при фризі).
+## Page 1: Dashboard (Analytics)
 
 ### KPI Widgets Grid
 
-- **Desktop:** чотири картки в ряд.
-- **Mobile:** карусель-слайдер або сітка 2×2.
-- Картки:
-  1. **Загальний дохід** — із вбудованим лінійним Sparkline-графіком.
-  2. **Кількість замовлень**
-  3. **Активні клієнти**
-  4. **Середній чек**
+- **Desktop:** four cards in a row.
+- **Mobile:** a grid/stack, adapted via Tailwind breakpoints.
+- Cards (all four — with an embedded line Sparkline chart):
+  1. **Total Revenue**
+  2. **Orders**
+  3. **Active Clients**
+  4. **Avg Check**
 
-### Головний графік продажів
+### Main sales chart
 
-- Широкий блок з лінійним або стовпчиковим графіком.
-- Верхня панель перемикання: **День / Тиждень / Місяць** (таби).
-- **Mobile:** контейнер графіка перехоплює Touch-події та блокує вертикальний скрол сторінки під час руху пальця по графіку.
+- A wide block with a line/canvas chart (`recharts`, client-only).
+- A top switcher: **Day / Week / Month** tabs.
 
-### Аналітичний ряд (два блоки поруч)
+### Analytics row (two blocks side by side)
 
-Під головним графіком — два блоки в ряд (десктоп) або стек (мобільний).
+Below the main chart — two blocks in a row (desktop) or stacked (mobile).
 
-#### Швидка аналітика категорій
+#### Category Analytics
 
-- Вузька колонка зі списком 5–6 рядків-категорій.
-- Окремий запит: `GET /products/categories`.
-- Кожен рядок:
-  - Назва категорії
-  - Прогрес-бар фінансової частки (`sum(price × stock)` категорії / загальна сума)
+- A list of **8 category rows** (top 8 by stock value).
+- A separate request: `GET /products/categories` + its own fetch of `/products?...&select=id,category,price,stock` for the aggregation.
+- Each row:
+  - Category name
+  - A progress bar of the financial share (`sum(price × stock)` of the category / grand total)
 
 #### Top Customers
 
-- Компактна картка зі списком 5 найактивніших клієнтів.
-- Дані з `GET /users?limit=100`.
-- Кожен рядок:
-  - Аватар (з поля `image`) або ініціали як fallback
-  - Ім'я та прізвище (`firstName lastName`)
-  - Розрахункова метрика "Lifetime Value" (дерувується детерміновано з `user.id`)
+- A compact card listing the 5 most active customers.
+- Data from `GET /users?limit=N` (N — the daily user pool, 90-120).
+- Each row:
+  - Avatar (from the `image` field) or initials as a fallback
+  - Full name (`firstName lastName`)
+  - Lifetime Value: `Math.round(user.id * 1250 + user.age * 300)`
 
 ### KPI Micro-cards Grid
 
-- Розташування: нижче головного графіка продажів, на повну ширину.
-- Над сіткою — горизонтальний слайдер **"Поріг маржинальності"** (0–50%). Змінює стейт при кожному русі → усі 100 карток отримують нове значення `threshold`, але реально перераховує свій вигляд лише та жменька карток, чий поріг щойно перетнуто (решта — залежно від тумблера Case 8 — або пропускають ре-рендер, або теж переробляють усе даремно).
-- **Desktop:** компактна grid-сітка, 4–5 карток у ряд (20–25 рядків).
-- **Анатомія мікро-картки:**
-  - **Верхній рядок:** назва розрізу (наприклад, "Smartphones — Kyiv")
-  - **Центр:** фінансове число (наприклад, $14,250) + кольоровий тренд-бейдж (+4.2% зеленим / -1.8% червоним)
-  - **Нижня частина:** Sparkline (тоненька крива recharts без осей, динаміка за 7 днів)
-  - **Куточок:** мінімальний live CSS spinner (`animate-ping`, зелена цятка) — завмирає при фризі main thread
-- **Візуальний ефект порогу маржинальності:**
-  - Картки з `marginality < threshold` → `opacity-40` + сірий бордер
-  - Картки з `marginality ≥ threshold` → активні, зелене підсвічування
-- **Mobile:** `grid-cols-1`; за замовчуванням видимі перші 10 карток (лідери за прибутковістю); кнопка "Показати всі 100 позицій"; Sparkline приховано.
+- Location: below the main sales chart, full width.
+- Above the grid — a horizontal **"Min GM%"** slider (0-40). Changes `threshold` on every move → all 100 cards get the new value, but only the handful of cards whose threshold was just crossed actually recompute their look (the rest — depending on Case 8's toggle — either skip the re-render thanks to `React.memo`, or redo everything pointlessly too, see `docs/case8.md`).
+- **Desktop:** a grid, 4-5 cards per row. **Mobile:** `grid-cols-1` — the same full set of cards, nothing hidden or truncated.
+- **Micro-card anatomy** (`MicroCardView.tsx`):
+  - **Top row:** the product title (truncated) + a `GM% {marginality}` badge
+  - **Center:** the financial value (currentValue) + a star rating
+  - **Sparkline** to the right of the value
+  - **Clicking the card** opens a Popover with the full title, SKU, and a copy-SKU button
+  - Wrapped in `FlashOnUpdate` — briefly flashes on re-render
+- **Threshold visual effect:** cards with `marginality < threshold` → dimmed (`disabled` styling); the rest — with an accented border.
 
 ---
 
-## Page 2: Inventory Control (Контроль запасів)
+## Page 2: Inventory Control
 
 ### Toolbar
 
 - **Desktop:**
-  - Пошуковий інпут
-  - Dropdown фільтрації за категоріями
-  - Кнопка "Bulk Actions: Змінити логістичний статус"
+  - Search input
+  - Category filter dropdown
+  - **"Bulk Actions"** button (picking the new status happens inside a Popover after the click)
 - **Mobile:**
-  - Пошуковий інпут (100% ширини)
-  - Фільтр згорнутий в іконку-воронку
-  - Bulk Actions приховано
+  - Full-width search input
+  - Filter collapsed into a funnel icon
+  - Bulk Actions hidden
 
 ### Data Table — Desktop
 
-- Таблиця високої щільності.
-- Колонки:
-  1. Чекбокс виділення
-  2. Мініатюра (фото товару)
-  3. Назва + SKU
-  4. Категорія
-  5. Ціна
-  6. Залишок
-  7. Статус-бейдж: `In Stock` / `To Order` / `Ordered` / `In Transit` / `Out of Stock`
-- При наведенні або зміні рядка — ефект **Flash on Update** (короткочасне підсвічування границь).
+- A high-density table.
+- Columns:
+  1. Selection checkbox
+  2. Thumbnail (product photo)
+  3. Name + SKU
+  4. Category
+  5. Price
+  6. Stock
+  7. Status badge: `In Stock` / `To Order` / `Ordered` / `In Transit` / `Out of Stock`
+- On row re-render — the **Flash on Update** effect (a brief outline highlight).
 
 ### Product Cards List — Mobile
 
-- Трансформація таблиці у вертикальну стрічку карток.
-- Структура картки:
-  - **Ліворуч:** квадратне зображення товару
-  - **Праворуч:** назва, ціна, кольоровий бейдж логістичного статусу
+- The table transforms into a vertical stack of cards (`ProductCardView.tsx`).
+- Card structure:
+  - **Top row:** a square product image on the left, name + SKU in the middle, price on the right
+  - **Second row:** category + stock on hand
+  - **Bottom row:** the logistic status badge + a "Change" button (opens the status-change drawer)

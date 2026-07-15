@@ -9,7 +9,7 @@ const ALLOWED_HOST = "cdn.dummyjson.com";
 //                               fetchpriority="high" preload in <head>)
 //   Bad  path → /api/img      (original full resolution, no resize, our
 //                               dev-server instead of CDN, no priority hint)
-// A 2 500 ms artificial delay simulates serving from a slow, unoptimised origin
+// A 1500 ms artificial delay simulates serving from a slow, unoptimised origin
 // (no CDN, no caching). Combined with the absence of a fetchpriority preload
 // hint, this reliably produces a poor LCP without requiring network throttling.
 export async function GET(request: NextRequest) {
