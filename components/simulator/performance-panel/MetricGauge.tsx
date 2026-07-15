@@ -9,7 +9,7 @@ interface MetricGaugeProps {
   rating: VitalRating | null;
   size?: number;
   // Link to the metric's official web.dev explainer. Optional — only the
-  // four Core Web Vitals (LCP/CLS/INP/TTFB) have one.
+  // three Core Web Vitals (LCP/CLS/INP) have one.
   href?: string;
 }
 

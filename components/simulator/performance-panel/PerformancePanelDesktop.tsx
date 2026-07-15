@@ -2,7 +2,6 @@ import {
   CLS_POOR,
   INP_POOR,
   LCP_POOR,
-  TTFB_POOR,
   VITAL_DOCS_URL,
 } from "@/lib/simulator-thresholds";
 import { formatNumber } from "@/lib/utils/format";
@@ -65,16 +64,6 @@ export default function PerformancePanelDesktop({
               poorThreshold={INP_POOR}
               rating={vitals.inp?.rating ?? null}
               href={VITAL_DOCS_URL.inp}
-            />
-            <MetricGauge
-              label="TTFB"
-              display={
-                vitals.ttfb ? `${(vitals.ttfb.value / 1000).toFixed(1)}s` : "—"
-              }
-              value={vitals.ttfb?.value ?? 0}
-              poorThreshold={TTFB_POOR}
-              rating={vitals.ttfb?.rating ?? null}
-              href={VITAL_DOCS_URL.ttfb}
             />
           </div>
           <span className="mx-2.5 w-px self-stretch bg-border" />

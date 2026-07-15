@@ -6,6 +6,9 @@ applied yet, decision pending.
 
 ---
 
+> **Вирішено (2026-07-15):** TTFB видалено з проєкту як метрика — Case 5
+> демонструє деградацію через LCP. Запис нижче лишається для історії.
+
 ## Case 5 (Waterfall) — TTFB does not rise on Vercel production
 
 **Status:** Diagnosed, not fixed. Decision pending.

@@ -50,7 +50,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           reproduction:
             "Go to the Dashboard. Switch this toggle on — the page reloads so the server can refetch sequentially.",
           effect:
-            "The dashboard stays blank for several seconds, then the whole layout snaps in at once instead of streaming in section by section — both TTFB and LCP spike in the Performance Panel, since nothing can render until the last request finishes.",
+            "The dashboard stays blank for several seconds, then the whole layout snaps in at once instead of streaming in section by section — LCP spikes in the Performance Panel, since nothing can render until the last request finishes.",
           badCode:
             "Each request is awaited before the next one starts, so the server can't send even its first byte until all four — normally independent — have finished one by one.",
           goodCode:
@@ -60,7 +60,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
         },
         alert: {
           title: "Request Waterfall",
-          body: "Requests fired one after another instead of in parallel — TTFB and LCP both spiked.",
+          body: "Requests fired one after another instead of in parallel — LCP spiked.",
         },
       },
       {

@@ -2,11 +2,13 @@
 
 **Категорія:** Network / Серверна архітектура
 **Тумблер:** Network → Request Waterfall
-**Метрика:** TTFB (Time to First Byte)
+**Метрика:** LCP
 
 ## Короткий опис
 
-Послідовне очікування (`await`) незалежних серверних запитів штучно збільшує TTFB та затримує рендеринг сторінки.
+Послідовне очікування (`await`) незалежних серверних запитів штучно затримує рендеринг сторінки — LCP зростає, бо нічого не може відрендеритись, поки не завершиться останній запит.
+
+> **Примітка:** початково кейс демонстрував і TTFB, але на Vercel production ця метрика не відображає штучну затримку (Early Hints — див. `docs/production-issues.md`), тому TTFB прибрано з проєкту, і кейс демонструється лише через LCP.
 
 ---
 
@@ -44,7 +46,7 @@ const [products, carts, users, categories] = await Promise.all([
 
 - Dashboard завантажується цілісно.
 - Загальний час ≈ час найдовшого запиту (~800ms).
-- Панель: `"Server Response Time (TTFB): 820ms"` (зелений).
+- Панель: `"LCP: 0.8s"` (зелений).
 
 ---
 
@@ -64,7 +66,7 @@ const categories = await getCategories(); // потім ще 400ms
 **Поведінка інтерфейсу:**
 
 - Після переходу на Dashboard — білий екран або статичний layout ~2.5 секунди.
-- Панель: `"Server Response Time (TTFB): 2500ms (⚠️ Critical Waterfall Detected)"`.
+- Панель: `"LCP: 2.5s (⚠️ Critical Waterfall Detected)"`.
 
 ---
 
