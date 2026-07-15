@@ -217,7 +217,7 @@ export const SIMULATOR_CASES: { title: string; items: ToggleItem[] }[] = [
           reproduction:
             "Go to the Dashboard. Switch this toggle on, then click Inventory Control in the menu and keep clicking around (e.g. the hero slider's arrow) while page loads.",
           effect:
-            "The old page stays put for several seconds; the first couple of clicks still land, then the app stops responding to anything until Inventory Control finally appears. The Performance Panel shows DOM Elements past 30,000 and INP spiking into the thousands of milliseconds — on mobile or a slower machine, Blocking Time spikes too, since there's less spare CPU for React to squeeze work between frames.",
+            "The old page stays put for several seconds; the first couple of clicks still land, then the app stops responding to anything until Inventory Control finally appears. The Performance Panel shows DOM Nodes past 30,000 and INP spiking into the thousands of milliseconds — on mobile or a slower machine, Blocking Time spikes too, since there's less spare CPU for React to squeeze work between frames.",
           badCode:
             "Maps the full, unfiltered row list straight into JSX with no limit on how many mount at once, so React has to build and commit 2000+ real row subtrees for a table that only ever shows about 15 of them.",
           goodCode:
