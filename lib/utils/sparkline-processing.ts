@@ -5,10 +5,17 @@
 // good and bad paths (see MicroCardsGridClient / MicroCardUnoptimized) render
 // pixel-identical sparklines no matter which one computes it.
 
-// Iterative IQR trim — repeatedly clamps points outside 1.5x the
-// interquartile range to the Q1/Q3 midpoint, stopping once a pass changes
-// nothing (capped at 5 passes so a pathological input can't loop forever).
-// Real robust-statistics technique, not a single-pass shortcut.
+// Iterative IQR trim (winsorizing) — repeatedly clamps points outside 1.5x
+// the interquartile range to the nearest fence boundary they crossed,
+// stopping once a pass changes nothing (capped at 5 passes so a pathological
+// input can't loop forever). Clamping to the boundary rather than the Q1/Q3
+// midpoint matters here specifically: Sparkline.tsx scales its vertical axis
+// straight off min/max of these 7 points, so an unclamped outlier would
+// still blow up that range — but clamping to the midpoint could push a real
+// upswing below its untouched neighbors, and since MicroCardView doesn't
+// pass `isGood`, the card's up/down color comes from the shape of this exact
+// array (see deriveTrend). Clamping to the boundary keeps relative order —
+// the point that was highest among its neighbors stays highest.
 export function removeOutliersIterative(
   data: number[],
   maxPasses = 5,
@@ -25,9 +32,13 @@ export function removeOutliersIterative(
 
     let changed = false;
     const next = current.map((value) => {
-      if (value < lower || value > upper) {
+      if (value > upper) {
         changed = true;
-        return (q1 + q3) / 2;
+        return upper;
+      }
+      if (value < lower) {
+        changed = true;
+        return lower;
       }
       return value;
     });
