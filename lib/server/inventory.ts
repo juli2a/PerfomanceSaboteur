@@ -42,7 +42,7 @@ const STATUS_BY_SHIPPING_SPEED: Record<ShippingInformation, LogisticStatus> = {
   "Ships in 1 month": "To Order",
 };
 
-function deriveLogisticStatus(
+export function deriveLogisticStatus(
   stock: number,
   shippingInformation: ShippingInformation,
 ): LogisticStatus {

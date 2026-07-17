@@ -48,3 +48,6 @@ next-env.d.ts
 
 # private per-developer instructions
 CLAUDE.local.md
+
+# private planning notes
+/docs/local-notes/
