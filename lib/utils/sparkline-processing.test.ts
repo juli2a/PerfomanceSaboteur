@@ -8,8 +8,8 @@ import {
 import { deriveRawHistory } from "@/lib/utils/derive";
 
 // Comment in the source: "repeatedly clamps points outside 1.5x IQR to the
-// Q1/Q3 midpoint, stopping once a pass changes nothing (capped at
-// maxPasses)."
+// nearest fence boundary they crossed, stopping once a pass changes nothing
+// (capped at maxPasses)."
 describe("removeOutliersIterative", () => {
   it("leaves data unchanged when nothing is outside the IQR fence", () => {
     // sorted = same; Q1=sorted[1]=11, Q3=sorted[4]=14, IQR=3,
@@ -18,13 +18,14 @@ describe("removeOutliersIterative", () => {
     expect(removeOutliersIterative(data)).toEqual(data);
   });
 
-  it("clamps a single outlier to the Q1/Q3 midpoint over two passes", () => {
-    // Pass 1: Q1=11, Q3=14, IQR=3, fence=[6.5,18.5]. 100 is outside →
-    // replaced by (11+14)/2=12.5.
-    // Pass 2: Q1=11, Q3=13, IQR=2, fence=[8,16] on the now-cleaned data —
-    // everything fits, nothing changes, loop stops.
+  it("clamps a single outlier to the nearest fence boundary over two passes", () => {
+    // Pass 1: Q1=11, Q3=14, IQR=3, fence=[6.5,18.5]. 100 is outside → clamped
+    // to upper=18.5 (not to the midpoint).
+    // Pass 2: sorted=[10,11,12,13,14,18.5] → Q1=11, Q3=14 (same four inner
+    // values), fence=[6.5,18.5] again. 18.5 > 18.5 is false → nothing
+    // changes, loop stops.
     expect(removeOutliersIterative([10, 11, 12, 13, 14, 100])).toEqual([
-      10, 11, 12, 13, 14, 12.5,
+      10, 11, 12, 13, 14, 18.5,
     ]);
   });
 
