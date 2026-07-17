@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useState } from "react";
 import Link from "next/link";
 import { Menu } from "lucide-react";
 import ControlPanel from "@/components/simulator/control-panel/ControlPanel";
@@ -35,13 +35,11 @@ export default function Header({
   // vs the desktop header's h-24), same class of bug
   // useSyncControlsAcrossBreakpoint already handles for the controls sheet.
   const isMobile = useContext(MediaContext);
-  const wasMobileRef = useRef(isMobile);
-  useEffect(() => {
-    if (isMobile === undefined) return;
-    if (wasMobileRef.current === isMobile) return;
-    wasMobileRef.current = isMobile;
+  const [prevIsMobile, setPrevIsMobile] = useState(isMobile);
+  if (isMobile !== undefined && prevIsMobile !== isMobile) {
+    setPrevIsMobile(isMobile);
     if (!isMobile) setDrawerOpen(false);
-  }, [isMobile]);
+  }
 
   const controlsOpen = useSimControlStore((state) => state.controlsOpen);
   const setControlsOpen = useSimControlStore((state) => state.setControlsOpen);
