@@ -58,6 +58,22 @@ Only then open the source file to compare.
    cookie-seeded state, never from the persisted localStorage blob"), not a
    specific magic value the code happens to produce today.
 
+## Depend on stable sources, not incidental implementation details
+
+Don't assert against a value that only exists as a private implementation
+detail — a timing constant re-typed as a bare number (`const DEBOUNCE_MS =
+300` vs. `vi.advanceTimersByTime(300)` in the test), or a class name/DOM
+order standing in for a state check (`className.includes("w-[76px]")` for
+"is this collapsed?"). A legitimate tuning or design change then breaks the
+test with no change to the actual behavior. Fix: export the constant and
+import it; add a semantic `data-*` attribute (`data-collapsed`, `data-open`)
+and assert on that instead of a class/pixel value.
+
+Exception — leave these alone: `getByRole(..., { name })` (Testing Library's
+own top-priority query, meant to break on a real UI regression), and a
+hardcoded number that matches a documented formula (`docs/data.md`) — that
+duplication is deliberate, catching doc/code drift.
+
 ## Test levels used in this repo
 
 Canonical three: **Unit / Integration / E2E** — the split is not "which

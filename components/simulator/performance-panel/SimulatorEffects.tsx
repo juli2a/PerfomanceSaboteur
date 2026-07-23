@@ -30,10 +30,22 @@ import { ENV } from "@/lib/config";
 // react.dev/errors/418 instead of readable text — process.env.NODE_ENV
 // (inlined at build time, so this is a static branch, not a runtime read)
 // picks the signature that actually matches the bundle running.
+//
+// Exported as two raw strings (rather than only the resolved
+// HYDRATION_MISMATCH_SIGNATURE below) so e2e/case6-hydration-mismatch.spec.ts
+// can import the literal text without re-deriving it from ENV itself: that
+// spec runs in the Playwright test runner's own Node process, where
+// process.env.NODE_ENV is unset even though the page under test is a real
+// production build — so ENV there would resolve to the dev branch and match
+// the wrong string.
+export const HYDRATION_MISMATCH_SIGNATURE_PROD = "react.dev/errors/418";
+export const HYDRATION_MISMATCH_SIGNATURE_DEV =
+  "Hydration failed because the server rendered";
+
 const HYDRATION_MISMATCH_SIGNATURE =
   ENV === "production"
-    ? "react.dev/errors/418"
-    : "Hydration failed because the server rendered";
+    ? HYDRATION_MISMATCH_SIGNATURE_PROD
+    : HYDRATION_MISMATCH_SIGNATURE_DEV;
 
 if (typeof window !== "undefined") {
   window.addEventListener("error", (event) => {

@@ -11,6 +11,7 @@ export default function InventorySearch() {
 
   return (
     <SearchInput
+      data-section="inventory-search"
       placeholder="Search products or SKU…"
       value={query}
       onChange={(event) => setQuery(event.target.value)}

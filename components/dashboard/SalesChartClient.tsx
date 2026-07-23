@@ -30,7 +30,7 @@ export function SalesChartClient({ data: salesChart }: Props) {
   const total = data.reduce((s, p) => s + p.value, 0);
 
   return (
-    <Card variant="global">
+    <Card variant="global" data-section="sales-chart">
       <div className="mb-heading-gap flex flex-wrap items-center gap-2">
         <div>
           <h2 className="heading-2">Revenue</h2>

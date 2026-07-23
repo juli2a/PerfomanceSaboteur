@@ -85,10 +85,21 @@ function setRealisticTime(d: Date, seed: number, index: number): Date {
 // ─── Memoised per-request fetchers ────────────────────────────────────────────
 // React.cache deduplicates within a single render pass:
 // KpiGrid and SalesChart both call getCarts() but trigger only one fetch.
+//
+// The four delays below are a deliberate pedagogical device (docs/case5.md),
+// not real DB latency — exported by name (rather than inlined into each
+// setTimeout) so anything that reasons about their magnitude, e.g.
+// e2e/case5-waterfall.spec.ts's streaming-vs-blocking timing thresholds, can
+// derive from the current values instead of duplicating separate hardcoded
+// numbers that would silently drift out of sync if these are ever retuned.
+export const CARTS_DELAY_MS = 700;
+export const PRODUCTS_DELAY_MS = 800;
+export const USERS_DELAY_MS = 600;
+export const CATEGORIES_DELAY_MS = 400;
 
 export const getCarts = cache(
   async (): Promise<{ kpi: KpiData; salesChart: SalesChartData }> => {
-    await new Promise((r) => setTimeout(r, 700));
+    await new Promise((r) => setTimeout(r, CARTS_DELAY_MS));
 
     const { seed, ordersCount, usersCount } = getDailySimConfig();
 
@@ -174,7 +185,7 @@ export const getCarts = cache(
 );
 
 export const getProducts = cache(async (): Promise<AnalyticCardData[]> => {
-  await new Promise((r) => setTimeout(r, 800));
+  await new Promise((r) => setTimeout(r, PRODUCTS_DELAY_MS));
 
   const { products } = await apiFetch<{ products: DummyProduct[] }>(
     "/products?limit=100",
@@ -193,7 +204,7 @@ export const getProducts = cache(async (): Promise<AnalyticCardData[]> => {
 });
 
 export const getUsers = cache(async (): Promise<CustomerData[]> => {
-  await new Promise((r) => setTimeout(r, 600));
+  await new Promise((r) => setTimeout(r, USERS_DELAY_MS));
 
   // usersCount is the same user-pool size that getCarts uses for activeClients,
   // derived from the same daily seed — no runtime dependency between the two.
@@ -216,7 +227,7 @@ export const getUsers = cache(async (): Promise<CustomerData[]> => {
 });
 
 export const getCategories = cache(async (): Promise<CategoryData[]> => {
-  await new Promise((r) => setTimeout(r, 400));
+  await new Promise((r) => setTimeout(r, CATEGORIES_DELAY_MS));
 
   const { products } = await apiFetch<{
     products: Pick<DummyProduct, "id" | "category" | "price" | "stock">[];

@@ -51,6 +51,7 @@ function ToggleRow({
 
   return (
     <div
+      data-case-key={caseKey}
       className={cn(
         "overflow-hidden rounded border transition-colors",
         checked

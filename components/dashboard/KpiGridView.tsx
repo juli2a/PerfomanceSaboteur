@@ -43,7 +43,7 @@ export function KpiGridView({ kpi }: Props) {
   ];
 
   return (
-    <section className="relative">
+    <section className="relative" data-section="kpi-grid">
       <h2 className="sr-only">KPI Overview</h2>
       <div className="grid grid-cols-1 gap-3 @min-[340px]:grid-cols-2 @min-[1280px]:grid-cols-4 @min-[1280px]:gap-4">
         {cards.map((card) => (
