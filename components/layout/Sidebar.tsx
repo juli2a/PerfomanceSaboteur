@@ -22,6 +22,7 @@ export default function Sidebar({
 
   return (
     <aside
+      data-collapsed={collapsed || undefined}
       className={cn(
         "hidden shrink-0 flex-col overflow-x-hidden overflow-y-auto border-r border-border bg-surface-2 pb-15 transition-[width] duration-280 lg:flex",
         collapsed ? "w-[76px]" : "w-[248px]",

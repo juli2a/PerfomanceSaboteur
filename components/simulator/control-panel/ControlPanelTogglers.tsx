@@ -75,7 +75,11 @@ export default function ControlPanelTogglers() {
               </legend>
               <div className="grid grid-flow-col grid-rows-2 gap-x-4.5 gap-y-2.25">
                 {zone.items.map((item) => (
-                  <div key={item.key} className="flex items-center gap-1.75">
+                  <div
+                    key={item.key}
+                    data-case-key={item.key}
+                    className="flex items-center gap-1.75"
+                  >
                     <Switch
                       color="brand"
                       size="sm"

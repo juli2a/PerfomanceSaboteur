@@ -25,7 +25,10 @@ export default function TopProductsBannerClient({
   isUnoptimized,
 }: Props) {
   return (
-    <div className="relative overflow-hidden rounded-xl">
+    <div
+      data-section="top-products"
+      className="relative overflow-hidden rounded-xl"
+    >
       <h2 className="heading-2 absolute top-4.25 left-4.25 z-10 text-white [text-shadow:0_1px_4px_rgba(0,0,0,0.6)] @min-[640px]:top-5.5 @min-[640px]:left-5.5">
         Top Products
       </h2>

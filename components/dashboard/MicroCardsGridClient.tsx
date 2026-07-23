@@ -39,7 +39,7 @@ export function MicroCardsGridClient({ products }: Props) {
   const activeCount = products.filter((p) => p.marginality >= threshold).length;
 
   return (
-    <Card variant="global">
+    <Card variant="global" data-section="analytics-grid">
       <div className="mb-heading-gap flex flex-col gap-3 @min-[640px]:flex-row @min-[640px]:items-center">
         <div className="flex items-center justify-between @min-[640px]:contents">
           <h2 className="heading-2">Analytics Grid</h2>
