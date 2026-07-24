@@ -46,6 +46,7 @@ export default function MicroCardView({
           render={
             <Card
               disabled={lowMargin}
+              data-low-margin={lowMargin}
               className={cn(
                 "py-2.5 px-3",
                 !lowMargin && "border-border-strong",

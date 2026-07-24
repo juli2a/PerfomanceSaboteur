@@ -5,7 +5,7 @@ import { useInventorySearchStore } from "@/store/inventory-search";
 import { useSimControlStore } from "@/store/simulator-control";
 import { useSimulatorCase } from "@/hooks/useSimulatorCase";
 
-const DEBOUNCE_MS = 300;
+export const DEBOUNCE_MS = 300;
 
 interface SearchResponse {
   ids: number[];

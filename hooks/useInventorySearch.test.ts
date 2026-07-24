@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { server } from "@/mocks/server";
-import { useInventorySearch } from "@/hooks/useInventorySearch";
+import {
+  useInventorySearch,
+  DEBOUNCE_MS,
+} from "@/hooks/useInventorySearch";
 import { useInventorySearchStore } from "@/store/inventory-search";
 import { useSimControlStore } from "@/store/simulator-control";
 
@@ -170,7 +173,7 @@ describe("useInventorySearch — good path (race condition toggle off)", () => {
     expect(pending).toHaveLength(0);
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(300);
+      await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
     });
 
     expect(pending).toHaveLength(1);
@@ -182,7 +185,7 @@ describe("useInventorySearch — good path (race condition toggle off)", () => {
 
     act(() => useInventorySearchStore.getState().setQuery("l"));
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(300);
+      await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
     });
     expect(pending).toHaveLength(1);
     const firstRequest = pending[0];
@@ -190,7 +193,7 @@ describe("useInventorySearch — good path (race condition toggle off)", () => {
 
     act(() => useInventorySearchStore.getState().setQuery("lipstick"));
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(300);
+      await vi.advanceTimersByTimeAsync(DEBOUNCE_MS);
     });
 
     expect(firstRequest.signal.aborted).toBe(true);

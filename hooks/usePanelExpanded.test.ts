@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { usePanelExpanded } from "@/hooks/usePanelExpanded";
+import {
+  usePanelExpanded,
+  RESTORE_ANIMATION_DELAY_MS,
+} from "@/hooks/usePanelExpanded";
 import { usePanelExpandedStore } from "@/store/panel-expanded";
 import { usePanelExpandedStoreUnstable } from "@/store/panel-expanded-unstable";
 
@@ -56,14 +59,14 @@ describe("usePanelExpanded", () => {
     expect(result.current.expanded).toBe(false);
   });
 
-  it("isUnstable=true: after advancing fake timers by 150ms, the returned expanded value catches up to the persisted store's new value", () => {
+  it("isUnstable=true: after advancing fake timers by RESTORE_ANIMATION_DELAY_MS, the returned expanded value catches up to the persisted store's new value", () => {
     const { result } = renderHook(() => usePanelExpanded(true, false));
 
     act(() => {
       usePanelExpandedStoreUnstable.getState().setExpanded(true);
     });
     act(() => {
-      vi.advanceTimersByTime(150);
+      vi.advanceTimersByTime(RESTORE_ANIMATION_DELAY_MS);
     });
 
     expect(result.current.expanded).toBe(true);

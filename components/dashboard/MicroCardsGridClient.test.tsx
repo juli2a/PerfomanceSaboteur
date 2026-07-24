@@ -36,14 +36,15 @@ beforeEach(() => {
 // A card's element is found via its own title text, not by index or by
 // `data-slot="card"` — PopoverTrigger's `render` prop takes over the Card
 // element it's given and overwrites its `data-slot` to "popover-trigger"
-// (verified via a debug render dump), so the `opacity-40` class Case 8
-// applies for `disabled` actually lands on `[data-slot="popover-trigger"]`,
-// not on a `[data-slot="card"]` — that selector only ever matches
-// MicroCardsGridClient's own outer wrapper Card, one level up.
+// (verified via a debug render dump), so the `data-low-margin` attribute
+// Case 8 sets via `disabled`/`lowMargin` actually lands on
+// `[data-slot="popover-trigger"]`, not on a `[data-slot="card"]` — that
+// selector only ever matches MicroCardsGridClient's own outer wrapper Card,
+// one level up.
 function isLowMargin(title: string): boolean {
   const card = screen.getByText(title).closest('[data-slot="popover-trigger"]');
   if (!card) throw new Error(`card not found for "${title}"`);
-  return card.className.includes("opacity-40");
+  return card.getAttribute("data-low-margin") === "true";
 }
 
 describe("MicroCardsGridClient (Case 8)", () => {

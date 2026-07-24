@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useRerenderNodesReporter } from "@/hooks/useRerenderNodesReporter";
+import {
+  useRerenderNodesReporter,
+  SETTLE_DELAY_MS,
+} from "@/hooks/useRerenderNodesReporter";
 import { useRenderCounterStore } from "@/store/render-counter";
 import { useSimPerformanceStore } from "@/store/simulator-performance";
 import { useSimControlStore } from "@/store/simulator-control";
@@ -37,26 +40,26 @@ describe("useRerenderNodesReporter", () => {
       useRenderCounterStore.getState().increment("contextOverhead");
     });
     act(() => {
-      vi.advanceTimersByTime(50);
+      vi.advanceTimersByTime(SETTLE_DELAY_MS / 2);
     });
     act(() => {
       useRenderCounterStore.getState().increment("contextOverhead");
     });
     act(() => {
-      vi.advanceTimersByTime(50);
+      vi.advanceTimersByTime(SETTLE_DELAY_MS / 2);
     });
     act(() => {
       useRenderCounterStore.getState().increment("contextOverhead");
     });
     act(() => {
-      vi.advanceTimersByTime(50);
+      vi.advanceTimersByTime(SETTLE_DELAY_MS / 2);
     });
     expect(
       useSimPerformanceStore.getState().rerenderedNodes.contextOverhead,
     ).toBeUndefined();
 
     act(() => {
-      vi.advanceTimersByTime(50);
+      vi.advanceTimersByTime(SETTLE_DELAY_MS / 2);
     });
     expect(
       useSimPerformanceStore.getState().rerenderedNodes.contextOverhead,
@@ -73,7 +76,7 @@ describe("useRerenderNodesReporter", () => {
       }
     });
     act(() => {
-      vi.advanceTimersByTime(100);
+      vi.advanceTimersByTime(SETTLE_DELAY_MS);
     });
 
     expect(useSimControlStore.getState().caseAlerts.contextOverhead).toBe(
@@ -92,7 +95,7 @@ describe("useRerenderNodesReporter", () => {
       }
     });
     act(() => {
-      vi.advanceTimersByTime(100);
+      vi.advanceTimersByTime(SETTLE_DELAY_MS);
     });
 
     expect(
@@ -104,7 +107,7 @@ describe("useRerenderNodesReporter", () => {
     renderHook(() => useRerenderNodesReporter("contextOverhead", 5));
 
     act(() => {
-      vi.advanceTimersByTime(1000);
+      vi.advanceTimersByTime(SETTLE_DELAY_MS * 10);
     });
 
     expect(

@@ -64,7 +64,7 @@ const CARD_HEIGHT_PX = 122;
 // Case 7 (contextOverhead): exposes unnecessary re-renders across the full visible set.
 // Case 3 (heavyMounting) deliberately does NOT use this cap — mounting every
 // row at once is the entire point of that case, see flatRowLimit below.
-const FLAT_ROW_LIMIT = 200;
+export const FLAT_ROW_LIMIT = 200;
 
 interface ProductTableProps {
   products: AmplifiedProduct[];
