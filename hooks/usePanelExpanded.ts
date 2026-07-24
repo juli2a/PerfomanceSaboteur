@@ -4,6 +4,8 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { usePanelExpandedStore } from "@/store/panel-expanded";
 import { usePanelExpandedStoreUnstable } from "@/store/panel-expanded-unstable";
 
+export const RESTORE_ANIMATION_DELAY_MS = 150;
+
 // Case 2 toggle OFF (good path): cookie-backed, SSR-safe — see
 // store/panel-expanded.ts. useSyncExternalStore's third argument is the
 // snapshot used for SSR *and* the client's first hydration pass — passing
@@ -48,7 +50,10 @@ function useUnstableExpanded(initialExpanded: boolean) {
   useEffect(() => {
     // Give styles/DOM a moment to settle, otherwise the CSS transition
     // doesn't play on first render.
-    const timer = setTimeout(() => setDisplayed(persisted), 150);
+    const timer = setTimeout(
+      () => setDisplayed(persisted),
+      RESTORE_ANIMATION_DELAY_MS,
+    );
     return () => clearTimeout(timer);
   }, [persisted]);
 

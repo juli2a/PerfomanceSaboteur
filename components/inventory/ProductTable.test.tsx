@@ -2,7 +2,9 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { render } from "@testing-library/react";
 
 import type { AmplifiedProduct } from "@/types/inventory";
-import ProductTable from "@/components/inventory/ProductTable";
+import ProductTable, {
+  FLAT_ROW_LIMIT,
+} from "@/components/inventory/ProductTable";
 import { MediaContext } from "@/context/MediaContext";
 import { TableSelectionProvider } from "@/context/TableSelectionContext";
 import { useSimControlStore } from "@/store/simulator-control";
@@ -66,7 +68,7 @@ describe("ProductTable row mounting (Case 3 vs Case 7)", () => {
 
     const { container } = renderTable();
 
-    expect(countMountedRows(container)).toBe(200);
+    expect(countMountedRows(container)).toBe(FLAT_ROW_LIMIT);
   });
 
   it("Case 3 alone: removes the cap, mounts every one of the 250 rows", () => {

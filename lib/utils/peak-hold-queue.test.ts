@@ -1,5 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { createPeakHoldQueue } from "@/lib/utils/peak-hold-queue";
+import {
+  createPeakHoldQueue,
+  PEAK_HOLD_MS,
+} from "@/lib/utils/peak-hold-queue";
 
 // Plan: docs/local-notes/step2e-peak-hold-queue-plan.md
 // good=100, poor=300 throughout — 50/60 are "good", 200 is "degraded",
@@ -42,7 +45,7 @@ describe("createPeakHoldQueue", () => {
     expect(apply).toHaveBeenNthCalledWith(1, 200);
     expect(apply).toHaveBeenCalledTimes(1); // 400 must still be waiting
 
-    vi.advanceTimersByTime(999);
+    vi.advanceTimersByTime(PEAK_HOLD_MS - 1);
     expect(apply).toHaveBeenCalledTimes(1); // 1ms short of the hold window
 
     vi.advanceTimersByTime(1);
@@ -61,10 +64,10 @@ describe("createPeakHoldQueue", () => {
     vi.advanceTimersByTime(0);
     expect(apply).toHaveBeenNthCalledWith(1, 400);
 
-    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(PEAK_HOLD_MS);
     expect(apply).toHaveBeenNthCalledWith(2, 410);
 
-    vi.advanceTimersByTime(1000);
+    vi.advanceTimersByTime(PEAK_HOLD_MS);
     expect(apply).toHaveBeenNthCalledWith(3, 420);
 
     expect(apply).toHaveBeenCalledTimes(3);
@@ -78,11 +81,11 @@ describe("createPeakHoldQueue", () => {
     vi.advanceTimersByTime(0);
     expect(apply).toHaveBeenCalledTimes(1); // 400 applied, hold now running
 
-    vi.advanceTimersByTime(500); // halfway through the 1000ms hold
+    vi.advanceTimersByTime(PEAK_HOLD_MS / 2); // halfway through the hold
     enqueue(50); // fresh good reading arrives mid-hold
     expect(apply).toHaveBeenCalledTimes(1); // must not apply early
 
-    vi.advanceTimersByTime(499);
+    vi.advanceTimersByTime(PEAK_HOLD_MS / 2 - 1);
     expect(apply).toHaveBeenCalledTimes(1); // still 1ms short
 
     vi.advanceTimersByTime(1);

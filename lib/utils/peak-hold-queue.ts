@@ -6,7 +6,7 @@ import { getValueRating } from "@/lib/utils/gauge";
 // fabricated) can flash by and be replaced by a calm number before a human
 // eye registers it. "good" samples are never held — they're applied as soon
 // as their turn in the queue comes up.
-const PEAK_HOLD_MS = 1000;
+export const PEAK_HOLD_MS = 1000;
 
 // A private FIFO queue + timer per call, driven via closure — samples are
 // never dropped: a burst of bad readings each get their full hold window,

@@ -5,7 +5,7 @@ import { useSimPerformanceStore } from "@/store/simulator-performance";
 import { useSimControlStore } from "@/store/simulator-control";
 import type { CaseKey } from "@/types/simulator";
 
-const SETTLE_DELAY_MS = 100;
+export const SETTLE_DELAY_MS = 100;
 
 // Called from SimulatorEffects — once per case that feeds the render-counter
 // store (see store/render-counter.ts), each with its own `caseKey` and
